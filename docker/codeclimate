@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+here="$(dirname "$0")";
+
+. "$here/common.sh"
+
+(cd "$here" && "$COMPOSE_BINARY" -f docker-compose.codeclimate.yml "$@")

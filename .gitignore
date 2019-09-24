@@ -58,7 +58,7 @@ phpunit.xml
 
 # Others
 /.idea
-/.vagrant
+/homestead/.vagrant
 /homestead/Homestead.json
 /homestead/Homestead.yaml
 yarn-error.log
@@ -66,3 +66,6 @@ yarn-error.log
 # Config
 /.env
 /docker/.env
+
+# Mergetool
+*.orig

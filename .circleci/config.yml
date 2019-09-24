@@ -1,22 +1,153 @@
 version: 2.1
 
 jobs:
-  example:
+  build_sami_docs:
+    docker:
+      - image: circleci/php:7.3.5-cli
+
+    working_directory: /tmp/build_docs
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install sami
+          command: |
+            curl -s -L -o sami.phar http://get.sensiolabs.org/sami.phar &&
+            chmod a+x sami.phar
+
+      - run:
+          name: Build docs
+          command: ./sami.phar update --force -vvv docs/sami/sami.conf.php
+
+      - persist_to_workspace:
+          root: docs/build/html
+          paths:
+            - api/
+
+  build_sphinx_docs:
     docker:
       - image: circleci/python:3.7
 
+    working_directory: /tmp/build_docs
 
     steps:
       - checkout
 
       - run:
           name: Setup virtualenv
-          command: echo "Hello world!"
+          command: python -m venv ~/.venv
 
+      - run:
+          name: Install sphinx
+          command: |
+            . ~/.venv/bin/activate &&
+            python -m pip install -U --progress-bar off pip &&
+            python -m pip install -U --progress-bar off -r docs/sphinx/requirements.txt
+
+      - run:
+          name: Build sphinx docs
+          command: |
+            . ~/.venv/bin/activate &&
+            sphinx-build docs/sphinx docs/build/html
+
+      - persist_to_workspace:
+          root: docs/build/html
+          paths:
+            - ./
+
+  deploy_docs:
+    docker:
+      - image: circleci/python:3.7
+
+    working_directory: /tmp/build_docs
+
+    environment:
+      DOCS_DIR: docs/build/html
+      SF_HOST: web.sourceforge.net
+      SF_DOCS_DIR: /home/project-web/cruftman/htdocs/docs
+
+    steps:
+      - attach_workspace:
+          at: docs/build/html
+
+      - add_ssh_keys:
+          fingerprints:
+            - "d8:11:d1:f4:92:5c:6c:05:dd:db:69:4d:71:2f:e7:24"
+
+      - run:
+          name: Deploy to Source Forge
+          command: |
+            sudo apt-get -y update && sudo apt-get -y install rsync &&
+            ssh-keyscan "${SF_HOST}" >> ~/.ssh/known_hosts &&
+            ( cd "${DOCS_DIR}" && rsync -aivz --delete ./ "${SF_USER}@${SF_HOST}:${SF_DOCS_DIR}/${CIRCLE_BRANCH}/" );
+
+  behat_test:
+    machine:
+      image: circleci/classic:latest
+
+    steps:
+      - checkout
+
+      - run:
+          name: Bootstrap project and install composer dependencies
+          command: |
+            docker/initialize.circle &&
+            docker/compose run --rm --entrypoint=composer php install
+
+      - run:
+          name: Running tests
+          command: |
+            docker/compose up -d ldap-service http-service &&
+            docker/compose run --rm test php -r 'sleep(10);' &&
+            docker/compose run --rm test vendor/bin/behat
+
+      - run:
+          name: Shuting down docker conainers
+          command: docker/compose down
+
+  behat_docs_test:
+    machine:
+      image: circleci/classic:latest
+
+    steps:
+      - checkout
+
+      - run:
+          name: Bootstrap project and install composer dependencies
+          command: |
+            docker/initialize.circle &&
+            docker/compose run --rm --entrypoint=composer php install
+
+      - run:
+          name: Running tests
+          command: |
+            docker/compose up -d ldap-service &&
+            docker/compose run --rm test php -r 'sleep(10);' &&
+            docker/compose run --rm test vendor/bin/behat -c docs/behat.yml
+
+      - run:
+          name: Shuting down docker conainers
+          command: docker/compose down
 
 workflows:
   version: 2.1
 
-  examples:
+  build_docs:
     jobs:
-      - example
+      - build_sami_docs
+      - build_sphinx_docs
+      - deploy_docs:
+          requires:
+            - build_sami_docs
+            - build_sphinx_docs
+          filters:
+            branches:
+              only:
+                - master
+                - devel
+
+  test:
+    jobs:
+      - behat_test
+      - behat_docs_test

@@ -1,0 +1,66 @@
+#!/usr/bin/env php
+<?php
+
+class CruftmanDockerInitializer
+{
+    public function __construct(array $config = [])
+    {
+        $this->dir = ($config['dir'] ?? null) ?: __DIR__;
+        $this->dotenv = ($config['dotenv'] ?? null) ?: $this->dir . '/.env';
+        $this->dotenv_dist = ($config['dotenv_dist'] ?? null) ?: $this->dir . '/.env.dist';
+        $this->substitutions = $config['substitutions'] ?? [];
+    }
+
+    public function run()
+    {
+        $this->updateDotEnv();
+    }
+
+    protected function findDockerCompose()
+    {
+        $fname = 'docker-compose';
+        $local = $this->dir . '/' .$fname;
+        if (file_exists($local) && is_executable($local)) {
+            return './' . $fname;
+        }
+
+        $upper = $this->dir . '/../' . $fname;
+        if (file_exists($upper) && is_executable($upper)) {
+            return '../' . $fname;
+        }
+        return $fname;
+    }
+
+    protected function updateDotEnv()
+    {
+        $defaults = [
+            '@BINARY@'          => $this->findDockerCompose(),
+            '@PROJECT@'         => 'cruftman',
+            '@UID@'             => (string)getmyuid(),
+            '@GID@'             => (string)getmygid(),
+            '@USER@'            => 'cruftman',
+            '@GROUP@'           => 'cruftman',
+            '@HOME@'            => '/home/cruftman',
+            '@CODE@'            => '/code',
+            '@PHP_TAG@'         => 'cli',
+            '@APACHE_TAG@'      => 'apache',
+            '@OPENLDAP_TAG@'    => 'latest',
+            '@CODECLIMATE_TAG@' => 'latest',
+            '@SPHINX_TAG@'      => 'latest',
+            '@SAMI_TAG@'        => 'latest',
+            '@HTTP_PORT@'       => '8000',
+            '@SAMI_PORT@'       => '8001',
+            '@SPHINX_PORT@'     => '8002',
+            '@TOP_SRCDIR@'      => realpath($this->dir . '/..'),
+            '@@'                => '@'
+        ];
+        $substitutions = array_merge($defaults, $this->substitutions);
+        $content = file_get_contents($this->dotenv_dist);
+        $content = strtr($content, $substitutions);
+        file_put_contents($this->dotenv, $content);
+    }
+};
+
+(new CruftmanDockerInitializer)->run();
+
+// vim: syntax=php sw=4 ts=4 et:

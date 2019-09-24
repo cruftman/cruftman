@@ -1,0 +1,27 @@
+version: '3.2'
+services:
+  sphinx:
+    build:
+      context: default
+      args:
+        CRUFT_IMG: "korowai/sphinx:${CRUFT_SPHINX_TAG:-latest}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    ports:
+      - "${CRUFT_SPHINX_PORT:-8002}:8000"
+    volumes:
+      - ../:${CRUFT_CODE:-/code}
+    user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"
+
+  sami:
+    build:
+      context: default
+      args:
+        CRUFT_IMG: "korowai/sami:${CRUFT_SAMI_TAG:-latest}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    ports:
+      - "${CRUFT_SAMI_PORT:-8001}:8001"
+    volumes:
+      - ../:${CRUFT_CODE:-/code}
+    user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"

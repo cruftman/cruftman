@@ -1,0 +1,11 @@
+version: '3'
+services:
+  codeclimate:
+    image: "codeclimate/codeclimate:${CRUFT_CODECLIMATE_TAG:-latest}"
+    environment:
+      - CODECLIMATE_CODE=${CRUFT_TOP_SRCDIR}
+    volumes:
+      - ..:${CRUFT_CODE:-/code}
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/cc:/tmp/cc
+    working_dir: "${CRUFT_CODE:-/code}"

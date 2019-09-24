@@ -1,0 +1,17 @@
+# behat.yml
+
+default:
+  autoload:
+    - "%paths.base%/tests/Cruftman/Behat"
+  suites:
+    ldap:
+      paths:
+        - "%paths.base%/tests/Cruftman/Behat"
+      contexts:
+        - "Cruftman\\Behat\\ExampleContext"
+  extensions:
+      Behat\MinkExtension:
+        base_url: 'http://http-service'
+        sessions:
+          default:
+            goutte: ~

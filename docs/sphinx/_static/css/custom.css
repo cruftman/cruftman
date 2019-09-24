@@ -1,0 +1,26 @@
+/* override table width restrictions */
+@media screen and (min-width: 767px) {
+
+   .wy-table-responsive table td {
+      /* !important prevents the common CSS stylesheets from overriding
+         this as on RTD they are loaded after this stylesheet */
+      white-space: normal !important;
+   }
+
+   .wy-table-responsive {
+      overflow: visible !important;
+   }
+}
+
+/* because I just like it ... */
+p { text-align: justify; }
+.rst-content table td li p { text-align: left; }
+code, .rst-content tt, .rst-content code {
+  border: none;
+  font-size: 95%;
+  background: transparent;
+}
+
+.rst-content table td blockquote {
+  margin-left: 0px;
+}

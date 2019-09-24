@@ -1,0 +1,52 @@
+version: '3.2'
+services:
+  php:
+    build:
+      context: default
+      args:
+        CRUFT_IMG: "korowai/php:${CRUFT_PHP_TAG:-cli}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    volumes:
+      - ..:${CRUFT_CODE:-/code}
+    user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"
+
+  test:
+    build:
+      context: default
+      args:
+        CRUFT_IMG: "korowai/php:${CRUFT_PHP_TAG:-cli}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    depends_on:
+      - ldap-service
+      - http-service
+    volumes:
+      - ..:${CRUFT_CODE:-/code}
+    user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"
+    entrypoint: [ "dockerize", "-wait", "tcp://ldap-service:389", "-timeout", "10s" ]
+
+  http-service:
+    build:
+      context: http
+      args:
+        CRUFT_IMG: "korowai/php:${CRUFT_APACHE_TAG:-apache}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    environment:
+      - APACHE_DOCUMENT_ROOT=${CRUFT_CODE:-/code}/public
+    ports:
+      - "${CRUFT_HTTP_PORT:-8000}:80"
+    volumes:
+      - ..:${CRUFT_CODE:-/code}
+
+  ldap-service:
+    build:
+      context: ldap
+      args:
+        CRUFT_IMG: "korowai/openldap:${CRUFT_PHP_TAG:-latest}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    command: [ --copy-service, --loglevel, debug]
+    volumes:
+      - ./ldap/resources/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif

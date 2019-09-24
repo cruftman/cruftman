@@ -1,0 +1,17 @@
+RewriteEngine On
+RewriteBase /docs/
+
+# /docs/ -> /docs/latest/
+RewriteRule ^$ latest/ [R,L]
+
+# /docs/{foo} -> /docs/{foo}/
+RewriteRule ^([^/]+)$ $1/ [R,L]
+
+# /docs/api/ -> /docs/latest/api/
+# /docs/user_guide/ -> /docs/latest/user_guide/
+# /docs/devel_guide/ -> /docs/latest/devel_guide/
+RewriteRule ^(api|user_guide|devel_guide)/$ latest/$1/ [R,L]
+
+# Map /docs/latest/ to appropriate branch
+##RewriteRule ^latest/(.*)$ master/$1 [L]
+RewriteRule ^latest/(.*)$ devel/$1 [L]

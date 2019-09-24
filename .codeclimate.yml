@@ -1,0 +1,20 @@
+---
+version: "2"
+exclude_patterns:
+  - "bin/"
+  - "**/cache/"
+  - "build/"
+  - "database/"
+  - "docker/"
+  - "docs/"
+  - "storage/"
+  - "tests/"
+  - "vendor/"
+  - "**/Behat/"
+  - "**/Resources/"
+  - "**/Tests/"
+  - "**/tests/"
+  - "**/vendor/"
+plugins:
+  phpcodesniffer:
+    enabled: true

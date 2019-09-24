@@ -1,0 +1,21 @@
+memory: 2048
+cpus: 1
+provider: virtualbox
+authorize: ~/.ssh/id_rsa.pub
+networks:
+    - type: "private_network"
+      ip: 192.168.10.10
+keys:
+    - ~/.ssh/id_rsa
+folders:
+    - map: ~/projects/cruftman
+      to: /home/vagrant/code
+sites:
+    - map: cruftman.local
+      to: /home/vagrant/code/public
+databases:
+    - cruftman
+name: cruftman
+hostname: cruftman.local
+
+# vim: set syntax=yaml ts=4 sw=4:

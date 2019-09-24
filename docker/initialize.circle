@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+here="$(dirname "$0")";
+top="$(dirname "$here")";
+top="$(readlink -f "$top")";
+
+cat "$here/.env.circle" | \
+  sed -e "s#@UID@#`id -u`#g" \
+      -e "s#@GID@#`id -g`#g" \
+      -e "s#@TOP_SRCDIR@#$top#g" > "$here/.env"

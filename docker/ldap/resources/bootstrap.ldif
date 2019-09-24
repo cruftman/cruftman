@@ -1,0 +1,51 @@
+# ou=people,dc=example,dc=org
+dn: ou=people,dc=example,dc=org
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+# uid=jsmith,ou=people,dc=example,dc=org
+dn: uid=jsmith,ou=people,dc=example,dc=org
+uid: jsmith
+uidNumber: 5678
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: shadowAccount
+objectClass: posixAccount
+cn: John Smith
+displayName: John Smith
+gecos: John Smith,,,
+gidNumber: 5000
+givenName: John
+sn: Smith
+homeDirectory: /home/jsmith
+initials: J. S
+loginShell: /bin/bash
+mail: jsmith@example.org
+roomNumber: 114
+telephoneNumber: +12 34 567 8908
+userPassword: secret
+
+# always empty subtree
+dn: dc=empty,dc=example,dc=org
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+dc: empty
+o: Empty, Example Org.
+
+# subtree
+dn: dc=subtree,dc=example,dc=org
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+dc: subtree
+o: Subtree, Example Org.
+
+# referral
+dn: dc=foreign,dc=example,dc=org
+objectClass: referral
+objectClass: extensibleObject
+dc: foreign
+uid: blabla
+ref: ldap://ldap-service/dc=subtree,dc=example,dc=org
