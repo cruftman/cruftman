@@ -11,8 +11,8 @@
 |
 */
 
-require __DIR__ . '/common.php';
-
-//$router->get('/', function () use ($router) {
-//    return $router->app->version();
-//});
+$router->get('/', function () use ($router) {
+    return [ 'foo' => true ];
+    //return 'No i dobrze';
+    // return $router->app->version();
+});

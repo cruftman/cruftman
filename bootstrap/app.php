@@ -79,6 +79,7 @@ $app->singleton(
 // $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+$app->register(Dingo\Api\Provider\LumenServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -91,10 +92,22 @@ $app->singleton(
 |
 */
 
+$app->router->get('/', function () {
+    return redirect('web');
+});
+
 $app->router->group([
-    'namespace' => 'App\Http\Controllers',
+    'namespace' => 'App\Http\Controllers\Api',
+    'prefix' => 'api',
 ], function ($router) {
     require __DIR__.'/../routes/api.php';
+});
+
+$app->router->group([
+    'namespace' => 'App\Http\Controllers\Web',
+    'prefix' => 'web',
+], function ($router) {
+    require __DIR__.'/../routes/web.php';
 });
 
 return $app;

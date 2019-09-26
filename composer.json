@@ -7,7 +7,8 @@
     "require": {
         "php": "^7.2",
         "korowai/ldaplib": "dev-master",
-        "laravel/lumen-framework": "^6.0"
+        "laravel/lumen-framework": "^6.0",
+        "dingo/api": "^2.4.0-rc1"
     },
     "require-dev": {
         "behat/behat": "^3.5",
