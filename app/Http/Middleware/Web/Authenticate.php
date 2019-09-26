@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Api;
+namespace App\Http\Middleware\Web;
 
 use App\Http\Middleware\Authenticate as BaseAuthenticate;
 
