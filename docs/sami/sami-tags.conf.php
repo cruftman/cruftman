@@ -32,3 +32,5 @@ return new Sami( $iterator, array(
   'cache_dir' => __DIR__ . '/../cache/%version%/html/api',
   'remote_repository' => new GithubRemoteRepository('cruftman/cruftman')
 ));
+
+// vim: syntax=php sw=4 ts=4 et:

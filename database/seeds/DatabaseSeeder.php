@@ -14,3 +14,5 @@ class DatabaseSeeder extends Seeder
         // $this->call('UsersTableSeeder');
     }
 }
+
+// vim: syntax=php sw=4 ts=4 et:

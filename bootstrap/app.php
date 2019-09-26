@@ -111,3 +111,5 @@ $app->router->group([
 });
 
 return $app;
+
+// vim: syntax=php sw=4 ts=4 et:

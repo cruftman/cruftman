@@ -24,3 +24,5 @@ class ExampleJob extends Job
         //
     }
 }
+
+// vim: syntax=php sw=4 ts=4 et:

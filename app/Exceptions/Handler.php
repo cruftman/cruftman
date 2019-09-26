@@ -48,3 +48,5 @@ class Handler extends ExceptionHandler
         return parent::render($request, $exception);
     }
 }
+
+// vim: syntax=php sw=4 ts=4 et:

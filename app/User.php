@@ -30,3 +30,5 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'password',
     ];
 }
+
+// vim: syntax=php sw=4 ts=4 et:

@@ -23,3 +23,5 @@ return new Sami($iterator, array(
   'build_dir' => __DIR__ . '/../build/local/html/api',
   'cache_dir' => __DIR__ . '/../cache/local/html/api'
 ));
+
+// vim: syntax=php sw=4 ts=4 et:

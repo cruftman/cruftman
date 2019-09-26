@@ -17,3 +17,5 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'email' => $faker->email,
     ];
 });
+
+// vim: syntax=php sw=4 ts=4 et:

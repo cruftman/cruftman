@@ -16,3 +16,5 @@ $router->get('/', function () use ($router) {
     //return 'No i dobrze';
     // return $router->app->version();
 });
+
+// vim: syntax=php sw=4 ts=4 et:

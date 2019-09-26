@@ -16,3 +16,5 @@ require __DIR__ . '/common.php';
 //$router->get('/', function () use ($router) {
 //    return $router->app->version();
 //});
+
+// vim: syntax=php sw=4 ts=4 et:

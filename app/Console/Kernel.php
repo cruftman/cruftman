@@ -27,3 +27,5 @@ class Kernel extends ConsoleKernel
         //
     }
 }
+
+// vim: syntax=php sw=4 ts=4 et:
