@@ -1,20 +1,33 @@
 ---
 version: "2"
 exclude_patterns:
-  - "bin/"
-  - "**/cache/"
-  - "build/"
-  - "database/"
-  - "docker/"
-  - "docs/"
-  - "storage/"
-  - "tests/"
-  - "vendor/"
   - "**/Behat/"
   - "**/Resources/"
   - "**/Tests/"
+  - "**/cache/"
   - "**/tests/"
   - "**/vendor/"
+  - ".git/"
+  - "bin/"
+  - "bootstrap/"
+  - "build/"
+  - "database/"
+  - "docker/"
+  - "docs/build/"
+  - "docs/cache/"
+  - "docs/sami/"
+  - "homestead/"
+  - "storage/"
+  - "tests/"
+  - "vendor/"
 plugins:
+  sonar-php:
+    enabled: true
+    config:
+      test_patterns:
+        - src/**
+        - tests/**
+        - app/**
+
   phpcodesniffer:
     enabled: true

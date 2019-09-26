@@ -34,8 +34,7 @@
             "tests/"
         ],
         "psr-4": {
-          "Cruftman\\Tests\\": "tests/Cruftman/Tests/",
-          "Cruftman\\Behat\\": "tests/Cruftman/Behat/",
+          "Cruftman\\": "tests/Cruftman/",
           "Cruftman\\Docs\\Behat\\":  "docs/sphinx/Behat/"
         }
     },

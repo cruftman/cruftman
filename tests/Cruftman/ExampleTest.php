@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Tests;
+namespace Cruftman;
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class ExampleTest extends TestCase
+class ExampleTest extends Testing\TestCase
 {
     /**
      * A basic test example.

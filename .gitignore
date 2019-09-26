@@ -58,9 +58,9 @@ phpunit.xml
 
 # Others
 /.idea
-/homestead/.vagrant
-/homestead/Homestead.json
-/homestead/Homestead.yaml
+.vagrant/
+Homestead.json
+Homestead.yaml
 yarn-error.log
 
 # Config

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Tests;
+namespace Cruftman\Testing;
 
 abstract class TestCase extends \Laravel\Lumen\Testing\TestCase
 {
