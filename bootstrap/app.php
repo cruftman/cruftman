@@ -21,9 +21,12 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+$app->withFacades();
 
 // $app->withEloquent();
+
+
+$app->configure('api');
 
 /*
 |--------------------------------------------------------------------------
@@ -92,19 +95,20 @@ $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
 |
 */
 
+$api = $app[\Dingo\Api\Routing\Router::class];
+
+$api->version('v1', [
+    'namespace' => 'App\\Http\\Controllers\\V1',
+], function ($api) {
+    require __DIR__ . '/../routes/v1/api.php';
+});
+
 $app->router->get('/', function () {
     return redirect('web');
 });
 
 $app->router->group([
-    'namespace' => 'App\Http\Controllers\Api',
-    'prefix' => 'api',
-], function ($router) {
-    require __DIR__.'/../routes/api.php';
-});
-
-$app->router->group([
-    'namespace' => 'App\Http\Controllers\Web',
+    'namespace' => 'App\\Http\\Controllers\\Web',
     'prefix' => 'web',
 ], function ($router) {
     require __DIR__.'/../routes/web.php';

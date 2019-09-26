@@ -47,3 +47,11 @@ EOF
 
 DEBIAN_FRONTEND=noninteractive sudo debconf-set-selections /tmp/debconf-slapd.conf
 DEBIAN_FRONTEND=noninteractive sudo apt install -y slapd ldap-utils
+
+if [ -z "$BOOTSTRAP_LDIF" ]; then
+  BOOTSTRAP_LDIF="/home/vagrant/code/tests/resources/ldap/bootstrap.ldif";
+fi
+
+if [ -f "$BOOTSTRAP_LDIF" ]; then
+  ldapadd -H ldapi:/// -D cn=admin,dc=example,dc=org -w admin -f "$BOOTSTRAP_LDIF";
+fi

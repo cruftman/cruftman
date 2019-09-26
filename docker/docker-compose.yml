@@ -49,4 +49,4 @@ services:
         CRUFT_GID: "${CRUFT_GID:-6789}"
     command: [ --copy-service, --loglevel, debug]
     volumes:
-      - ./ldap/resources/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
+      - ../tests/resources/ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
