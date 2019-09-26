@@ -1,0 +1,45 @@
+version: 2.1
+
+jobs:
+  build_sami_docs:
+    docker:
+      - image: circleci/php:7.3.5-cli
+
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install sami
+          command: |
+            curl -s -L -o sami.phar http://get.sensiolabs.org/sami.phar &&
+            chmod a+x sami.phar
+
+
+  build_sphinx_docs:
+    docker:
+      - image: circleci/python:3.7
+
+
+    steps:
+      - checkout
+
+      - run:
+          name: Setup virtualenv
+          command: python -m venv ~/.venv
+
+      - run:
+          name: Install sphinx
+          command: |
+            . ~/.venv/bin/activate &&
+            python -m pip install -U --progress-bar off pip &&
+            python -m pip install -U --progress-bar off -r docs/sphinx/requirements.txt
+
+
+workflows:
+  version: 2.1
+
+  build_docs:
+    jobs:
+      - build_sami_docs
+      - build_sphinx_docs
