@@ -17,7 +17,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$app = new Laravel\Lumen\Application(
+$app = new Cruftman\Application\Application(
     dirname(__DIR__)
 );
 

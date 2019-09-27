@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'fallback_locale' => 'pl',
+    'fallback_locale' => 'pl'
 ];

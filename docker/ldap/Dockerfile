@@ -16,6 +16,8 @@ ENV CRUFT_USER=$CRUFT_USER \
     CRUFT_HOME=$CRUFT_HOME \
     CRUFT_CODE=$CRUFT_CODE
 
+ADD etc/ldap/schema/*.ldif /container/service/slapd/assets/config/bootstrap/schema/
+
 RUN if [ -f /etc/alpine-release ]; then \
       addgroup -g $CRUFT_GID $CRUFT_GROUP && \
       adduser -h $CRUFT_HOME -G $CRUFT_GROUP -u $CRUFT_UID -D $CRUFT_USER; \
@@ -23,7 +25,8 @@ RUN if [ -f /etc/alpine-release ]; then \
       groupadd -g $CRUFT_GID $CRUFT_GROUP && \
       useradd -m -d $CRUFT_HOME -g $CRUFT_GROUP --uid $CRUFT_UID $CRUFT_USER; \
     fi; \
-    mkdir -p $CRUFT_CODE && chown $CRUFT_USER:$CRUFT_GROUP $CRUFT_CODE
+    mkdir -p $CRUFT_CODE && chown $CRUFT_USER:$CRUFT_GROUP $CRUFT_CODE && \
+    rm -rf /container/service/slapd/assets/config/bootstrap/schema/mmc
 
 VOLUME $CRUFT_CODE
 

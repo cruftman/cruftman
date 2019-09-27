@@ -1,51 +1,421 @@
-# ou=people,dc=example,dc=org
+############################################################################
+#
+# The structure of the bootstrap.ldif provide is:
+#
+#   dc=example,dc=org
+#   + ou=people
+#   | + uid=jsmith    # John Smith
+#   | + uid=owilliams # Oliver Williams
+#   |
+#   + ou=london
+#   | + ou=people
+#   | | + uid=htaylor # Harry Taylor
+#   | | + uid=gdavies # George Davies
+#   | | + uid=jjones  # Jack Jones
+#   | | + uid=mbaker  # Michael Baker
+#   | |
+#   + + ou=systems
+#   |   + ou=configs
+#   |     + cn=dhcp
+#   |       + cn=dhcp-failover
+#   |       + cn=london.example.org
+#   |         + cn=172.22.0.0
+#   |         + cn=172.22.1.0
+#   |
+#   + ou=manchester
+#   | + ou=people
+#   |   + uid=chbrown # Charlie Brown
+#   |   + uid=jwilson # James Wilson
+
+
+#
+# dc=example,dc=org
+#
+
 dn: ou=people,dc=example,dc=org
 objectClass: top
 objectClass: organizationalUnit
 ou: people
 
-# uid=jsmith,ou=people,dc=example,dc=org
+dn: ou=london,dc=example,dc=org
+dc: london
+description: Office of example.org located in London
+objectclass: dcObject
+objectclass: organizationalUnit
+objectclass: top
+ou: london
+
+dn: ou=manchester,dc=example,dc=org
+dc: manchester
+description: Office of example.org located in Manchester
+objectclass: dcObject
+objectclass: organizationalUnit
+objectclass: top
+ou: manchester
+
+#
+# ou=people,dc=example,dc=org
+#
+
 dn: uid=jsmith,ou=people,dc=example,dc=org
 uid: jsmith
-uidNumber: 5678
 objectClass: top
 objectClass: inetOrgPerson
-objectClass: shadowAccount
-objectClass: posixAccount
+objectClass: mailUser
 cn: John Smith
 displayName: John Smith
-gecos: John Smith,,,
-gidNumber: 5000
 givenName: John
 sn: Smith
-homeDirectory: /home/jsmith
-initials: J. S
-loginShell: /bin/bash
+initials: J. S.
 mail: jsmith@example.org
-roomNumber: 114
-telephoneNumber: +12 34 567 8908
-userPassword: secret
+roomNumber: 1000
+telephoneNumber: +44 0141 123 4444
+userPassword: jsmith
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
 
-# always empty subtree
-dn: dc=empty,dc=example,dc=org
+dn: uid=owilliams,ou=people,dc=example,dc=org
+uid: owilliams
 objectClass: top
-objectClass: dcObject
-objectClass: organization
-dc: empty
-o: Empty, Example Org.
+objectClass: inetOrgPerson
+objectClass: mailUser
+cn: Oliver Williams
+displayName: Oliver Williams
+givenName: Oliver
+sn: Williams
+initials: O. W
+mail: owilliams@example.org
+roomNumber: 1001
+telephoneNumber: +44 0141 123 4444
+userPassword: owilliams
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
 
-# subtree
-dn: dc=subtree,dc=example,dc=org
+#
+# ou=london,dc=example,dc=org
+#
+#
+
+dn: ou=people,ou=london,dc=example,dc=org
 objectClass: top
-objectClass: dcObject
-objectClass: organization
-dc: subtree
-o: Subtree, Example Org.
+objectClass: organizationalUnit
+ou: london
 
-# referral
-dn: dc=foreign,dc=example,dc=org
-objectClass: referral
-objectClass: extensibleObject
-dc: foreign
-uid: blabla
-ref: ldap://ldap-service/dc=subtree,dc=example,dc=org
+dn: ou=systems,ou=london,dc=example,dc=org
+objectclass: organizationalUnit
+ou: systems
+
+#
+# ou=manchester,dc=example,dc=org
+#
+#
+
+dn: ou=people,ou=manchester,dc=example,dc=org
+objectClass: top
+objectClass: organizationalUnit
+ou: manchester
+
+dn: ou=systems,ou=manchester,dc=example,dc=org
+objectclass: organizationalUnit
+ou: systems
+
+
+#
+# ou=people,ou=london,dc=example,dc=org
+#
+#
+dn: uid=htaylor,ou=people,ou=london,dc=example,dc=org
+uid: htaylor
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: mailUser
+cn: Harry Taylor
+displayName: Harry Taylor
+givenName: Harry
+sn: Taylor
+initials: H. T
+mail: htaylor@example.org
+roomNumber: 1002
+telephoneNumber: +44 020 1234 5555
+userPassword: htaylor
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
+
+dn: uid=gdavies,ou=people,ou=london,dc=example,dc=org
+uid: gdavies
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: mailUser
+cn: George Davies
+displayName: George Davies
+givenName: George
+sn: Davies
+initials: G. D
+mail: gdavies@example.org
+roomNumber: 1003
+telephoneNumber: +44 020 1234 6666
+userPassword: gdavies
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
+
+dn: uid=jjones,ou=people,ou=london,dc=example,dc=org
+uid: jjones
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: mailUser
+cn: Jack Jones
+displayName: Jack Jones
+givenName: Jack
+sn: Jones
+initials: J. J
+mail: jjones@example.org
+roomNumber: 1003
+telephoneNumber: +44 020 1234 7777
+userPassword: jjones
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
+
+dn: uid=mbaker,ou=people,ou=london,dc=example,dc=org
+uid: mbaker
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: mailUser
+cn: Michael Baker
+displayName: Michel Baker
+givenName: Michael
+sn: Baker
+initials: M. B
+mail: mbaker@example.org
+roomNumber: 1003
+telephoneNumber: +44 020 1234 8888
+userPassword: mbaker
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
+
+#
+# ou=people,ou=manchester,dc=example,dc=org
+#
+dn: uid=chbrown,ou=people,ou=manchester,dc=example,dc=org
+uid: chbrown
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: mailUser
+cn: Charlie Brown
+displayName: Charlie Brown
+givenName: Charlie
+sn: Brown
+initials: Ch.B
+mail: chbrown@example.org
+roomNumber: 1004
+telephoneNumber: +44 0161 123 4444
+userPassword: chbrown
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
+
+dn: uid=jwilson,ou=people,ou=manchester,dc=example,dc=org
+uid: jwilson
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: mailUser
+cn: James Wilson
+displayName: James Wilson
+givenName: James
+sn: Wilson
+initials: J. W
+mail: jwilson@example.org
+roomNumber: 1005
+telephoneNumber: +44 0161 123 5555
+userPassword: jwilson
+accountStatus: enabled
+enabledService: mail
+enabledService: cruftman
+
+#
+# ou=systems,ou=london,dc=example,dc=org
+#
+dn: ou=configs,ou=systems,ou=london,dc=example,dc=org
+objectclass: organizationalUnit
+ou: configs
+
+#
+# ou=systems,ou=manchester,dc=example,dc=org
+#
+
+dn: ou=configs,ou=systems,ou=manchester,dc=example,dc=org
+objectclass: organizationalUnit
+ou: configs
+
+#
+# ou=configs,ou=systems,ou=london,dc=example,dc=org
+#
+dn: cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: dhcp
+dhcpprimarydn: cn=dhcp1.london.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+dhcpsecondarydn: cn=dhcp2.london.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+dhcpserverdn: cn=dhcp1.london.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+dhcpserverdn: cn=dhcp2.london.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+objectclass: dhcpService
+objectclass: top
+
+#
+# cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+#
+
+dn: cn=dhcp-failover,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: dhcp-failover
+dhcpcomments: DHCP failover configuration for london.example.org
+dhcpfailoverloadbalancetime: 3
+dhcpfailoverprimaryport: 647
+dhcpfailoverprimaryserver: dhcp1.london.example.org
+dhcpfailoverresponsedelay: 30
+dhcpfailoversecondaryport: 647
+dhcpfailoversecondaryserver: dhcp2.london.example.org
+dhcpfailoversplit: 128
+dhcpfailoverunackedupdates: 10
+dhcpmaxclientleadtime: 1800
+objectclass: dhcpFailOverPeer
+objectclass: top
+
+dn: cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: london.example.org
+dhcpstatements: authoritative
+objectclass: top
+objectclass: dhcpSharedNetwork
+
+#
+# cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+#
+
+dn: cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 172.22.0.0
+dhcpnetmask: 24
+dhcpoption: broadcast-address 172.22.0.255
+dhcpoption: routers 172.22.0.254
+dhcpoption: domain-name "london.example.org"
+dhcpoption: domain-name-servers 8.8.8.8
+dhcpoption: subnet-mask 255.255.255.0
+objectclass: top
+objectclass: dhcpSubnet
+objectclass: dhcpOptions
+objectclass: radiusprofile
+radiusframedprotocol: PPP
+radiusservicetype: Framed
+radiustunnelmediumtype: IEEE-802
+radiustunnelprivategroupid: 1000
+radiustunneltype: VLAN
+
+dn: cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 172.22.1.0
+dhcpnetmask: 24
+dhcpoption: broadcast-address 172.22.1.255
+dhcpoption: routers 172.22.1.254
+dhcpoption: domain-name "london.example.org"
+dhcpoption: domain-name-servers 8.8.8.8
+dhcpoption: subnet-mask 255.255.255.0
+objectclass: top
+objectclass: dhcpSubnet
+objectclass: dhcpOptions
+objectclass: radiusprofile
+radiusframedprotocol: PPP
+radiusservicetype: Framed
+radiustunnelmediumtype: IEEE-802
+radiustunnelprivategroupid: 1010
+radiustunneltype: VLAN
+
+#
+# dn: cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+#
+dn: cn=0000AABA7925,cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 0000AABA7925
+dhcpcomments: Harry Taylor Printer
+dhcphwaddress: ethernet 00:00:AA:BA:79:25
+dhcpstatements: fixed-address 172.22.0.1
+iphostnumber: 172.22.0.1
+manager: uid=htaylor,ou=people,ou=london,dc=example,dc=org
+objectclass: top
+objectclass: dhcpHost
+objectclass: radiusprofile
+objectclass: ipHost
+radiuscallingstationid: 00-00-AA-BA-79-25
+radiusprofiledn: cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+
+dn: cn=0000F0A91522,cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 0000F0A91522
+dhcpcomments: Harry Taylor PC
+dhcphwaddress: ethernet 00:00:F0:A9:15:22
+dhcpstatements: fixed-address 172.22.0.2
+iphostnumber: 172.22.0.2
+manager: uid=htaylor,ou=people,ou=london,dc=example,dc=org
+objectclass: top
+objectclass: dhcpHost
+objectclass: radiusprofile
+objectclass: ipHost
+radiuscallingstationid: 00-00-F0-A9-15-22
+radiusprofiledn: cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+
+dn: cn=000103057528,cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 000103057528
+dhcpcomments: George Davies PC
+dhcphwaddress: ethernet 00:01:03:05:75:28
+dhcpstatements: fixed-address 172.22.0.3
+iphostnumber: 172.22.0.3
+manager: uid=gdavies,ou=people,ou=london,dc=example,dc=org
+objectclass: dhcpHost
+objectclass: ipHost
+objectclass: radiusprofile
+objectclass: top
+radiuscallingstationid: 00-01-03-05-75-28
+radiusprofiledn: cn=172.22.0.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+
+#
+# dn: cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+#
+
+dn: cn=0000853DEA33,cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 0000853DEA33
+dhcpcomments: Jack Jones Printer
+dhcphwaddress: ethernet 00:00:85:3D:EA:33
+dhcpstatements: fixed-address 172.22.1.1
+iphostnumber: 172.22.1.1
+manager: uid=jjones,ou=people,ou=london,dc=example,dc=org
+objectclass: dhcpHost
+objectclass: ipHost
+objectclass: radiusprofile
+objectclass: top
+radiuscallingstationid: 00-00-85-3D-EA-33
+radiusprofiledn: cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+
+dn: cn=0001021DA52B,cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 0001021DA52B
+dhcpcomments: Jack Jones PC
+dhcphwaddress: ethernet 00:01:02:1D:A5:2B
+dhcpstatements: fixed-address 172.22.1.2
+iphostnumber: 172.22.1.2
+manager: uid=jjones,ou=people,ou=london,dc=example,dc=org
+objectclass: top
+objectclass: dhcpHost
+objectclass: radiusprofile
+objectclass: ipHost
+radiuscallingstationid: 00-01-02-1D-A5-2B
+radiusprofiledn: cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+
+dn: cn=000347ECF521,cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+cn: 000347ECF521
+dhcpcomments: Michael Baker PC
+dhcphwaddress: ethernet 00:03:47:EC:F5:21
+dhcpstatements: fixed-address 172.22.1.3
+iphostnumber: 172.22.1.3
+manager: uid=mbaker,ou=people,ou=london,dc=example,dc=org
+objectclass: top
+objectclass: dhcpHost
+objectclass: radiusprofile
+objectclass: ipHost
+radiuscallingstationid: 00-03-47-EC-F5-21
+radiusprofiledn: cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org

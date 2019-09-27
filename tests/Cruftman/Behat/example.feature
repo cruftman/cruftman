@@ -3,4 +3,6 @@ Feature: Example
 
 Scenario: Home Page
     Given I am on the homepage
-    Then I should see "Lumen"
+    Then I should see "Cruftman"
+    And I should see "based on: Lumen"
+    And I should see "Laravel Components"
