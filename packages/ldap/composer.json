@@ -1,0 +1,30 @@
+{
+    "name": "cruftman/ldap",
+    "description": "LDAP service provider for Cruftman.",
+    "keywords": ["ldap", "cruftman", "kleptomaniac", "inventory"],
+    "license": "MIT",
+    "type": "library",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.1.3",
+        "korowai/ldaplib": "dev-master"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Cruftman\\Ldap\\": "src/Cruftman/Ldap/"
+        },
+        "exclude-from-classmap": [
+          "/Tests/",
+          "/Behat/",
+          "/Resources/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+          "Cruftman\\Ldap\\Tests\\": "Tests/"
+        }
+    }
+}

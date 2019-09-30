@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Korowai/Lib/Basic/Singleton.php
+ * @file src/Cruftman/Application/Application.php
  *
  * This file is part of the Cruftman package
  *

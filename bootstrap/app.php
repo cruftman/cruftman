@@ -23,7 +23,7 @@ $app = new Cruftman\Application\Application(
 
 $app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 
 $app->configure('api');

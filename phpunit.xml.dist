@@ -9,13 +9,24 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Application Test Suite">
+        <testsuite name="Cruftman Application Test Suite">
             <directory suffix="Test.php">./tests</directory>
+        </testsuite>
+    </testsuites>
+    <testsuites>
+        <testsuite name="Cruftman Packages Test Suite">
+            <directory suffix="Test.php">./packages/*/Tests/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./app</directory>
+            <exclude>
+              <directory>./packages/*/Tests</directory>
+              <directory>./packages/*/Behat</directory>
+              <directory>./packages/*/Resources</directory>
+              <directory>./packages/*/vendor</directory>
+            </exclude>
         </whitelist>
     </filter>
     <php>
