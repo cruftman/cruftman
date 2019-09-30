@@ -6,9 +6,10 @@
     "type": "project",
     "require": {
         "php": "^7.2",
+        "darkaonline/swagger-lume": "6.*",
+        "dingo/api": "^2.4.0-rc1",
         "korowai/ldaplib": "dev-master",
-        "laravel/lumen-framework": "^6.0",
-        "dingo/api": "^2.4.0-rc1"
+        "laravel/lumen-framework": "^6.0"
     },
     "require-dev": {
         "behat/behat": "^3.5",
