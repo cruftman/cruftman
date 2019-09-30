@@ -1,0 +1,124 @@
+dn: cn=iredmail,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: iredmail
+olcAttributeTypes: {0}( 1.3.6.1.4.1.32349.1.2.1.1 NAME 'domainName' DESC 'Virt
+ ual Domain Name' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.
+ 1.26{255} SINGLE-VALUE )
+olcAttributeTypes: {1}( 1.3.6.1.4.1.32349.1.2.1.2 NAME 'mtaTransport' DESC 'Tr
+ ansport program for Postfix' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1
+ 466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {2}( 1.3.6.1.4.1.32349.1.2.1.3 NAME 'domainStatus' DESC 'De
+ precated since iRedMail-0.4.1, use accountStatus instead' EQUALITY caseIgnore
+ IA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {3}( 1.3.6.1.4.1.32349.1.2.1.4 NAME 'domainBackupMX' DESC '
+ Backup MX: yes, no' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.1
+ 21.1.26 SINGLE-VALUE )
+olcAttributeTypes: {4}( 1.3.6.1.4.1.32349.1.2.1.5 NAME 'domainSenderBccAddress
+ ' DESC 'Sender BCC address for whole domain' EQUALITY caseIgnoreIA5Match SYNT
+ AX 1.3.6.1.4.1.1466.115.121.1.26{320} SINGLE-VALUE )
+olcAttributeTypes: {5}( 1.3.6.1.4.1.32349.1.2.1.6 NAME 'domainRecipientBccAddr
+ ess' DESC 'Recipient BCC address for whole domain' EQUALITY caseIgnoreIA5Matc
+ h SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{320} SINGLE-VALUE )
+olcAttributeTypes: {6}( 1.3.6.1.4.1.32349.1.2.1.7 NAME 'domainMaxQuotaSize' DE
+ SC 'Max quota size limit for single domain' EQUALITY caseIgnoreIA5Match SYNTA
+ X 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {7}( 1.3.6.1.4.1.32349.1.2.1.8 NAME 'domainCurrentQuotaSize
+ ' DESC 'Current quota size limit for single domain' EQUALITY caseIgnoreIA5Mat
+ ch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {8}( 1.3.6.1.4.1.32349.1.2.1.9 NAME 'domainMaxUserNumber' D
+ ESC 'Max user number limit for single domain' EQUALITY caseIgnoreIA5Match SYN
+ TAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {9}( 1.3.6.1.4.1.32349.1.2.1.10 NAME 'domainCurrentUserNumb
+ er' DESC 'Max user number limit for single domain' EQUALITY caseIgnoreIA5Matc
+ h SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {10}( 1.3.6.1.4.1.32349.1.2.1.11 NAME 'domainMaxAliasNumber
+ ' DESC 'Max user number limit for single domain' EQUALITY caseIgnoreIA5Match 
+ SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {11}( 1.3.6.1.4.1.32349.1.2.1.12 NAME 'domainCurrentAliasNu
+ mber' DESC 'Max user number limit for single domain' EQUALITY caseIgnoreIA5Ma
+ tch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {12}( 1.3.6.1.4.1.32349.1.2.1.13 NAME 'domainAdmin' DESC 'D
+ omain admin' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+ {320} )
+olcAttributeTypes: {13}( 1.3.6.1.4.1.32349.1.2.1.14 NAME 'domainGlobalAdmin' D
+ ESC 'Site wide domin admin: yes' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4
+ .1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {14}( 1.3.6.1.4.1.32349.1.2.2.1 NAME 'mailUID' DESC 'UID of
+  the user on the mailsystem' EQUALITY integerMatch SYNTAX 1.3.6.1.4.1.1466.11
+ 5.121.1.27 SINGLE-VALUE )
+olcAttributeTypes: {15}( 1.3.6.1.4.1.32349.1.2.2.2 NAME 'mailGID' DESC 'GID of
+  the user on the mailsystem' EQUALITY integerMatch SYNTAX 1.3.6.1.4.1.1466.11
+ 5.121.1.27 SINGLE-VALUE )
+olcAttributeTypes: {16}( 1.3.6.1.4.1.32349.1.2.2.3 NAME 'storageBaseDirectory'
+  DESC 'Path to mail storage base directory' EQUALITY caseExactIA5Match SYNTAX
+  1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {17}( 1.3.6.1.4.1.32349.1.2.2.4 NAME 'mailMessageStore' DES
+ C 'Path to the maildir/mbox on the mail system' EQUALITY caseExactIA5Match SY
+ NTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {18}( 1.3.6.1.4.1.32349.1.2.2.5 NAME 'mailQuota' DESC 'The 
+ amount of space the user can use until all further messages get bounced' SYNT
+ AX 1.3.6.1.4.1.1466.115.121.1.44 SINGLE-VALUE )
+olcAttributeTypes: {19}( 1.3.6.1.4.1.32349.1.2.2.6 NAME 'mailQuotaMessageLimit
+ ' DESC 'Quota limit in number of messages, 0 means unlimited' SYNTAX 1.3.6.1.
+ 4.1.1466.115.121.1.44 SINGLE-VALUE )
+olcAttributeTypes: {20}( 1.3.6.1.4.1.32349.1.2.2.7 NAME 'mailHost' DESC 'On wh
+ ich mail server the messagestore of this user is located' EQUALITY caseIgnore
+ IA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {21}( 1.3.6.1.4.1.32349.1.2.2.8 NAME 'mailForwardingAddress
+ ' DESC 'Address(es) to forward all incoming messages to.' EQUALITY caseIgnore
+ IA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{320} )
+olcAttributeTypes: {22}( 1.3.6.1.4.1.32349.1.2.2.9 NAME 'accountStatus' DESC '
+ The status of a user account: active, disabled' EQUALITY caseIgnoreIA5Match S
+ YNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {23}( 1.3.6.1.4.1.32349.1.2.2.10 NAME 'userRecipientBccAddr
+ ess' DESC 'Recipient BCC address for single user: must be a valid email addre
+ ss' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{320} SIN
+ GLE-VALUE )
+olcAttributeTypes: {24}( 1.3.6.1.4.1.32349.1.2.2.11 NAME 'userSenderBccAddress
+ ' DESC 'Sender BCC address for single user: must be a valid email address' EQ
+ UALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{320} SINGLE-VA
+ LUE )
+olcAttributeTypes: {25}( 1.3.6.1.4.1.32349.1.2.2.12 NAME 'backupMailAddress' D
+ ESC 'Backup mail address, used to reset password or whatever' EQUALITY caseIg
+ noreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{320} SINGLE-VALUE )
+olcAttributeTypes: {26}( 1.3.6.1.4.1.32349.1.2.2.13 NAME 'userRank' DESC 'Rank
+ : boss, manager, normal or whatever' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6
+ .1.4.1.1466.115.121.1.26 )
+olcAttributeTypes: {27}( 1.3.6.1.4.1.32349.1.2.2.14 NAME 'enabledService' DESC
+  'Enabled service: mail, smtp, imap, pop3, deliver, forward, senderbcc, recip
+ ientbcc' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+olcAttributeTypes: {28}( 1.3.6.1.4.1.32349.1.2.2.15 NAME 'memberOfGroup' DESC 
+ 'Group/List name which user belong to, MUST be a valid email address' EQUALIT
+ Y caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{320} )
+olcAttributeTypes: {29}( 1.3.6.1.4.1.32349.1.2.3.1 NAME 'accessPolicy' DESC 'M
+ ail list access policy: open, domain, member, owner' EQUALITY caseIgnoreIA5Ma
+ tch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {30}( 1.3.6.1.4.1.32349.1.2.3.2 NAME 'hasMember' DESC 'Grou
+ p has members: yes, no' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.1
+ 15.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: {31}( 1.3.6.1.4.1.32349.1.2.3.3 NAME 'listAllowedUser' DESC
+  'User allowed to mail to list: must be a valid email address for mail delive
+ r' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{320} )
+olcObjectClasses: {0}( 1.3.6.1.4.1.32349.1.2.4.1 NAME 'mailDomain' DESC 'Mail 
+ Domain' SUP top STRUCTURAL MUST domainName MAY ( cn $ mtaTransport $ domainAd
+ min $ enabledService $ domainBackupMX $ domainStatus $ accountStatus $ domain
+ SenderBccAddress $ domainRecipientBccAddress $ domainMaxQuotaSize $ domainCur
+ rentQuotaSize $ domainMaxUserNumber $ domainCurrentUserNumber $ domainMaxAlia
+ sNumber $ domainCurrentAliasNumber $ description $ streetAddress $ telephoneN
+ umber $ fax ) )
+olcObjectClasses: {1}( 1.3.6.1.4.1.32349.1.2.4.2 NAME 'mailAdmin' DESC 'Mail D
+ omain Admin' SUP top STRUCTURAL MUST mail MAY ( domainGlobalAdmin $ descripti
+ on $ enabledService $ userPassword $ accountStatus $ cn $ sn $ gn $ givenName
+  ) )
+olcObjectClasses: {2}( 1.3.6.1.4.1.32349.1.2.4.3 NAME 'mailUser' DESC 'Mail Us
+ er' SUP top AUXILIARY MUST ( mail $ uid ) MAY ( storageBaseDirectory $ mailMe
+ ssageStore $ homeDirectory $ userPassword $ mailHost $ mailUID $ mailGID $ ma
+ ilQuota $ mailQuotaMessageLimit $ mailForwardingAddress $ accountStatus $ use
+ rRecipientBccAddress $ userSenderBccAddress $ enabledService $ telephoneNumbe
+ r $ backupMailAddress $ mtaTransport $ memberOfGroup ) )
+olcObjectClasses: {3}( 1.3.6.1.4.1.32349.1.2.4.4 NAME 'mailAlias' DESC 'Mail A
+ lias' SUP top STRUCTURAL MUST ( mail $ mailForwardingAddress ) MAY ( enabledS
+ ervice $ accountStatus $ description $ cn ) )
+olcObjectClasses: {4}( 1.3.6.1.4.1.32349.1.2.4.5 NAME 'mailList' DESC 'Mail Do
+ main Admin' SUP top STRUCTURAL MUST ( mail $ accountStatus ) MAY ( descriptio
+ n $ accessPolicy $ enabledService $ hasMember $ listAllowedUser $ cn ) )

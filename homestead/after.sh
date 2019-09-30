@@ -48,10 +48,24 @@ EOF
 DEBIAN_FRONTEND=noninteractive sudo debconf-set-selections /tmp/debconf-slapd.conf
 DEBIAN_FRONTEND=noninteractive sudo apt install -y slapd ldap-utils
 
+
+for s in dhcp iredmail radius; do
+  if ! ( sudo ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:/// -b 'cn=schema,cn=config' "cn={*}${s}" dn | grep -q '^\s*dn:' )
+  then
+    sudo ldapadd -Q -Y EXTERNAL -H ldapi:/// -f "/vagrant/ldap/schema/$s.ldif"
+  fi
+done
+
 if [ -z "$BOOTSTRAP_LDIF" ]; then
   BOOTSTRAP_LDIF="/home/vagrant/code/tests/resources/ldap/bootstrap.ldif";
 fi
 
 if [ -f "$BOOTSTRAP_LDIF" ]; then
+  # Delete old LDAP entries first...
+  ldapsearch -LLL -H ldapi:/// -D cn=admin,dc=example,dc=org -w admin \
+    -s one -b 'dc=example,dc=org' '(&(objectclass=*)(!(cn=admin)))' 'dn' | \
+    awk -F': ' '$1~/^\s*dn/ {print $2}' | \
+    ldapdelete -H ldapi:/// -D cn=admin,dc=example,dc=org -w admin -r;
+  # ... then load new ones...
   ldapadd -H ldapi:/// -D cn=admin,dc=example,dc=org -w admin -f "$BOOTSTRAP_LDIF";
 fi

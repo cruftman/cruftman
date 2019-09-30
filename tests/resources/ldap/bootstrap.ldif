@@ -8,13 +8,17 @@
 #   | + uid=owilliams # Oliver Williams
 #   |
 #   + ou=london
+#   | + ou=departments
+#   | | + cn=it
+#   | | + cn=hr
+#   | |
 #   | + ou=people
 #   | | + uid=htaylor # Harry Taylor
 #   | | + uid=gdavies # George Davies
 #   | | + uid=jjones  # Jack Jones
 #   | | + uid=mbaker  # Michael Baker
 #   | |
-#   + + ou=systems
+#   | + ou=systems
 #   |   + ou=configs
 #   |     + cn=dhcp
 #   |       + cn=dhcp-failover
@@ -96,7 +100,11 @@ enabledService: cruftman
 #
 # ou=london,dc=example,dc=org
 #
-#
+
+dn: ou=departments,ou=london,dc=example,dc=org
+objectclass: organizationalUnit
+objectclass: top
+ou: departments
 
 dn: ou=people,ou=london,dc=example,dc=org
 objectClass: top
@@ -110,7 +118,6 @@ ou: systems
 #
 # ou=manchester,dc=example,dc=org
 #
-#
 
 dn: ou=people,ou=manchester,dc=example,dc=org
 objectClass: top
@@ -121,11 +128,43 @@ dn: ou=systems,ou=manchester,dc=example,dc=org
 objectclass: organizationalUnit
 ou: systems
 
+#
+# ou=departments,ou=london,dc=example,dc=org
+#
+dn: cn=it,ou=departments,ou=london,dc=example,dc=org
+cn: it
+uid: it
+description: IT stuff
+accountstatus: enabled
+enabledservice: mail
+enabledservice: cruftman
+mail: it@example.org
+objectclass: top
+objectclass: groupOfUniqueNames
+objectclass: mailUser
+uniquemember: uid=htaylor,ou=people,ou=london,dc=example,dc=org
+uniquemember: uid=gdavies,ou=people,ou=london,dc=example,dc=org
+userpassword: it@london
+
+dn: cn=hr,ou=departments,ou=london,dc=example,dc=org
+cn: hr
+uid: hr
+description: HR stuff
+accountstatus: enabled
+enabledservice: mail
+enabledservice: cruftman
+mail: hr@example.org
+objectclass: top
+objectclass: groupOfUniqueNames
+objectclass: mailUser
+uniquemember: uid=htaylor,ou=people,ou=london,dc=example,dc=org
+uniquemember: uid=gdavies,ou=people,ou=london,dc=example,dc=org
+userpassword: hr@london
 
 #
 # ou=people,ou=london,dc=example,dc=org
 #
-#
+
 dn: uid=htaylor,ou=people,ou=london,dc=example,dc=org
 uid: htaylor
 objectClass: top
