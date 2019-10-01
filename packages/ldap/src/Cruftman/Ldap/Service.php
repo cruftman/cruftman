@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/ServiceProvider.php
+ * @file src/Cruftman/Ldap/Service.php
  *
  * This file is part of the Cruftman package
  *
