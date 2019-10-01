@@ -22,6 +22,7 @@
         "psy/psysh": "dev-master"
     },
     "replace": {
+        "cruftman/contracts": "self.version",
         "cruftman/ldap": "self.version"
     },
     "autoload": {

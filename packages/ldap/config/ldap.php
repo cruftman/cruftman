@@ -14,7 +14,7 @@ return [
     */
     'connections' => [
         //
-        // Each entry in 'servers' is a configuration array for
+        // Each entry in 'connections' is a configuration array for
         // Korowai\Lib\Ldap\Ldap::createWithConfig(). See documentation at
         // https://korowai-framework.readthedocs.io/en/latest/lib/ldap/config.html
         //
@@ -30,7 +30,7 @@ return [
     |--------------------------------------------------------------------------
     | Connections
     |--------------------------------------------------------------------------
-    | A list of predefined sessions.
+    | A list of predefined session templates.
     */
     'sessions' => [
         'ldap-service-admin' => [

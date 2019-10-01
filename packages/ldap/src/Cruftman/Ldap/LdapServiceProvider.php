@@ -30,9 +30,10 @@ class LdapServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../../../config/ldap.php', 'ldap');
-        $this->app->singleton('cruftman.ldap', function ($app) {
+        $this->app->singleton(LdapServiceInterface::class, function ($app) {
             return new LdapService($app['config']->get('ldap'));
         });
+        $this->app->alias(LdapServiceInterface::class, 'cruftman.ldap');
     }
 }
 

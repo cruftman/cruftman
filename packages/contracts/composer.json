@@ -1,5 +1,5 @@
 {
-    "name": "cruftman/constracts",
+    "name": "cruftman/contracts",
     "description": "PHP interfaces defined by cruftman",
     "keywords": ["contracts", "interfaces", "cruftman", "kleptomaniac", "inventory"],
     "license": "MIT",
