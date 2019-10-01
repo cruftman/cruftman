@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Application/Aplication.php
+ * @file src/Cruftman/Application/Application.php
  *
  * This file is part of the Cruftman package
  *
