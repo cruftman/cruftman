@@ -1,21 +1,20 @@
 {
-    "name": "cruftman/ldap",
-    "description": "LDAP service provider for Cruftman.",
-    "keywords": ["ldap", "cruftman", "kleptomaniac", "inventory"],
+    "name": "cruftman/constracts",
+    "description": "PHP interfaces defined by cruftman",
+    "keywords": ["contracts", "interfaces", "cruftman", "kleptomaniac", "inventory"],
     "license": "MIT",
     "type": "library",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
         "php": ">=7.1.3",
-        "cruftman/contracts": "*",
         "korowai/ldaplib": "dev-master"
     },
     "require-dev": {
     },
     "autoload": {
         "psr-4": {
-            "Cruftman\\Ldap\\": "src/Cruftman/Ldap/"
+            "Cruftman\\Contracts\\": "src/Cruftman/Contracts/"
         },
         "exclude-from-classmap": [
           "/Tests/",
@@ -25,7 +24,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-          "Cruftman\\Ldap\\Tests\\": "Tests/"
+          "Cruftman\\Contracts\\Tests\\": "Tests/"
         }
     }
 }
