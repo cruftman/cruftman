@@ -27,6 +27,7 @@ $app->withEloquent();
 
 
 $app->configure('api');
+$app->configure('ldap');
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,7 @@ $app->singleton(
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
+$app->register(Cruftman\Ldap\LdapServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

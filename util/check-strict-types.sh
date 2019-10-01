@@ -13,7 +13,7 @@ while read f; do
       echo "sed -e 's|^\s*\(namespace .\+;\)\s*$|declare(strict_types=1);\\n\\n\1|' -i '$f'";
       if (( 0 == $err )); then err=2; fi
     fi
-done <<<$( find src/ packages/ app/ -type f -name '*.php' )
+done <<<$( find src/ packages/ app/ -type f -name '*.php' ! -wholename '*/config/*.php' )
 
 popd > /dev/null
 

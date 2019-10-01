@@ -8,13 +8,13 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.1.3",
-        "korowai/ldaplib": "dev-master"
+        "korowai/contracts": "dev-master"
     },
     "require-dev": {
     },
     "autoload": {
         "psr-4": {
-            "Cruftman\\Contracts\\": "src/Cruftman/Contracts/"
+            "Cruftman\\": "src/Cruftman/"
         },
         "exclude-from-classmap": [
           "/Tests/",

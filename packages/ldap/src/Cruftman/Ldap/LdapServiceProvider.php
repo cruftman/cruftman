@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/ServiceProvider.php
+ * @file src/Cruftman/Ldap/LdapServiceProvider.php
  *
  * This file is part of the Cruftman package
  *
@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider
+use Illuminate\Support\ServiceProvider;
+
+class LdapServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -27,6 +29,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../../../config/ldap.php', 'ldap');
+        $this->app->singleton('cruftman.ldap', function ($app) {
+            return new LdapService($app['config']->get('ldap'));
+        });
     }
 }
 
