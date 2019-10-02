@@ -20,16 +20,39 @@
 #   | |
 #   | + ou=systems
 #   |   + ou=configs
-#   |     + cn=dhcp
-#   |       + cn=dhcp-failover
-#   |       + cn=london.example.org
-#   |         + cn=172.22.0.0
-#   |         + cn=172.22.1.0
+#   |   | + cn=dhcp
+#   |   |   + cn=dhcp-failover
+#   |   |   + cn=london.example.org
+#   |   |     + cn=172.22.0.0
+#   |   |     | + cn=0000AABA7925
+#   |   |     | + cn=0000F0A91522
+#   |   |     | + cn=000103057528
+#   |   |     |
+#   |   |     + cn=172.22.1.0
+#   |   |       + cn=0000853DEA33
+#   |   |       + cn=0001021DA52B
+#   |   |       + cn=000347ECF521
+#   |   |
+#   |   + ou=roles
+#   |   | + cn=bindUserAuth
+#   |   |
+#   |   + ou=servers
+#   |     + cn=cruftman.example.org
+#   |       + cn=cruftUserAuth
 #   |
 #   + ou=manchester
 #   | + ou=people
-#   |   + uid=chbrown # Charlie Brown
-#   |   + uid=jwilson # James Wilson
+#   | | + uid=chbrown # Charlie Brown
+#   | | + uid=jwilson # James Wilson
+#   | |
+#   | + ou=systems
+#   |   + ou=configs
+#   |   + ou=roles
+#   |   | + cn=bindUserAuth
+#   |   |
+#   |   + ou=servers
+#   |     + cn=cruftman.example.org
+#   |       + cn=cruftUserAuth
 
 
 #
@@ -283,6 +306,15 @@ dn: ou=configs,ou=systems,ou=london,dc=example,dc=org
 objectclass: organizationalUnit
 ou: configs
 
+dn: ou=roles,ou=systems,ou=london,dc=example,dc=org
+objectclass: organizationalUnit
+objectclass: top
+ou: roles
+
+dn: ou=servers,ou=systems,ou=london,dc=example,dc=org
+objectclass: organizationalUnit
+ou: servers
+
 #
 # ou=systems,ou=manchester,dc=example,dc=org
 #
@@ -291,9 +323,19 @@ dn: ou=configs,ou=systems,ou=manchester,dc=example,dc=org
 objectclass: organizationalUnit
 ou: configs
 
+dn: ou=roles,ou=systems,ou=manchester,dc=example,dc=org
+objectclass: organizationalUnit
+objectclass: top
+ou: roles
+
+dn: ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+objectclass: organizationalUnit
+ou: servers
+
 #
 # ou=configs,ou=systems,ou=london,dc=example,dc=org
 #
+
 dn: cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
 cn: dhcp
 dhcpprimarydn: cn=dhcp1.london.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
@@ -301,6 +343,56 @@ dhcpsecondarydn: cn=dhcp2.london.example.org,ou=servers,ou=systems,ou=london,dc=
 dhcpserverdn: cn=dhcp1.london.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
 dhcpserverdn: cn=dhcp2.london.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
 objectclass: dhcpService
+objectclass: top
+
+#
+# ou=roles,ou=systems,ou=london,dc=example,dc=org
+#
+
+dn: cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org
+cn: bindUserAuth
+description: A group of entries allowed to authenticate users via regular bind.
+  These servers are allowed to search under
+  ou=people,ou=london,dc=example,dc=org
+  as well as within ou=departments,ou=london,dc=example,dc=org
+objectclass: organizationalRole
+objectclass: top
+roleoccupant: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+
+#
+# ou=servers,ou=systems,ou=london,dc=example,dc=org
+#
+
+dn: cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+cn: cruftman.example.org
+objectclass: organizationalRole
+objectclass: top
+
+#
+# ou=configs,ou=systems,ou=manchester,dc=example,dc=org
+#
+
+#
+# ou=roles,ou=systems,ou=manchester,dc=example,dc=org
+#
+
+dn: cn=bindUserAuth,ou=roles,ou=systems,ou=manchester,dc=example,dc=org
+cn: bindUserAuth
+description: A group of entries allowed to authenticate users via regular bind.
+  These servers are allowed to search under
+  ou=people,ou=manchester,dc=example,dc=org
+  as well as within ou=departments,ou=manchester,dc=example,dc=org
+objectclass: organizationalRole
+objectclass: top
+roleoccupant: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+
+#
+# ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+#
+
+dn: cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+cn: cruftman.example.org
+objectclass: organizationalRole
 objectclass: top
 
 #
@@ -458,3 +550,25 @@ objectclass: radiusprofile
 objectclass: ipHost
 radiuscallingstationid: 00-03-47-EC-F5-21
 radiusprofiledn: cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=systems,ou=london,dc=example,dc=org
+
+#
+# cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+#
+
+dn: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+cn: pkiUserAuth
+objectclass: organizationalRole
+objectclass: simpleSecurityObject
+objectclass: top
+userpassword: london
+
+#
+# cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+#
+
+dn: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+cn: pkiUserAuth
+objectclass: organizationalRole
+objectclass: simpleSecurityObject
+objectclass: top
+userpassword: manchester

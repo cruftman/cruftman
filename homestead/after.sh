@@ -37,7 +37,7 @@ slapd slapd/domain string example.org
 slapd slapd/ppolicy_schema_needs_update select abort installation
 slapd slapd/invalid_config boolean true
 slapd slapd/move_old_database boolean false
-slapd slapd/backend select MDB
+slapd slapd/backend select HDB
 slapd shared/organization string Example Org.
 slapd slapd/dump_database_destdir string /var/backups/slapd-VERSION
 slapd slapd/no_configuration boolean false
@@ -55,6 +55,14 @@ for s in dhcp iredmail radius; do
     sudo ldapadd -Q -Y EXTERNAL -H ldapi:/// -f "/vagrant/ldap/schema/$s.ldif"
   fi
 done
+
+if [ -z "$ACL_LDIF" ]; then
+  ACL_LDIF="/home/vagrant/code/tests/resources/ldap/acl.ldif";
+fi
+
+if [ -f "$ACL_LDIF" ]; then
+  sudo ldapmodify -Y EXTERNAL -H ldapi:/// -f "$ACL_LDIF";
+fi
 
 if [ -z "$BOOTSTRAP_LDIF" ]; then
   BOOTSTRAP_LDIF="/home/vagrant/code/tests/resources/ldap/bootstrap.ldif";
