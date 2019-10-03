@@ -81,10 +81,10 @@ $app->singleton(
 */
 
 // $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
-$app->register(Cruftman\Ldap\LdapServiceProvider::class);
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class,);
 
 /*
 |--------------------------------------------------------------------------
@@ -101,6 +101,7 @@ $api = $app[\Dingo\Api\Routing\Router::class];
 
 $api->version('v1', [
     'namespace' => 'App\\Http\\Controllers\\V1',
+    //'middleware' => 'api.auth'
 ], function ($api) {
     require __DIR__ . '/../routes/v1/api.php';
 });

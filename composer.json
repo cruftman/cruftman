@@ -8,6 +8,7 @@
         "php": "^7.2",
         "darkaonline/swagger-lume": "6.*",
         "dingo/api": "^2.4.0-rc1",
+        "tymon/jwt-auth": "^1.0.0-rc.5",
         "laravel/lumen-framework": "^6.0",
         "wikimedia/composer-merge-plugin": "^1.4"
     },

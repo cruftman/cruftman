@@ -30,10 +30,10 @@ class AuthServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../../../config/ldap.php', 'ldap');
-        $this->app->singleton(LdapServiceInterface::class, function ($app) {
+        $this->app->singleton(AuthServiceInterface::class, function ($app) {
             return new AuthService($app['config']->get('ldap'));
         });
-        $this->app->alias(LdapServiceInterface::class, 'cruftman.ldap');
+        $this->app->alias(AuthServiceInterface::class, 'cruftman.ldap');
     }
 }
 
