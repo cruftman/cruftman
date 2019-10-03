@@ -45,6 +45,7 @@ class CruftmanDockerInitializer
             '@PHP_TAG@'         => 'cli',
             '@APACHE_TAG@'      => 'apache',
             '@OPENLDAP_TAG@'    => 'latest',
+            '@MARIADB_TAG@'     => 'latest',
             '@CODECLIMATE_TAG@' => 'latest',
             '@SPHINX_TAG@'      => 'latest',
             '@SAMI_TAG@'        => 'latest',
