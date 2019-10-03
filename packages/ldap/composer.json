@@ -9,7 +9,8 @@
     "require": {
         "php": ">=7.1.3",
         "cruftman/contracts": "*",
-        "korowai/ldaplib": "dev-master"
+        "korowai/ldaplib": "dev-master",
+        "symfony/options-resolver": ">=4.2"
     },
     "require-dev": {
     },

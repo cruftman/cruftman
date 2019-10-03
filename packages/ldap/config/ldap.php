@@ -6,41 +6,71 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Servers
+    | Connection templates
     |--------------------------------------------------------------------------
     |
-    | An array of connections. A single connection definition may be used by
-    | one or more sessions (below).
+    | An array of named connections.
     */
     'connections' => [
         //
-        // Each entry in 'connections' is a configuration array for
-        // Korowai\Lib\Ldap\Ldap::createWithConfig(). See documentation at
         // https://korowai-framework.readthedocs.io/en/latest/lib/ldap/config.html
         //
         'ldap-service' => [
-            'uri' => 'ldap://ldap-service',
-            'options' => [
-                'protocol_version' => 3
-            ]
+            'uri' => 'ldap://ldap-service'
         ]
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Connections
+    | Authentication
     |--------------------------------------------------------------------------
-    | A list of predefined session templates.
     */
-    'sessions' => [
-        'ldap-service-admin' => [
-            'connection' => 'ldap-service',
-            'bind' => ['cn=admin,dc=example,dc=org', 'admin'],
-            'base_dn' => 'dc=example,dc=org'
+    'auth' => [
+        'contexts' => [
+            'defaults' => [
+                'method' => 'bind',
+                'connection' => 'ldap-service',
+                'search' => [
+                    'filter' => '(&(uid={{ username }})(accountStatus=enabled)(enabledService=cruftman))',
+                    'options' => [
+                        'scope' => 'one',
+                        'attributes' => []
+                    ]
+                ],
+            ],
+            'example.org' => [
+                'inherit' => ['defaults'],
+                'bind' => [
+                    'cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org',
+                    'london'
+                ],
+                'search' => [
+                    'base_dn' => 'ou=people,dc=example,dc=org'
+                ]
+            ],
+            'london.example.org' => [
+                'inherit' => ['defaults'],
+                'bind' => [
+                    'cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org',
+                    'london'
+                ],
+                'search' => [
+                    'base_dn' => 'ou=people,ou=london,dc=example,dc=org'
+                ]
+            ],
+            'manchester.example.org' => [
+                'inherit' => ['defaults'],
+                'bind' => [
+                    'cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org',
+                    'manchester'
+                ],
+                'search' => [
+                    'base_dn' => 'ou=people,ou=manchester,dc=example,dc=org'
+                ]
+            ],
         ],
-        'ldap-service-anon' => [
-            'connection' => 'ldap-service',
-            'base_dn' => 'dc=example,dc=org'
+        'order' => [
+            'example.org', 'london.example.org', 'manchester.example.org'
         ]
     ]
 ];
