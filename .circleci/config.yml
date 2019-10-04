@@ -93,7 +93,7 @@ jobs:
           name: Bootstrap project and install composer dependencies
           command: |
             docker/initialize.circle &&
-            docker/compose run --rm --entrypoint=composer php install
+            docker/compose run --rm -e "COMPOSER_MEMORY_LIMIT=-1" --entrypoint=composer php install
 
       - run:
           name: Running tests
