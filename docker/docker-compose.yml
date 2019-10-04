@@ -2,7 +2,7 @@ version: '3.2'
 services:
   php:
     build:
-      context: default
+      context: php
       args:
         CRUFT_IMG: "korowai/php:${CRUFT_PHP_TAG:-cli}"
         CRUFT_UID: "${CRUFT_UID:-6789}"
@@ -13,7 +13,7 @@ services:
 
   test:
     build:
-      context: default
+      context: php
       args:
         CRUFT_IMG: "korowai/php:${CRUFT_PHP_TAG:-cli}"
         CRUFT_UID: "${CRUFT_UID:-6789}"
@@ -27,7 +27,7 @@ services:
     user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"
     entrypoint: [ "dockerize", "-wait", "tcp://ldap-service:389",
                                "-wait", "tcp://db-service:3306",
-                               "-timeout", "10s" ]
+                               "-timeout", "600s" ]
 
   http-service:
     build:
@@ -67,5 +67,7 @@ services:
       - MYSQL_DATABASE=${CRUFT_MYSQL_DATABASE:-cruftman}
       - MYSQL_USER=${CRUFT_MYSQL_USER:-cruftman}
       - MYSQL_PASSWORD=${CRUFT_MYSQL_USER:-cruftman}
+    ports:
+      - "${CRUFT_DB_PORT:-8306}:3306"
     volumes:
       - ..:${CRUFT_CODE:-/code}

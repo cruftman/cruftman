@@ -23,7 +23,7 @@ class ExampleTest extends Testing\TestCase
      */
     public function testExample()
     {
-        $this->get('/');
+        $this->get('/web/');
 
         $this->assertEquals(
             $this->app->version(), $this->response->getContent()

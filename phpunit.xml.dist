@@ -12,8 +12,6 @@
         <testsuite name="Cruftman Application Test Suite">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
-    </testsuites>
-    <testsuites>
         <testsuite name="Cruftman Packages Test Suite">
             <directory suffix="Test.php">./packages/*/Tests/</directory>
         </testsuite>
@@ -29,9 +27,9 @@
             </exclude>
         </whitelist>
     </filter>
-    <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="CACHE_DRIVER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-    </php>
+    <!-- <php> -->
+        <!-- <env name="APP_ENV" value="testing"/> -->
+        <!-- <env name="CACHE_DRIVER" value="array"/> -->
+        <!-- <env name="QUEUE_CONNECTION" value="sync"/>-->
+    <!-- </php> -->
 </phpunit>

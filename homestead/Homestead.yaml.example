@@ -13,8 +13,9 @@ folders:
 sites:
     - map: cruftman.local
       to: /home/vagrant/code/public
-databases:
-    - cruftman
+variables:
+    - key: CRUFT_DOTENV_FILE
+      value: .env.homestead
 name: cruftman
 hostname: cruftman.local
 
