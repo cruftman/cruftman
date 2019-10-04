@@ -9,6 +9,7 @@ ARG CRUFT_GID=6789
 ARG CRUFT_HOME=/home/${CRUFT_USER}
 ARG CRUFT_CODE=/code
 ARG CRUFT_DOTENV_FILE=.env.docker
+ARG CRUFT_BEHAT_PARAMS='{"extensions":{"Behat\\MinkExtension":{"base_url":"http://http-service"}}}'
 
 ENV CRUFT_USER=$CRUFT_USER \
     CRUFT_GROUP=$CRUFT_GROUP \
@@ -16,7 +17,8 @@ ENV CRUFT_USER=$CRUFT_USER \
     CRUFT_GID=$CRUFT_GID \
     CRUFT_HOME=$CRUFT_HOME \
     CRUFT_CODE=$CRUFT_CODE \
-    CRUFT_DOTENV_FILE=$CRUFT_DOTENV_FILE
+    CRUFT_DOTENV_FILE=$CRUFT_DOTENV_FILE \
+    BEHAT_PARAMS=$CRUFT_BEHAT_PARAMS
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends mariadb-client && \

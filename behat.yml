@@ -1,5 +1,4 @@
 # behat.yml
-
 default:
   autoload:
     - "%paths.base%/tests/Cruftman/Behat"
@@ -11,7 +10,23 @@ default:
         - "Cruftman\\Behat\\ExampleContext"
   extensions:
       Behat\MinkExtension:
-        base_url: 'http://http-service'
+#        Must comment-out for BEHAT_PARAMS to be effective
+#        base_url: 'http://localhost'
         sessions:
           default:
             goutte: ~
+
+local:
+  extensions:
+      Behat\MinkExtension:
+        base_url: 'http://localhost'
+
+homestead:
+  extensions:
+      Behat\MinkExtension:
+        base_url: 'http://cruftman.local'
+
+docker:
+  extensions:
+      Behat\MinkExtension:
+        base_url: 'http://http-service'

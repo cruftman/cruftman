@@ -16,6 +16,8 @@ sites:
 variables:
     - key: CRUFT_DOTENV_FILE
       value: .env.homestead
+    - key: BEHAT_PARAMS
+      value: '{"extensions":{"Behat\\MinkExtension":{"base_url":"http://localhost"}}}'
 name: cruftman
 hostname: cruftman.local
 

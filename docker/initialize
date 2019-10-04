@@ -53,6 +53,7 @@ class CruftmanDockerInitializer
             '@SAMI_PORT@'       => '8001',
             '@SPHINX_PORT@'     => '8002',
             '@DOTENV_FILE@'     => '.env.docker',
+            '@BEHAT_PARAMS@'    => '{"extensions":{"Behat\\\\MinkExtensin":{"base_url":"http://http-service"}}}',
             '@TOP_SRCDIR@'      => realpath($this->dir . '/..'),
             '@@'                => '@'
         ];
