@@ -23,6 +23,7 @@ ENV CRUFT_USER=$CRUFT_USER \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends mariadb-client && \
     apt-get clean && \
+    docker-php-ext-install pdo pdo_mysql mysqli && \
     rm -rf /var/lib/apt/lists/* && \
     if [ -f /etc/alpine-release ]; then \
       addgroup -g $CRUFT_GID $CRUFT_GROUP && \

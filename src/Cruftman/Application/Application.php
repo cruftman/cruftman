@@ -5,7 +5,7 @@
  * This file is part of the Cruftman package
  *
  * @author Paweł Tomulik <ptomulik@meil.pw.edu.pl>
- * @package cruftman\application
+ * @package cruftman\framework
  * @license Distributed under MIT license.
  */
 

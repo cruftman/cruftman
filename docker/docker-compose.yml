@@ -59,14 +59,9 @@ services:
     build:
       context: db
       args:
-        CRUFT_IMG: "mariadb:${CRUFT_MARIADB_TAG:-latest}"
+        CRUFT_IMG: "cruftman/mariadb:${CRUFT_MARIADB_TAG:-latest}"
         CRUFT_UID: "${CRUFT_UID:-6789}"
         CRUFT_GID: "${CRUFT_GID:-6789}"
-    environment:
-      - MYSQL_ROOT_PASSWORD=${CRUFT_MYSQL_ROOT_PASSWORD:-cruftman}
-      - MYSQL_DATABASE=${CRUFT_MYSQL_DATABASE:-cruftman}
-      - MYSQL_USER=${CRUFT_MYSQL_USER:-cruftman}
-      - MYSQL_PASSWORD=${CRUFT_MYSQL_USER:-cruftman}
     ports:
       - "${CRUFT_DB_PORT:-8306}:3306"
     volumes:
