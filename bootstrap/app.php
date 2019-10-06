@@ -28,6 +28,7 @@ $app->withEloquent();
 
 $app->configure('api');
 $app->configure('ldap');
+$app->configure('swagger-lume');
 
 /*
 |--------------------------------------------------------------------------
@@ -66,7 +67,7 @@ $app->singleton(
 // ]);
 
 // $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
+//     'auth' => Cruftman\Http\Middleware\Authenticate::class,
 // ]);
 
 /*
@@ -85,6 +86,8 @@ $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class,);
+$app->register(SwaggerLume\ServiceProvider::class);
+$app->register(Cruftman\Providers\FractalServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -100,10 +103,10 @@ $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class,);
 $api = $app[\Dingo\Api\Routing\Router::class];
 
 $api->version('v1', [
-    'namespace' => 'App\\Http\\Controllers\\V1',
+    'namespace' => 'Cruftman\\Http\\Controllers',
     //'middleware' => 'api.auth'
 ], function ($api) {
-    require __DIR__ . '/../routes/v1/api.php';
+    require __DIR__ . '/../routes/api.php';
 });
 
 $app->router->get('/', function () {

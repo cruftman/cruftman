@@ -1,0 +1,12 @@
+version: '3.2'
+services:
+  openapi-codegen:
+    build:
+      context: default
+      args:
+        CRUFT_IMG: "openapitools/openapi-generator-cli:${CRUFT_OPENAPI_TAG:-latest}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    volumes:
+      - ../:${CRUFT_CODE:-/code}
+    user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"

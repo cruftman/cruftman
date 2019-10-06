@@ -77,3 +77,5 @@ if [ -f "$BOOTSTRAP_LDIF" ]; then
   # ... then load new ones...
   ldapadd -H ldapi:/// -D cn=admin,dc=example,dc=org -w admin -f "$BOOTSTRAP_LDIF";
 fi
+
+sudo service avahi-daemon restart

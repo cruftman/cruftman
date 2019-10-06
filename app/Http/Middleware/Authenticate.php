@@ -1,48 +1,22 @@
 <?php
+/**
+ * @file app/Http/Middleware/Authenticate.php
+ *
+ * This file is part of the Cruftman package
+ *
+ * @author Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+ * @package cruftman\cruftman
+ * @license Distributed under MIT license.
+ */
 
 declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Contracts\Auth\Factory as Auth;
+use Cruftman\Http\Middleware\Authenticate as BaseAuthenticate;
 
-class Authenticate
+class Authenticate extends BaseAuthenticate
 {
-    /**
-     * The authentication guard factory instance.
-     *
-     * @var \Illuminate\Contracts\Auth\Factory
-     */
-    protected $auth;
-
-    /**
-     * Create a new middleware instance.
-     *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
-     * @return void
-     */
-    public function __construct(Auth $auth)
-    {
-        $this->auth = $auth;
-    }
-
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string|null  $guard
-     * @return mixed
-     */
-    public function handle($request, Closure $next, $guard = null)
-    {
-        if ($this->auth->guard($guard)->guest()) {
-            return response('Unauthorized.', 401);
-        }
-
-        return $next($request);
-    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

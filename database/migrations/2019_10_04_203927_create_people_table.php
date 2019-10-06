@@ -22,6 +22,7 @@ class CreatePeopleTable extends Migration
             $table->date('birthday')->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             // constraints & indexes
             $table->unique('uid');
@@ -40,3 +41,5 @@ class CreatePeopleTable extends Migration
         Schema::dropIfExists('people');
     }
 }
+
+// vim: syntax=php sw=4 ts=4 et:

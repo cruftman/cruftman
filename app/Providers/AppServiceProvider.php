@@ -1,10 +1,21 @@
 <?php
+/**
+ * @file app/Providers/AppServiceProvider.php
+ *
+ * This file is part of the Cruftman package
+ *
+ * @author Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+ * @package cruftman\cruftman
+ * @license Distributed under MIT license.
+ */
 
 declare(strict_types=1);
 
 namespace App\Providers;
 
-class AppServiceProvider extends \Cruftman\Providers\AppServiceProvider
+use Cruftman\Providers\AppServiceProvider as ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
 {
 }
 

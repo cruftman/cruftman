@@ -1,0 +1,26 @@
+version: '3.2'
+services:
+  swagger-editor:
+    build:
+      context: default
+      args:
+        CRUFT_IMG: "swaggerapi/swagger-editor:${CRUFT_SWAGGER_TAG:-latest}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    ports:
+      - "${CRUFT_SWAGGER_PORT:-8010}:8080"
+    volumes:
+      - ../:${CRUFT_CODE:-/code}
+        #    user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"
+  swagger-codegen:
+    build:
+      context: default
+      args:
+        CRUFT_IMG: "swaggerapi/swagger-codegen-cli-v3:${CRUFT_SWAGGER_TAG:-3.0.11}"
+        CRUFT_UID: "${CRUFT_UID:-6789}"
+        CRUFT_GID: "${CRUFT_GID:-6789}"
+    ports:
+      - "${CRUFT_SWAGGER_PORT:-8010}:8080"
+    volumes:
+      - ../:${CRUFT_CODE:-/code}
+    user: "${CRUFT_UID:-6789}:${CRUFT_GID:-6789}"

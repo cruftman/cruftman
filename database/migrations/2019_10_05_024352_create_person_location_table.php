@@ -20,8 +20,19 @@ class CreatePersonLocationTable extends Migration
 
             // constraints & indices
             $table->unique(['person_id', 'location_id']);
-            $table->foreign('person_id')->references('id')->on('people')->onDelete('cascade');
-            $table->foreign('location_id')->references('id')->on('locations')->onDelete('cascade');
+        });
+
+        Schema::table('person_location', function(Blueprint $table) {
+            $table->foreign('person_id')
+                  ->references('id')
+                  ->on('people')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+            $table->foreign('location_id')
+                  ->references('id')
+                  ->on('locations')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
         });
     }
 
@@ -35,3 +46,5 @@ class CreatePersonLocationTable extends Migration
         Schema::dropIfExists('person_location');
     }
 }
+
+// vim: syntax=php sw=4 ts=4 et:

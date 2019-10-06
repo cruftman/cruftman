@@ -18,6 +18,7 @@ class CreateLocationsTable extends Migration
             $table->string('name', 100);
             $table->text('comment')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             // constraints and indices
             $table->index('name');
@@ -34,3 +35,5 @@ class CreateLocationsTable extends Migration
         Schema::dropIfExists('locations');
     }
 }
+
+// vim: syntax=php sw=4 ts=4 et:
