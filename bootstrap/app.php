@@ -26,9 +26,9 @@ $app->withFacades();
 $app->withEloquent();
 
 
-$app->configure('api');
-$app->configure('ldap');
-$app->configure('swagger-lume');
+//$app->configure('api');
+//$app->configure('ldap');
+//$app->configure('swagger-lume');
 
 /*
 |--------------------------------------------------------------------------
@@ -84,10 +84,10 @@ $app->singleton(
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+$app->register(Cruftman\Providers\FractalServiceProvider::class);
 $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class,);
 $app->register(SwaggerLume\ServiceProvider::class);
-$app->register(Cruftman\Providers\FractalServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

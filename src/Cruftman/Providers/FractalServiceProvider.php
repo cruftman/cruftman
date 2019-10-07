@@ -14,14 +14,22 @@ declare(strict_types=1);
 namespace Cruftman\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use League\Fractal\Manager;
+use League\Fractal\Manager as FractalManager;
 use League\Fractal\Serializer\JsonApiSerializer;
-use Dingo\Api\Transformer\Adapter\Fractal;
-use Dingo\Api\Transformer\Factory;
-
+use Dingo\Api\Transformer\Adapter\Fractal as FractalAdapter;
 
 class FractalServiceProvider extends ServiceProvider
 {
+    /**
+     * Boot the fractal service for application.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->app->configure('api');
+    }
+
     /**
      * Register any application services.
      *
@@ -29,15 +37,23 @@ class FractalServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(Manager::class, function ($app) {
-            $fractal = new Manager;
-            $fractal->setSerializer(new JsonApiSerializer);
+        $this->app->bind(JsonApiSerializer::class, function ($app) {
+            $domain = $app['config']->get('api.domain');
+            $prefix = $app['config']->get('api.prefix');
+            $url = rtrim(implode('/', [$domain, $prefix]), '/');
+            return new JsonApiSerializer($url);
+        });
+
+        $this->app->bind(FractalManager::class, function ($app) {
+            $fractal = new FractalManager;
+            $serializer = $app->make(JsonApiSerializer::class);
+            $fractal->setSerializer($serializer);
             return $fractal;
         });
 
-        $this->app->bind(Fractal::class, function ($app) {
-            $fractal = $app->make(Manager::class);
-            return new Fractal($fractal);
+        $this->app->bind(FractalAdapter::class, function ($app) {
+            $fractal = $app->make(FractalManager::class);
+            return new FractalAdapter($fractal);
         });
     }
 }

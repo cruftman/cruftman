@@ -14,36 +14,29 @@ declare(strict_types=1);
 namespace Cruftman\Transformers;
 
 use Cruftman\Models\Location;
+use League\Fractal\ParamBag;
 
-class LocationTransformer extends Transformer
+class LocationTransformer extends ModelTransformer
 {
+    protected $modelName = 'Location';
+
     /**
      * List of resources possible to include in json response.
      *
      * @var array
      */
     protected $availableIncludes = [
-        'people'
+        'occupants'
     ];
-
-    /**
-     * Turns this item object into a generic array
-     *
-     * @return array
-     */
-    public function transform(Location $location)
-    {
-        return $location->toArray();
-    }
 
     /**
      * Include People
      *
      * @return \League\Fractal\Resource\Collection
      */
-    public function includePeople(Location $location)
+    public function includeOccupants(Location $location, ParamBag $params = null)
     {
-        return $this->collection($location->people, new PersonTransformer, 'person');
+        return $this->transformRelated($location->occupants, new PersonTransformer, $params);
     }
 }
 

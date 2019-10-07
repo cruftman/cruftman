@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePersonLocationTable extends Migration
+class CreateLocationOccupantTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePersonLocationTable extends Migration
      */
     public function up()
     {
-        Schema::create('person_location', function (Blueprint $table) {
+        Schema::create('location_occupant', function (Blueprint $table) {
             $table->unsignedBigInteger('person_id');
             $table->unsignedBigInteger('location_id');
             $table->timestamps();
@@ -22,7 +22,7 @@ class CreatePersonLocationTable extends Migration
             $table->unique(['person_id', 'location_id']);
         });
 
-        Schema::table('person_location', function(Blueprint $table) {
+        Schema::table('location_occupant', function(Blueprint $table) {
             $table->foreign('person_id')
                   ->references('id')
                   ->on('people')
@@ -43,7 +43,7 @@ class CreatePersonLocationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('person_location');
+        Schema::dropIfExists('location_occupant');
     }
 }
 

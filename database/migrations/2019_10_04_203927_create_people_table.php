@@ -15,19 +15,20 @@ class CreatePeopleTable extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('uid', 100);
-            $table->string('givenname', 100)->nullable(false);
-            $table->string('surname', 100)->nullable(false);
-            $table->string('nickname', 100)->nullable();
+            $table->string('personal_id', 100)->comment('Personal ID, such as Social Security ID');
+            $table->string('first_name', 100)->nullable(false);
+            $table->string('last_name', 100)->nullable(false);
             $table->date('birthday')->nullable();
+            $table->enum('gender', ['male','female','bigender'])->nullable();
+            $table->string('title', 20)->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             // constraints & indexes
-            $table->unique('uid');
-            $table->index('givenname');
-            $table->index('surname');
+            $table->unique('personal_id');
+            $table->index('first_name');
+            $table->index('last_name');
         });
     }
 

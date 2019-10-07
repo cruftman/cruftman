@@ -22,11 +22,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *      title="Person model",
  *      @OA\Xml(name="Person"),
  *      @OA\Property(property="id", type="integer"),
- *      @OA\Property(property="uid", type="string"),
- *      @OA\Property(property="givenname", type="string"),
- *      @OA\Property(property="surname", type="string"),
- *      @OA\Property(property="nickname", type="string"),
+ *      @OA\Property(property="personal_id", type="string"),
+ *      @OA\Property(property="first_name", type="string"),
+ *      @OA\Property(property="last_name", type="string"),
  *      @OA\Property(property="birthday", type="string"),
+ *      @OA\Property(property="gender", type="string"),
+ *      @OA\Property(property="title", type="string"),
  *      @OA\Property(property="comment", type="string"),
  *      @OA\Property(property="created_at", type="string", format="date-time"),
  *      @OA\Property(property="updated_at", type="string", format="date-time"),
@@ -42,14 +43,22 @@ class Person extends Model
      *
      * @var array
      */
-    protected $fillable = ['uid', 'givenname', 'surname', 'nickname', 'birthday', 'comment'];
+    protected $fillable = [
+        'personal_id',
+        'first_name',
+        'last_name',
+        'birthday',
+        'gender',
+        'title',
+        'comment'
+    ];
 
     /**
-     * Locations assigned to the person.
+     * Locations occuppied by the person.
      */
-    public function locations()
+    public function occupied_locations()
     {
-        return $this->belongsToMany(Location::class, 'person_location');
+        return $this->belongsToMany(Location::class, 'location_occupant');
     }
 }
 

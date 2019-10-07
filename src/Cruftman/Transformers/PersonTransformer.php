@@ -14,21 +14,19 @@ declare(strict_types=1);
 namespace Cruftman\Transformers;
 
 use Cruftman\Models\Person;
+use League\Fractal\ParamBag;
 
-class PersonTransformer extends Transformer
+class PersonTransformer extends ModelTransformer
 {
+    protected $modelName = 'Person';
+
     protected $availableIncludes = [
-        'locations'
+        'occupied_locations'
     ];
 
-    public function transform(Person $person)
+    public function includeOccupiedLocations(Person $person, ParamBag $params = null)
     {
-        return $person->toArray();
-    }
-
-    public function includeLocations(Person $person)
-    {
-        return $this->collection($person->locations, new LocationTransformer);
+        return $this->transformRelated($person->occupied_locations, new LocationTransformer, $params);
     }
 }
 

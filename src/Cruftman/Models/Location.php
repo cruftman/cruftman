@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Cruftman\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -33,11 +32,11 @@ class Location extends Model
     protected $fillable = [ 'name', 'comment' ];
 
     /**
-     * Persons assigned to the location.
+     * Persons occupying the location.
      */
-    public function people()
+    public function occupants()
     {
-        return $this->belongsToMany(Person::class, 'person_location');
+        return $this->belongsToMany(Person::class, 'location_occupant');
     }
 }
 

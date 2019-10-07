@@ -20,6 +20,8 @@ exclude_patterns:
   - "storage/"
   - "tests/"
   - "vendor/"
+  - "resources/"
+  - "config/"
 plugins:
   sonar-php:
     enabled: true
