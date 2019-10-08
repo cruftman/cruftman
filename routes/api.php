@@ -23,24 +23,8 @@ $api->get('/', function () {
     ];
 });
 
-$api->get('/people', [
-    'uses' => 'PersonController@index',
-    'as' => 'person.index'
-]);
-
-$api->get('/person/{id}', [
-    'uses' => 'PersonController@show',
-    'as' => 'person.show'
-]);
-
-$api->get('/locations', [
-    'uses' => 'LocationController@index',
-    'as' => 'location.index'
-]);
-
-$api->get('/location/{id}', [
-    'uses' => 'LocationController@show',
-    'as' => 'location.show'
-]);
+$api->resource('person', 'PersonController');
+$api->resource('person.occupied_locations', 'LocationController'); #!!!
+$api->resource('location', 'LocationController');
 
 // vim: syntax=php sw=4 ts=4 et:

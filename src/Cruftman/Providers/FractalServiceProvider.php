@@ -27,7 +27,6 @@ class FractalServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->configure('api');
     }
 
     /**
