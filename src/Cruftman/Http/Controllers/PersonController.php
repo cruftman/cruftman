@@ -18,7 +18,7 @@ namespace Cruftman\Http\Controllers;
  */
 class PersonController extends ModelController
 {
-    protected $modelName = 'Person';
+    protected $modelClass = \Cruftman\Models\Person::class;
 }
 
 // vim: syntax=php sw=4 ts=4 et:

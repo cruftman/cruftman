@@ -15,6 +15,8 @@ namespace Cruftman\Transformers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
 use League\Fractal\ParamBag;
 use Cruftman\Models\ModelUserHelpers;
 
@@ -27,7 +29,7 @@ class ModelTransformer extends Transformer
 
     public function transform(Model $model)
     {
-        return $model->toArray();
+        return $model->attributesToArray();
     }
 
     protected function applyCollectionLimits(Collection $collection, ParamBag $params) : Collection
@@ -64,12 +66,32 @@ class ModelTransformer extends Transformer
         return $collection;
     }
 
-    protected function transformRelated(Collection $collection, ModelTransformer $transformer, ?ParamBag $params)
+    protected function resolveRelatedTransformer(Relation $relation)
     {
-        if(!is_null($params)) {
+        $factory = app(\Dingo\Api\Transformer\Factory::class);
+        $related = $relation->getRelated();
+        if (!$factory->transformableResponse($related)) {
+            throw new \RuntimeException('failed to find transformer');
+        }
+        $bindings = $factory->getTransformerBindings();
+        $binding = $bindings[get_class($related)];
+        return $binding->resolveTransformer();
+    }
+
+    protected function transformRelatedCollection(Relation $relation, ?ParamBag $params = null, $transformer = null)
+    {
+        if (!isset($transformer)) {
+            $transformer = $this->resolveRelatedTransformer($relation);
+        }
+        return $this->transformCollection($relation->get(), $transformer, $params);
+    }
+
+    protected function transformCollection(Collection $collection, $transformer, ?ParamBag $params = null)
+    {
+        if (isset($params)) {
             $collection = $this->applyCollectionParams($collection, $params);
         }
-        return $this->collection($collection, $transformer, $transformer->getModelResourceKey());
+        return $this->collection($collection, $transformer);
     }
 }
 

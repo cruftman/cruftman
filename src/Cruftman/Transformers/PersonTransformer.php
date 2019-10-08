@@ -26,7 +26,7 @@ class PersonTransformer extends ModelTransformer
 
     public function includeOccupiedLocations(Person $person, ParamBag $params = null)
     {
-        return $this->transformRelated($person->occupied_locations, new LocationTransformer, $params);
+        return $this->transformRelatedCollection($person->occupied_locations(), $params);
     }
 }
 

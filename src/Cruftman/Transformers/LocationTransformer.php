@@ -34,9 +34,9 @@ class LocationTransformer extends ModelTransformer
      *
      * @return \League\Fractal\Resource\Collection
      */
-    public function includeOccupants(Location $location, ParamBag $params = null)
+    protected function includeOccupants(Location $location, ParamBag $params = null)
     {
-        return $this->transformRelated($location->occupants, new PersonTransformer, $params);
+        return $this->transformRelatedCollection($location->occupants(), $params);
     }
 }
 

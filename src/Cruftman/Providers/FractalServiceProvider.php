@@ -15,7 +15,7 @@ namespace Cruftman\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use League\Fractal\Manager as FractalManager;
-use League\Fractal\Serializer\JsonApiSerializer;
+use Cruftman\Serializers\JsonApiSerializer;
 use Dingo\Api\Transformer\Adapter\Fractal as FractalAdapter;
 
 class FractalServiceProvider extends ServiceProvider

@@ -41,60 +41,9 @@ use Cruftman\Transformers\TransformerUserHelpers;
  */
 class ModelController extends Controller
 {
-    use ModelUserHelpers;
-    use TransformerUserHelpers;
-
-    /**
-     * Returns an array of additional arguments passed to JsonApiSerializer.
-     *
-     * @returns array
-     */
-    public function getResourceParams() : array
+    public function getModelClass()
     {
-        return ['key' => $this->getModelResourceKey()];
-    }
-
-    /**
-     * Calls appropriate 'constructor' for the response, such as $this->response->collection(...).
-     *
-     * @param string $constructor name of the constructor function
-     * @param mixed $result the result to be morphed into HTTP response
-     * @param TransformerAbstract|null $transformer
-     */
-    protected function getModelResponse(
-        string $constructor,
-        $result,
-        ?TransformerAbstract $transformer = null,
-        array $params = []
-    ) : Response {
-        $args = [$result, $transformer ?? $this->getTransformer(), array_merge($this->getResourceParams(), $params)];
-        return call_user_func_array([$this->response, $constructor], $args);
-    }
-
-    /**
-     * Return HTTP response for collective result.
-     *
-     * @return Response
-     */
-    public function getModelCollectionResponse(
-        Collection $result,
-        ?TransformerAbstract $transformer = null,
-        array $params = []
-    ) : Response {
-        return $this->getModelResponse('collection', $result, $transformer, $params);
-    }
-
-    /**
-     * Return HTTP response for a single-item result.
-     *
-     * @return Response
-     */
-    public function getModelItemResponse(
-        Model $result,
-        ?TransformerAbstract $transformer = null,
-        array $params = []
-    ) : Response {
-        return $this->getModelResponse('item', $result, $transformer, $params);
+        return $this->modelClass;
     }
 
     /**
@@ -125,8 +74,7 @@ class ModelController extends Controller
      */
     public function index(Request $request)
     {
-        $models = $this->getModelInstances($request);
-        return $this->getModelCollectionResponse($models);
+        return $this->getModelInstances($request);
     }
 
     /**
@@ -138,7 +86,7 @@ class ModelController extends Controller
         if ($model == null) {
             return $this->response->errorNotFound(__('error.not_found'));
         }
-        return $this->getModelItemResponse($model);
+        return $model;
     }
 }
 

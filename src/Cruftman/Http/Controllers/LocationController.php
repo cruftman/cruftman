@@ -18,7 +18,7 @@ namespace Cruftman\Http\Controllers;
  */
 class LocationController extends ModelController
 {
-    protected $modelName = 'Location';
+    protected $modelClass = \Cruftman\Models\Location::class;
 }
 
 // vim: syntax=php sw=4 ts=4 et:

@@ -25,11 +25,6 @@ $app->withFacades();
 
 $app->withEloquent();
 
-
-//$app->configure('api');
-//$app->configure('ldap');
-//$app->configure('swagger-lume');
-
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -81,12 +76,7 @@ $app->singleton(
 |
 */
 
-//$app->register(App\Providers\AppServiceProvider::class);
-//$app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
-
 $app->register(Cruftman\Providers\LumenServiceProvider::class);
-
 
 /*
 |--------------------------------------------------------------------------
@@ -98,15 +88,6 @@ $app->register(Cruftman\Providers\LumenServiceProvider::class);
 | can respond to, as well as the controllers that may handle them.
 |
 */
-
-$api = $app[\Dingo\Api\Routing\Router::class];
-
-$api->version('v1', [
-    'namespace' => 'Cruftman\\Http\\Controllers',
-    //'middleware' => 'api.auth'
-], function ($api) {
-    require __DIR__ . '/../routes/api.php';
-});
 
 $app->router->get('/', function () {
     return redirect('web');

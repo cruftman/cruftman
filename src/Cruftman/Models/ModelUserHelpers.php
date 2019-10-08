@@ -92,7 +92,8 @@ trait ModelUserHelpers
      */
     public function getModelResourceKey() : string
     {
-        return Str::singular($this->getModelTable());
+        return $this->getModelTable();
+        //return Str::singular($this->getModelTable());
     }
 }
 

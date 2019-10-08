@@ -27,6 +27,14 @@ class RoutingServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $api = $this->app[\Dingo\Api\Routing\Router::class];
+
+        $api->version('v1', [
+            'namespace' => 'Cruftman\\Http\\Controllers',
+            //'middleware' => 'api.auth'
+        ], function ($api) {
+            require __DIR__ . '/../../../routes/api.php';
+        });
     }
 
     /**

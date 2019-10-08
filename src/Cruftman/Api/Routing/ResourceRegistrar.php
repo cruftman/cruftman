@@ -28,7 +28,39 @@ class ResourceRegistrar extends DingoResourceRegistrar
      */
     public function register($name, $controller, array $options = [])
     {
+        if (($transformers = $options['transform'] ?? null) !== null) {
+            $this->registerTransformers($name, $transformers);
+        }
         return parent::register($name, $controller, $options);
+    }
+
+    protected function registerTransformers($name, $transformers)
+    {
+        foreach ($transformers as $class => $binding) {
+            $this->registerTransformer($name, $class, $binding);
+        }
+    }
+
+    protected function registerTransformer($name, $class, $binding)
+    {
+        if (is_string($binding) || is_callable($binding) || is_object($binding)) {
+            $binding = [ $binding ];
+        } elseif (! is_array($binding)) {
+            throw new \InvalidArgumentException("\$binding must be a string, callable, object or an array");
+        }
+
+        $resolver = $binding['resolver'] ?? $binding[0];
+        $defaults = ['key' => ($binding['key'] ?? $name)];
+        $parameters = $binding['parameters'] ?? [];
+        $parameters = array_merge($defaults, $parameters);
+
+        $args = [$class, $resolver, $parameters];
+
+        if (($after = $binding['after'] ?? null) !== null) {
+            $args[] = $after;
+        }
+
+        app(\Dingo\Api\Transformer\Factory::class)->register(...$args);
     }
 }
 
