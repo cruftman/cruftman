@@ -20,9 +20,6 @@ use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\TransformerAbstract;
 
-use Cruftman\Models\ModelUserHelpers;
-use Cruftman\Transformers\TransformerUserHelpers;
-
 /**
  * Base class for Controller that serves instances of a particular Cruftman
  * Model.
@@ -74,7 +71,26 @@ class ModelController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->fetchCollection($request);
+        // Simply returning $collection would work in most cases, except for
+        // the $empty collection. So, we must find $transformer by ourselves.
+
+        $collection = $this->fetchCollection($request);
+        $binding = $this->getTransformerBinding();
+        if ($collection->isEmpty()) {
+            $transformer = $binding->resolveTransformer();
+            $parameters = $binding->getParameters();
+
+            // The following call has side effect: the $collection's class
+            // (Illuminate\Support\Collection::class) gets registered in
+            // transformer's factory (app('api.transformer') - a singleton).
+            // To minimize inpact, we let this to be made only for empty
+            // collections, because any non-empty collections is handled
+            // properly based on its first element, which should already be
+            // registered.
+            return $this->response->collection($collection, $transformer, $parameters);
+        } else {
+            return Response($collection, 200, [], $binding);
+        }
     }
 
     /**
@@ -83,10 +99,20 @@ class ModelController extends Controller
     public function show(Request $request, $id)
     {
         $instance = $this->fetchInstance($request, $id);
-        if ($instance == null) {
-            return $this->response->errorNotFound(__('error.not_found'));
+        $binding = $this->getTransformerBinding();
+        if ($instance === null) {
+            return new Response(null, 200, [], $binding);
         }
-        return $instance;
+//        if ($instance === null) {
+//            return $this->response->errorNotFound(__('error.not_found')); 
+//        }
+        return Response($instance, 200, [], $binding);
+        //return $this->response->item($instance, $binding->resolveTransformer(), $binding->getParameters());
+    }
+
+    protected function getTransformerBinding()
+    {
+        return app('api.transformer')->getTransformerBinding($this->getModelClass());
     }
 }
 

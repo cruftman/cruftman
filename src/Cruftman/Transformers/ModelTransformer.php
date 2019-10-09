@@ -13,14 +13,20 @@ declare(strict_types=1);
 
 namespace Cruftman\Transformers;
 
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+
 /**
  * Base class for Cruftman Model transformers .
  */
 class ModelTransformer extends Transformer
 {
-    public function transform($model)
+    public function transform($data)
     {
-        return $model->attributesToArray();
+        if (is_a($data, EloquentModel::class)) {
+            return $data->attributesToArray();
+        } else {
+            return parent::transform($data);
+        }
     }
 }
 

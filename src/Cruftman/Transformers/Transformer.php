@@ -22,10 +22,15 @@ use Illuminate\Contracts\Paginator\Paginator as IlluminatePaginator;
 
 class Transformer extends TransformerAbstract
 {
+    protected function getTransformerBinding($data)
+    {
+        return app('api.transformer')->getTransformerBinding($data);
+    }
+
     public function createFractalResource($data, $transformer = null, $resourceKey = null)
     {
         if (!isset($transformer)) {
-            $binding = app('api.transformer')->getTransformerBinding($data);
+            $binding = $this->getTransformerBinding($data);
             $transformer = $binding->resolveTransformer();
             $parameters = $binding->getParameters();
             if (!isset($resourceKey)) {
@@ -39,6 +44,11 @@ class Transformer extends TransformerAbstract
             return new FractalCollection($data, $transformer, $resourceKey);
         }
         return new FractalItem($data, $transformer, $resourceKey);
+    }
+
+    public function transform($data)
+    {
+        return $data;
     }
 }
 
