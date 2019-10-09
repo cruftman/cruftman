@@ -42,6 +42,7 @@ class LumenServiceProvider extends ServiceProvider
 
         // ... and (2) then our own to overwrite some of their bindings.
         $this->app->register(FractalServiceProvider::class);
+        $this->app->register(TransformerFactoryProvider::class);
         $this->app->register(RoutingServiceProvider::class);
     }
 }

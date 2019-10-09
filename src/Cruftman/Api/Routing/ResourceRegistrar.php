@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Api/Routing/Router.php
+ * @file src/Cruftman/Api/Routing/ResourceRegistrar.php
  *
  * This file is part of the Cruftman package
  *
@@ -60,7 +60,7 @@ class ResourceRegistrar extends DingoResourceRegistrar
             $args[] = $after;
         }
 
-        app(\Dingo\Api\Transformer\Factory::class)->register(...$args);
+        app('api.transformer')->register(...$args);
     }
 }
 

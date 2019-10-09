@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Transformers/Transformer.php
+ * @file src/Cruftman/Transformers/LocationTransformer.php
  *
  * This file is part of the Cruftman package
  *
@@ -36,7 +36,7 @@ class LocationTransformer extends ModelTransformer
      */
     protected function includeOccupants(Location $location, ParamBag $params = null)
     {
-        return $this->transformRelatedCollection($location->occupants(), $params);
+        return $this->transformCollection($location->occupants, null, $params);
     }
 }
 

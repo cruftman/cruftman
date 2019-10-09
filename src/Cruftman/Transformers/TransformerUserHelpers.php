@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Transformers/TranformerUserHelpers.php
+ * @file src/Cruftman/Transformers/TransformerUserHelpers.php
  *
  * This file is part of the Cruftman package
  *

@@ -52,7 +52,7 @@ class ModelController extends Controller
      * @param Request $request
      * @return Collection
      */
-    public function getModelInstances(Request $request) : Collection
+    public function fetchCollection(Request $request) : Collection
     {
         return call_user_func_array([$this->getModelClass(), 'all'], []);
     }
@@ -64,7 +64,7 @@ class ModelController extends Controller
      * @param $id Instance identifier
      * @return Model|null
      */
-    public function getModelInstance(Request $request, $id) : ?Model
+    public function fetchInstance(Request $request, $id) : ?Model
     {
         return call_user_func_array([$this->getModelClass(), 'find'], [$id]);
     }
@@ -74,7 +74,7 @@ class ModelController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->getModelInstances($request);
+        return $this->fetchCollection($request);
     }
 
     /**
@@ -82,11 +82,11 @@ class ModelController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = $this->getModelInstance($request, $id);
-        if ($model == null) {
+        $instance = $this->fetchInstance($request, $id);
+        if ($instance == null) {
             return $this->response->errorNotFound(__('error.not_found'));
         }
-        return $model;
+        return $instance;
     }
 }
 

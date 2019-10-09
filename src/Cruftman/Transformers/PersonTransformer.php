@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Transformers/Transformer.php
+ * @file src/Cruftman/Transformers/PersonTransformer.php
  *
  * This file is part of the Cruftman package
  *
@@ -18,15 +18,13 @@ use League\Fractal\ParamBag;
 
 class PersonTransformer extends ModelTransformer
 {
-    protected $modelName = 'Person';
-
     protected $availableIncludes = [
         'occupied_locations'
     ];
 
     public function includeOccupiedLocations(Person $person, ParamBag $params = null)
     {
-        return $this->transformRelatedCollection($person->occupied_locations(), $params);
+        return $this->createFractalResource($person->occupied_locations);
     }
 }
 

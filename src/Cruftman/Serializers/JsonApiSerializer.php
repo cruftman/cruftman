@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Serializers/Transformer.php
+ * @file src/Cruftman/Serializers/JsonApiSerializer.php
  *
  * This file is part of the Cruftman package
  *

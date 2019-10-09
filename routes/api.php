@@ -26,9 +26,13 @@ $api->get('/', function () {
 $api->resource('people', 'PersonController', [
     'transform' => [\Cruftman\Models\Person::class => \Cruftman\Transformers\PersonTransformer::class]
 ]);
-$api->resource('person.occupied_locations', 'LocationController');
 $api->resource('locations', 'LocationController', [
     'transform' => [\Cruftman\Models\Location::class => \Cruftman\Transformers\LocationTransformer::class]
 ]);
+
+$api->resource('people.occupied_locations', 'PersonOccupiedLocationsController');
+$api->resource('locations.occupants', 'LocationOccupantsController');
+
+//$api->resource('locations.occupants', 'LocationOccupantsController');
 
 // vim: syntax=php sw=4 ts=4 et:
