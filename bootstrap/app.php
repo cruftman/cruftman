@@ -12,7 +12,8 @@
 */
 
 $app = new Cruftman\Application\Application(
-    $_ENV['CRUFT_BASE_PATH'] ?? dirname(__DIR__)
+    env('CRUFT_BASE_PATH') ?? dirname(__DIR__),
+    env('CRUFT_DOTENV_FILE') ?? null
 );
 
 /*

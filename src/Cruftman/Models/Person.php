@@ -56,7 +56,7 @@ class Person extends Model
     /**
      * Locations occuppied by the person.
      */
-    public function occupied_locations()
+    public function occupiedLocations()
     {
         return $this->belongsToMany(Location::class, 'location_occupant');
     }

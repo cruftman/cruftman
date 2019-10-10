@@ -54,6 +54,7 @@ return [
     */
     'resources' => [
         'people' => \Cruftman\Models\Person::class,
+        'locations' => \Cruftman\Models\Location::class,
     ],
 
     /*

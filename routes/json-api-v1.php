@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| Json API Routes
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
@@ -13,10 +11,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/', function (Request $request) {
-    return ['message' => 'welcome'];
+$api->resource('people')->relationships(function ($relations) {
+    $relations->hasMany('occupied_locations', 'locations');
 });
-
-JsonApi::register('v1')->routes(function ($api) {
-    require __DIR__.'/json-api-v1.php';
+$api->resource('locations')->relationships(function ($relations) {
+    $relations->hasMany('occupants', 'people');
 });
