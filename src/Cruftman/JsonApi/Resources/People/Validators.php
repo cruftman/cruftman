@@ -1,6 +1,6 @@
 <?php
 
-namespace Cruftman\JsonApi\Locations;
+namespace Cruftman\JsonApi\Resources\People;
 
 class Validators extends \Cruftman\JsonApi\Validators
 {
@@ -10,5 +10,5 @@ class Validators extends \Cruftman\JsonApi\Validators
      * @var string[]|null
      *      the allowed paths, an empty array for none allowed, or null to allow all paths.
      */
-    protected $allowedIncludePaths = ['occupants'];
+    protected $allowedIncludePaths = ['occupied_locations'];
 }

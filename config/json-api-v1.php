@@ -36,7 +36,7 @@ return [
     |   - e.g. App\JsonApi\Validators\{PostValidator, CommentValidator}
     |
     */
-    'namespace' => 'Cruftman\JsonApi',
+    'namespace' => 'Cruftman\JsonApi\Resources',
     'by-resource' => true,
 
     /*
@@ -70,7 +70,7 @@ return [
     | override it; if the setting is `false`, then `--eloquent` is the override.
     |
     */
-    'use-eloquent' => true,
+    'use-eloquent' => false,
 
     /*
     |--------------------------------------------------------------------------

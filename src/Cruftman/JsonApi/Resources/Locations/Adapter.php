@@ -1,6 +1,6 @@
 <?php
 
-namespace Cruftman\JsonApi\Locations;
+namespace Cruftman\JsonApi\Resources\Locations;
 
 class Adapter extends \Cruftman\JsonApi\Adapter
 {
