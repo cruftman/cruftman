@@ -1,25 +1,13 @@
 <?php
-/**
- * @file src/Cruftman/Http/Controllers/Controller.php
- *
- * This file is part of the Cruftman package
- *
- * @author Paweł Tomulik <ptomulik@meil.pw.edu.pl>
- * @package cruftman\framework
- * @license Distributed under MIT license.
- */
-
-declare(strict_types=1);
 
 namespace Cruftman\Http\Controllers;
 
-use Laravel\Lumen\Routing\Controller as BaseController;
-use Dingo\Api\Routing\Helpers;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    use Helpers;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }
-
-
-// vim: syntax=php sw=4 ts=4 et:

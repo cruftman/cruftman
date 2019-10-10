@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Http\Controllers;
 
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 
 class NestedModelController extends Controller
 {

@@ -1,38 +1,18 @@
 <?php
 
+use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
-| V1 API routes
+| API Routes
 |--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
 */
 
-/**
- * @OA\Get(
- *      path="/",
- *      summary="Display welcome message",
- *      @OA\Response(
- *          response=200,
- *          description="OK"
- *      )
- * )
- */
-$api->get('/', function () {
-    return [
-        'message' => __('messages.welcome'),
-        'branch' => 'dev-master'
-    ];
+Route::middleware('auth:api')->get('/', function (Request $request) {
+    return ['message' => 'welcome'];
 });
-
-$api->resource('people', 'PersonController', [
-    'transform' => [\Cruftman\Models\Person::class => \Cruftman\Transformers\PersonTransformer::class]
-]);
-$api->resource('locations', 'LocationController', [
-    'transform' => [\Cruftman\Models\Location::class => \Cruftman\Transformers\LocationTransformer::class]
-]);
-
-$api->resource('people.occupied_locations', 'PersonOccupiedLocationsController');
-$api->resource('locations.occupants', 'LocationOccupantsController');
-
-//$api->resource('locations.occupants', 'LocationOccupantsController');
-
-// vim: syntax=php sw=4 ts=4 et:

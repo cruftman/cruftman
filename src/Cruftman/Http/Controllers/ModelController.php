@@ -13,16 +13,10 @@ declare(strict_types=1);
 
 namespace Cruftman\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
-
-use Dingo\Api\Http\Request;
-use Dingo\Api\Http\Response;
-use Dingo\Api\TransformerAbstract;
+use Illuminate\Http\Request;
 
 /**
- * Base class for Controller that serves instances of a particular Cruftman
- * Model.
+ * Base class for Controller that serves instances of Eloquent models.
  *
  * For groups of routes that serve particular model, it's enough to inherit from
  * this class as follows::
@@ -47,9 +41,9 @@ class ModelController extends Controller
      * Returns a collection of model instances for the $request.
      *
      * @param Request $request
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function fetchCollection(Request $request) : Collection
+    public function retrieveCollection(Request $request)
     {
         return call_user_func_array([$this->getModelClass(), 'all'], []);
     }
@@ -59,9 +53,10 @@ class ModelController extends Controller
      *
      * @param Request $request
      * @param $id Instance identifier
-     * @return Model|null
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function fetchInstance(Request $request, $id) : ?Model
+    public function retrieveInstance(Request $request, $id)
     {
         return call_user_func_array([$this->getModelClass(), 'find'], [$id]);
     }
@@ -71,26 +66,7 @@ class ModelController extends Controller
      */
     public function index(Request $request)
     {
-        // Simply returning $collection would work in most cases, except for
-        // the $empty collection. So, we must find $transformer by ourselves.
-
-        $collection = $this->fetchCollection($request);
-        $binding = $this->getTransformerBinding();
-        if ($collection->isEmpty()) {
-            $transformer = $binding->resolveTransformer();
-            $parameters = $binding->getParameters();
-
-            // The following call has side effect: the $collection's class
-            // (Illuminate\Support\Collection::class) gets registered in
-            // transformer's factory (app('api.transformer') - a singleton).
-            // To minimize inpact, we let this to be made only for empty
-            // collections, because any non-empty collections is handled
-            // properly based on its first element, which should already be
-            // registered.
-            return $this->response->collection($collection, $transformer, $parameters);
-        } else {
-            return Response($collection, 200, [], $binding);
-        }
+        return $this->retrieveCollection($request);
     }
 
     /**
@@ -98,21 +74,7 @@ class ModelController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $instance = $this->fetchInstance($request, $id);
-        $binding = $this->getTransformerBinding();
-        if ($instance === null) {
-            return new Response(null, 200, [], $binding);
-        }
-//        if ($instance === null) {
-//            return $this->response->errorNotFound(__('error.not_found')); 
-//        }
-        return Response($instance, 200, [], $binding);
-        //return $this->response->item($instance, $binding->resolveTransformer(), $binding->getParameters());
-    }
-
-    protected function getTransformerBinding()
-    {
-        return app('api.transformer')->getTransformerBinding($this->getModelClass());
+        return $this->retrieveInstance($request, $id);
     }
 }
 
