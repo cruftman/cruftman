@@ -2,7 +2,7 @@
 
 namespace Cruftman\JsonApi\Resources\People;
 
-class Adapter extends \Cruftman\JsonApi\Adapter
+class Adapter extends \Cruftman\JsonApi\Eloquent\Adapter
 {
     protected $modelClass = \Cruftman\Models\Person::class;
 

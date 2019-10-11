@@ -1,6 +1,6 @@
 <?php
 
-namespace Cruftman\JsonApi;
+namespace Cruftman\JsonApi\Eloquent;
 
 use CloudCreativity\LaravelJsonApi\Eloquent\AbstractAdapter;
 use CloudCreativity\LaravelJsonApi\Pagination\StandardStrategy;

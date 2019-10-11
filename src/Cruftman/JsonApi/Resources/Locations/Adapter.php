@@ -2,7 +2,7 @@
 
 namespace Cruftman\JsonApi\Resources\Locations;
 
-class Adapter extends \Cruftman\JsonApi\Adapter
+class Adapter extends \Cruftman\JsonApi\Eloquent\Adapter
 {
     protected $modelClass = \Cruftman\Models\Location::class;
 

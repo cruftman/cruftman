@@ -2,14 +2,21 @@
 
 namespace Cruftman\JsonApi\Resources\Locations;
 
-class Schema extends \Cruftman\JsonApi\Schema
+use Cruftman\JsonApi\Eloquent\SchemaAbstract;
+use Cruftman\JsonApi\Eloquent\PreconfiguredAttributes;
+
+class Schema extends SchemaAbstract
 {
+    use PreconfiguredAttributes;
+
     /**
      * @var string
      */
     protected $resourceType = 'locations';
 
     protected $relathionships = [
-        'occupants' => [self::DATA_ATTRIBUTE => 'occupants']
+    ];
+
+    protected $attributes = [
     ];
 }
