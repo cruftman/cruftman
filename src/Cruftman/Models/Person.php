@@ -15,25 +15,6 @@ namespace Cruftman\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-/**
- *  @OA\Schema(
- *      description="Person model",
- *      type="object",
- *      title="Person model",
- *      @OA\Xml(name="Person"),
- *      @OA\Property(property="id", type="integer"),
- *      @OA\Property(property="personal_id", type="string"),
- *      @OA\Property(property="first_name", type="string"),
- *      @OA\Property(property="last_name", type="string"),
- *      @OA\Property(property="birthday", type="string"),
- *      @OA\Property(property="gender", type="string"),
- *      @OA\Property(property="title", type="string"),
- *      @OA\Property(property="comment", type="string"),
- *      @OA\Property(property="created_at", type="string", format="date-time"),
- *      @OA\Property(property="updated_at", type="string", format="date-time"),
- *      @OA\Property(property="deleted_at", type="string", format="date-time")
- *  )
- */
 class Person extends Model
 {
     use SoftDeletes;
@@ -53,12 +34,36 @@ class Person extends Model
         'comment'
     ];
 
+
+    /**
+     * Used by JsonAPI (and perhaps by someone else).
+     *
+     * @var array
+     */
+    protected $visible = [
+        'personal_id',
+        'first_name',
+        'last_name',
+        'birthday',
+        'gender',
+        'title',
+        'comment'
+    ];
+
     /**
      * Locations occuppied by the person.
      */
     public function occupiedLocations()
     {
         return $this->belongsToMany(Location::class, 'location_occupant');
+    }
+
+    /**
+     * @todo Write documentation.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(Person::class);
     }
 }
 

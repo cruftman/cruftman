@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Models/Location.php
+ * @file src/Cruftman/Models/User.php
  *
  * This file is part of the Cruftman package
  *
@@ -15,12 +15,7 @@ namespace Cruftman\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-/**
- * Location model.
- *
- * It may be a room, a lobby, building, etc.
- */
-class Location extends Model
+class User extends Model
 {
     use SoftDeletes;
 
@@ -30,26 +25,42 @@ class Location extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'comment'
+        'name'
     ];
 
+
     /**
-     * Used by JsonAPI (and perhaps someone else).
+     * Used by JsonAPI (and perhaps by someone else).
      *
      * @var array
      */
     protected $visible = [
-        'name',
-        'comment'
+        'person_id',
+        'name'
     ];
 
     /**
-     * Persons occupying the location.
+     * @todo Write documentation
      */
-    public function occupants()
+    public function person()
     {
-        return $this->belongsToMany(Person::class, 'location_occupant');
+        return $this->hasOne(Person::class);
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    public function password()
+    {
+        return $this->hasOne(Password::class);
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
     }
 }
 

@@ -12,8 +12,20 @@
 */
 
 $api->resource('people')->relationships(function ($relations) {
-    $relations->hasMany('occupied_locations', 'locations');
+    $relations->hasMany('occupied-locations', 'locations');
+    $relations->hasMany('users');
 });
 $api->resource('locations')->relationships(function ($relations) {
     $relations->hasMany('occupants', 'people');
+});
+$api->resource('users')->relationships(function ($relations) {
+    $relations->hasOne('person');
+    $relations->hasOne('password');
+    $relations->hasMany('accounts');
+});
+$api->resource('passwords')->relationships(function ($relations) {
+    $relations->hasOne('user');
+});
+$api->resource('accounts')->relationships(function ($relations) {
+    $relations->hasMany('users');
 });

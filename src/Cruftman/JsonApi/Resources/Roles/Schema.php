@@ -1,6 +1,6 @@
 <?php
 
-namespace Cruftman\JsonApi\Resources\People;
+namespace Cruftman\JsonApi\Resources\Roles;
 
 use Cruftman\JsonApi\Eloquent\AbstractSchema;
 
@@ -9,10 +9,10 @@ class Schema extends AbstractSchema
     /**
      * @var string
      */
-    protected $resourceType = 'people';
+    protected $resourceType = 'roles';
 
     /**
      * @var array
      */
-    protected $relationships = ['occupiedLocations'];
+    protected $relationships = ['users', 'policies'];
 }

@@ -55,6 +55,9 @@ return [
     'resources' => [
         'people' => \Cruftman\Models\Person::class,
         'locations' => \Cruftman\Models\Location::class,
+        'passwords' => \Cruftman\Models\Password::class,
+        'users' => \Cruftman\Models\User::class,
+        'roles' => \Cruftman\Models\Role::class
     ],
 
     /*

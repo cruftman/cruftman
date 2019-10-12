@@ -6,7 +6,7 @@ class Adapter extends \Cruftman\JsonApi\Eloquent\Adapter
 {
     protected $modelClass = \Cruftman\Models\Person::class;
 
-    protected function occupied_locations()
+    protected function occupiedLocations()
     {
         return $this->hasMany();
     }

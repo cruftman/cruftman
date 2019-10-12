@@ -16,7 +16,7 @@ class CreatePeopleTable extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('personal_id', 100)->comment('Personal ID, such as Social Security ID');
-            $table->string('first_name', 100)->nullable(false);
+            $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable(false);
             $table->date('birthday')->nullable();
             $table->enum('gender', ['male','female','bigender'])->nullable();

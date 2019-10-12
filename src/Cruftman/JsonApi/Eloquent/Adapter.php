@@ -9,20 +9,20 @@ use Illuminate\Support\Collection;
 
 class Adapter extends AbstractAdapter
 {
-    /**
-     * Mapping of JSON API attribute field names to model keys.
-     *
-     * @var array
-     */
-    protected $attributes = [];
-
-    /**
-     * Mapping of JSON API filter names to model scopes.
-     *
-     * @var array
-     */
-    protected $filterScopes = [];
-
+//    /**
+//     * Mapping of JSON API attribute field names to model keys.
+//     *
+//     * @var array
+//     */
+//    protected $attributes = [];
+//
+//    /**
+//     * Mapping of JSON API filter names to model scopes.
+//     *
+//     * @var array
+//     */
+//    protected $filterScopes = [];
+//
     /**
      * Adapter constructor.
      *

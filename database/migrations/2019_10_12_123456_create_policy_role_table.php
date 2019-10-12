@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLocationOccupantTable extends Migration
+class CreatePolicyRoleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,24 +13,25 @@ class CreateLocationOccupantTable extends Migration
      */
     public function up()
     {
-        Schema::create('location_occupant', function (Blueprint $table) {
-            $table->unsignedBigInteger('person_id');
-            $table->unsignedBigInteger('location_id');
+        Schema::create('policy_role', function (Blueprint $table) {
+            $table->unsignedBigInteger('policy_id');
+            $table->unsignedBigInteger('role_id');
+            $table->boolean('enabled')->default(true);
             $table->timestamps();
 
             // constraints & indices
-            $table->primary(['person_id', 'location_id']);
+            $table->primary(['policy_id', 'role_id']);
         });
 
-        Schema::table('location_occupant', function(Blueprint $table) {
-            $table->foreign('person_id')
+        Schema::table('policy_role', function(Blueprint $table) {
+            $table->foreign('policy_id')
                   ->references('id')
-                  ->on('people')
+                  ->on('policies')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
-            $table->foreign('location_id')
+            $table->foreign('role_id')
                   ->references('id')
-                  ->on('locations')
+                  ->on('roles')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
         });
@@ -43,8 +44,6 @@ class CreateLocationOccupantTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('location_occupant');
+        Schema::dropIfExists('policy_role');
     }
 }
-
-// vim: syntax=php sw=4 ts=4 et:
