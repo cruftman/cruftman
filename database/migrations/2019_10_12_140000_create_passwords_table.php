@@ -16,7 +16,7 @@ class CreatePasswordsTable extends Migration
         Schema::create('passwords', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('login')->nullable(false);
-            $table->string('password', 256)->nullable();
+            $table->string('password', 256)->nullable(false);
             $table->timestamp('expires_at')->nullable();
             $table->boolean('disabled')->default(false);
             $table->timestamps();

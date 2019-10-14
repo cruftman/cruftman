@@ -23,6 +23,9 @@ class CreateUsersTable extends Migration
 
             // indexes & constraints
             $table->unique(['password_id']);
+        });
+
+        Schema::table('users', function (Blueprint $table) {
             $table->foreign('password_id')
                   ->references('id')
                   ->on('passwords')

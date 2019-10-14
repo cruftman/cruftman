@@ -37,6 +37,10 @@ class Password extends Model
         'disabled'
     ];
 
+    protected $hidden = [
+        'password'
+    ];
+
     /**
      * @todo Write documentation
      */
