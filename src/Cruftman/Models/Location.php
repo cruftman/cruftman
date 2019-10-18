@@ -35,8 +35,6 @@ class Location extends Model
     ];
 
     /**
-     * Used by JsonAPI (and perhaps someone else).
-     *
      * @var array
      */
     protected $visible = [

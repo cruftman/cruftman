@@ -16,7 +16,3 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/', function (Request $request) {
     return ['message' => 'welcome'];
 });
-
-JsonApi::register('v1')->routes(function ($api) {
-    require __DIR__.'/json-api-v1.php';
-});

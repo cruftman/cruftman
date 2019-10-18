@@ -165,14 +165,12 @@ return [
         /*
          * Package Service Providers...
          */
-        CloudCreativity\LaravelJsonApi\ServiceProvider::class,
 
         /*
          * Application Service Providers...
          */
         Cruftman\Providers\AppServiceProvider::class,
         Cruftman\Providers\ArtisanServiceProvider::class,
-        Cruftman\Providers\JsonApiServiceProvider::class,
         Cruftman\Providers\AuthServiceProvider::class,
         // Cruftman\Providers\BroadcastServiceProvider::class,
         Cruftman\Providers\EventServiceProvider::class,
@@ -230,7 +228,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         // Aliases for package facades
-        'JsonApi' => CloudCreativity\LaravelJsonApi\Facades\JsonApi::class,
     ],
 
 ];

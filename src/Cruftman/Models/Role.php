@@ -31,8 +31,6 @@ class Role extends Model
 
 
     /**
-     * Used by JsonAPI (and perhaps by someone else).
-     *
      * @var array
      */
     protected $visible = [

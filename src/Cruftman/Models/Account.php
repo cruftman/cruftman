@@ -31,7 +31,7 @@ class Account extends Model
 
 
     /**
-     * Used by JsonAPI (and perhaps by someone else).
+     * May help to build an API around the model.
      *
      * @var array
      */
