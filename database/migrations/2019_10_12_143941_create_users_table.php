@@ -17,20 +17,21 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('password_id')->nullable();
             $table->unsignedBigInteger('person_id')->nullable();
-            $table->string('name', 100)->nullable();
+            $table->string('name', 256)->nullable();
+            $table->boolean('enabled')->default(true);
+            $table->rememberToken();
             $table->timestamps();
-            $table->softDeletes();
-
-            // indexes & constraints
-            $table->unique(['password_id']);
         });
 
         Schema::table('users', function (Blueprint $table) {
+            $table->unique('password_id');
+
             $table->foreign('password_id')
                   ->references('id')
                   ->on('passwords')
                   ->onUpdate('cascade')
                   ->onDelete('set null');
+
             $table->foreign('person_id')
                   ->references('id')
                   ->on('people')

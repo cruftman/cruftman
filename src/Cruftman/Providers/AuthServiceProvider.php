@@ -4,6 +4,8 @@ namespace Cruftman\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
+use Cruftman\Auth\UserProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,5 +28,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         //
+        Auth::provider('cruftman', function ($app, array $config) {
+            return new UserProvider($app['hash'], $config['model']);
+        });
     }
 }

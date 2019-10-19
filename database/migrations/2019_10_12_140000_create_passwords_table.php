@@ -15,15 +15,15 @@ class CreatePasswordsTable extends Migration
     {
         Schema::create('passwords', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('login')->nullable(false);
+            $table->string('identifier', 256)->nullable(false);
             $table->string('password', 256)->nullable(false);
             $table->timestamp('expires_at')->nullable();
             $table->boolean('disabled')->default(false);
             $table->timestamps();
+        });
 
-
-            // indexes & constraints
-            $table->unique(['login']);
+        Schema::table('passwords', function (Blueprint $table) {
+            $table->unique(['identifier']);
         });
     }
 

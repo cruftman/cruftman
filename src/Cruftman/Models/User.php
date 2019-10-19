@@ -13,11 +13,20 @@ declare(strict_types=1);
 
 namespace Cruftman\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 
-class User extends Model
+class User extends Model implements
+    AuthenticatableContract,
+    AuthorizableContract,
+    CanResetPasswordContract
 {
-    use SoftDeletes;
+    use Authenticatable, Authorizable, CanResetPassword/*, MustVerifyEmail*/;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +37,14 @@ class User extends Model
         'name'
     ];
 
+    /**
+     * The attributes that should be hiddent for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'remember_token'
+    ];
 
     /**
      * @var array
@@ -59,6 +76,21 @@ class User extends Model
     public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * Get the password for the user.
+     *
+     * @return string|null
+     */
+    public function getAuthPassword()
+    {
+        if (($password = $this->password) === null) {
+            // no password assigned.
+            return null;
+        }
+        // TODO: disabled? expired?
+        return $password->password;
     }
 }
 

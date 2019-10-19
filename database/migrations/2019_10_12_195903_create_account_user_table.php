@@ -19,7 +19,6 @@ class CreateAccountUserTable extends Migration
             $table->boolean('enabled')->default(true);
             $table->timestamps();
 
-            // indexes & constraints
             $table->primary(['account_id', 'user_id']);
         });
 

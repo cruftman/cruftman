@@ -18,10 +18,9 @@ class CreatePoliciesTable extends Migration
             $table->string('name', 100)->nullable(false);
             $table->text('comment')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+        });
 
-
-            // indexes & constraints
+        Schema::table('policies', function (Blueprint $table) {
             $table->index('name');
         });
     }

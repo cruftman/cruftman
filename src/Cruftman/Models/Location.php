@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Cruftman\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 /**
  * Location model.
  *
@@ -22,8 +20,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Location extends Model
 {
-    use SoftDeletes;
-
     /**
      * The attributes that are mass assignable.
      *

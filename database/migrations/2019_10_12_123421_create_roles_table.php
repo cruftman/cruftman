@@ -18,10 +18,9 @@ class CreateRolesTable extends Migration
             $table->string('name', '100')->nullable(false);
             $table->text('comment')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+        });
 
-
-            // indexes & constraints
+        Schema::table('roles', function (Blueprint $table) {
             $table->index('name');
         });
     }

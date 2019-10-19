@@ -23,9 +23,9 @@ class CreatePeopleTable extends Migration
             $table->string('title', 20)->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+        });
 
-            // constraints & indexes
+        Schema::table('people', function (Blueprint $table) {
             $table->unique('personal_id');
             $table->index('first_name');
             $table->index('last_name');

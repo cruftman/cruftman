@@ -19,9 +19,9 @@ class CreateAccountsTable extends Migration
             $table->boolean('enabled')->default(true);
             $table->text('comment')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+        });
 
-            // constraints & indexes
+        Schema::table('accounts', function (Blueprint $table) {
             $table->index('name');
             $table->index('enabled');
         });
