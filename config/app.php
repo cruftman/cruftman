@@ -228,6 +228,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         // Aliases for package facades
+        'Adldap' => Adldap\Laravel\Facades\Adldap::class,
     ],
 
 ];
