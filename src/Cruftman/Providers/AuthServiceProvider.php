@@ -28,8 +28,5 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         //
-        Auth::provider('cruftman', function ($app, array $config) {
-            return new UserProvider($app['hash'], $config['model']);
-        });
     }
 }

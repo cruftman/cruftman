@@ -36,4 +36,15 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * The model's attribute used to find the user.
+     *
+     * @return string.
+     */
+    public function username()
+    {
+        return 'username';
+    }
+
 }

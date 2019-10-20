@@ -15,15 +15,19 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('password_id')->nullable();
-            $table->unsignedBigInteger('person_id')->nullable();
-            $table->string('name', 256)->nullable();
-            $table->boolean('enabled')->default(true);
+//            $table->unsignedBigInteger('password_id')->nullable();
+//            $table->unsignedBigInteger('person_id')->nullable();
+            $table->string('name', 256);
+            $table->string('username', 256)->nullable(false);
+            $table->string('password', 256);
+//            $table->boolean('enabled')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });
 
         Schema::table('users', function (Blueprint $table) {
+            $table->unique('username');
+            /*
             $table->unique('password_id');
 
             $table->foreign('password_id')
@@ -37,6 +41,7 @@ class CreateUsersTable extends Migration
                   ->on('people')
                   ->onUpdate('cascade')
                   ->onDelete('set null');
+             */
         });
     }
 

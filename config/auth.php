@@ -67,7 +67,7 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'cruftman',
+            'driver' => 'eloquent',
             'model' => Cruftman\Models\User::class,
         ],
 
