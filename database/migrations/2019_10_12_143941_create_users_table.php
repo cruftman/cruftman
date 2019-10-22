@@ -15,9 +15,10 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('objectguid')->nullable();
 //            $table->unsignedBigInteger('password_id')->nullable();
 //            $table->unsignedBigInteger('person_id')->nullable();
-            $table->string('name', 256);
+            $table->string('name', 256)->nullable();
             $table->string('username', 256)->nullable(false);
             $table->string('password', 256);
 //            $table->boolean('enabled')->default(true);
@@ -27,6 +28,7 @@ class CreateUsersTable extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->unique('username');
+            $table->unique('objectguid');
             /*
             $table->unique('password_id');
 

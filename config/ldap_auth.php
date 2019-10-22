@@ -34,6 +34,7 @@ return [
     */
 
     'provider' => Adldap\Laravel\Auth\DatabaseUserProvider::class,
+//    'provider' => Adldap\Laravel\Auth\NoDatabaseUserProvider::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -135,7 +136,8 @@ return [
 
             'locate_users_by' => 'uid',
 
-            'bind_users_by' => 'distinguishedname',
+            #'bind_users_by' => 'distinguishedname',
+            'bind_users_by' => 'dn',
 
         ],
 
@@ -292,6 +294,7 @@ return [
     //    'email' => 'userprincipalname',
 
         'name' => 'cn',
+        'username' => 'uid',
 
     ],
 
