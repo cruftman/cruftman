@@ -26,7 +26,7 @@ class User extends AuthUser
      * @var array
      */
     protected $fillable = [
-        'name', 'username', 'password'
+        'username', 'password'
     ];
 
     /**
@@ -38,15 +38,15 @@ class User extends AuthUser
         'password', 'remember_token'
     ];
 
-//
-//    /**
-//     * @todo Write documentation
-//     */
-//    public function person()
-//    {
-//        return $this->hasOne(Person::class);
-//    }
-//
+
+    /**
+     * @todo Write documentation
+     */
+    public function person()
+    {
+        return $this->hasOne(Person::class);
+    }
+
 //    /**
 //     * @todo Write documentation
 //     */

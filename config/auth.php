@@ -67,7 +67,8 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'ldap',
+            'driver' => 'cruft',
+//            'driver' => 'ldap',
             'model' => Cruftman\Models\User::class,
         ],
 

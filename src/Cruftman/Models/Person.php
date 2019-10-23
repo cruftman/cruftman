@@ -57,7 +57,7 @@ class Person extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(Person::class);
+        return $this->belongsToMany(User::class);
     }
 }
 

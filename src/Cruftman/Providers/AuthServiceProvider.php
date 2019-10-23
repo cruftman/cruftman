@@ -3,7 +3,7 @@
 namespace Cruftman\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
+//use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Cruftman\Auth\UserProvider;
 
@@ -28,5 +28,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         //
+        Auth::provider('cruft', function ($app, array $config) {
+            dump(['providerCreateCallback', $config]);
+            return new UserProvider($app['hash'], $config['model']);
+        });
     }
 }
