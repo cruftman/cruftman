@@ -7,7 +7,9 @@ return [
     | Connections
     |--------------------------------------------------------------------------
     |
-    | The LDAP connections to use for Laravel authentication.
+    | Predefined LDAP connections to use for Laravel authentication. These
+    | connection parameters may be referenced from other pieces of this
+    | configuration array.
     */
     'connections' => [
         'ldap1' => [
@@ -22,7 +24,10 @@ return [
     | Bindings
     |--------------------------------------------------------------------------
     |
-    | Credentials used to bind to our LDAP databases before searching for users.
+    | Predefined credentials used to bind to LDAP databases in order to perform
+    | necessary operations like searching for user entries or authenticating
+    | them. These binding parameters may be referenced from other pieces of this
+    | configuration array.
     */
     'bindings' => [
         'auth@london.example.org' => [
@@ -51,32 +56,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Searching
+    | Searches
     |--------------------------------------------------------------------------
     |
-    | Parameters used when searching LDAP databases in order to authenticate users.
+    | Predefined searches. A search is defined by LDAP connections, binding
+    | parameters, base_dn, filter and optional parameters, such as scope.
+    | These predefined searches may be referenced from other parts of this
+    | config arrays.
     */
-    'searching' => [
-        'people.example.org' => [
+    'searches' => [
+        'people.defaults' => [
             'connections' => ['ldap1'],
-            'bind' => 'auth@london.example.org'
-            'base_dn' => 'ou=people,dc=example,dc=org',
-            'filter' => 'enabled_user'
+            'filter' => 'enabled_user',
             'scope' => 'one'
+        ],
+        'people.example.org' => [
+            'inherit' => 'people.defaults',
+            'bind' => 'auth@london.example.org',
+            'base_dn' => 'ou=people,dc=example,dc=org',
         ],
         'people.london.example.org' => [
-            'connections' => ['ldap1'],
+            'inherit' => 'people.defaults',
             'bind' => 'auth@london.example.org',
             'base_dn' => 'ou=people,ou=london,dc=example,dc=org',
-            'filter' => 'enabled_user',
-            'scope' => 'one'
         ],
         'people.manchester.example.org' => [
-            'connections' => ['ldap1'],
+            'inherit' => 'people.defaults',
             'bind' => 'auth@london.example.org',
             'base_dn' => 'ou=people,ou=manchester,dc=example,dc=org',
-            'filter' => 'enabled_user',
-            'scope' => 'one'
         ]
     ],
 
