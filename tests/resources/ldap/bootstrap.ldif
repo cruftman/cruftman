@@ -35,10 +35,12 @@
 #   |   |
 #   |   + ou=roles
 #   |   | + cn=bindUserAuth
+#   |   | + cn=bindUserList
 #   |   |
 #   |   + ou=servers
 #   |     + cn=cruftman.example.org
 #   |       + cn=cruftUserAuth
+#   |       + cn=cruftUserList
 #   |
 #   + ou=manchester
 #   | + ou=people
@@ -49,10 +51,12 @@
 #   |   + ou=configs
 #   |   + ou=roles
 #   |   | + cn=bindUserAuth
+#   |   | + cn=bindUserList
 #   |   |
 #   |   + ou=servers
 #   |     + cn=cruftman.example.org
 #   |       + cn=cruftUserAuth
+#   |       + cn=cruftUserList
 
 
 #
@@ -359,6 +363,14 @@ objectclass: organizationalRole
 objectclass: top
 roleoccupant: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
 
+dn: cn=bindUserList,ou=roles,ou=systems,ou=london,dc=example,dc=org
+cn: bindUserList
+description: A group of entries allowed to list users. This role differs from
+  bindUserAuth because it has read access to more attributes.
+objectclass: organizationalRole
+objectclass: top
+roleoccupant: cn=cruftUserList,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+
 #
 # ou=servers,ou=systems,ou=london,dc=example,dc=org
 #
@@ -385,6 +397,14 @@ description: A group of entries allowed to authenticate users via regular bind.
 objectclass: organizationalRole
 objectclass: top
 roleoccupant: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+
+dn: cn=bindUserList,ou=roles,ou=systems,ou=manchester,dc=example,dc=org
+cn: bindUserList
+description: A group of entries allowed to list users. This role differs from
+  bindUserAuth because it has read access to more attributes.
+objectclass: organizationalRole
+objectclass: top
+roleoccupant: cn=cruftUserList,cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
 
 #
 # ou=servers,ou=systems,ou=manchester,dc=example,dc=org
@@ -556,7 +576,14 @@ radiusprofiledn: cn=172.22.1.0,cn=london.example.org,cn=dhcp,ou=configs,ou=syste
 #
 
 dn: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
-cn: pkiUserAuth
+cn: cruftUserAuth
+objectclass: organizationalRole
+objectclass: simpleSecurityObject
+objectclass: top
+userpassword: london
+
+dn: cn=cruftUserList,cn=cruftman.example.org,ou=servers,ou=systems,ou=london,dc=example,dc=org
+cn: cruftUserList
 objectclass: organizationalRole
 objectclass: simpleSecurityObject
 objectclass: top
@@ -567,7 +594,14 @@ userpassword: london
 #
 
 dn: cn=cruftUserAuth,cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
-cn: pkiUserAuth
+cn: cruftUserAuth
+objectclass: organizationalRole
+objectclass: simpleSecurityObject
+objectclass: top
+userpassword: manchester
+
+dn: cn=cruftUserList,cn=cruftman.example.org,ou=servers,ou=systems,ou=manchester,dc=example,dc=org
+cn: cruftUserList
 objectclass: organizationalRole
 objectclass: simpleSecurityObject
 objectclass: top

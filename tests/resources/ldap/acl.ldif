@@ -34,83 +34,99 @@ olcAccess: {6}
   by * break
 olcAccess: {7}
  to dn.regex="uid=[^,]+,ou=people(,ou=london)?,dc=example,dc=org"
-  attrs=entry,uid,entryuuid,objectclass
-  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org" read
+  attrs=entry,uid,entryuuid
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=london,dc=example,dc=org" read
   by * break
 olcAccess: {8}
  to dn.regex="uid=[^,]+,ou=people(,ou=manchester)?,dc=example,dc=org"
-  attrs=entry,uid,entryuuid,objectclass
-  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" read
+  attrs=entry,uid,entryuuid
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" read
   by * break
 olcAccess: {9}
- to dn.subtree="ou=departments,ou=london,dc=example,dc=org"
+ to dn.regex="uid=[^,]+,ou=people(,ou=london)?,dc=example,dc=org"
+  attrs=entry
   by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org" read
   by * break
 olcAccess: {10}
- to dn.subtree="ou=departments,ou=manchester,dc=example,dc=org"
+ to dn.regex="uid=[^,]+,ou=people(,ou=manchester)?,dc=example,dc=org"
+  attrs=entry
   by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" read
   by * break
 olcAccess: {11}
- to dn.subtree="ou=people,dc=example,dc=org"
-  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org" search
-  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" search
+ to dn.subtree="ou=departments,ou=london,dc=example,dc=org"
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=london,dc=example,dc=org" read
+  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org" read
   by * break
 olcAccess: {12}
- to dn.subtree="ou=people,ou=london,dc=example,dc=org"
-  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org" search
+ to dn.subtree="ou=departments,ou=manchester,dc=example,dc=org"
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" read
+  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" read
   by * break
 olcAccess: {13}
- to dn.subtree="ou=people,ou=manchester,dc=example,dc=org"
+ to dn.subtree="ou=people,dc=example,dc=org"
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=london,dc=example,dc=org" search
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" search
+  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org" search
   by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" search
   by * break
 olcAccess: {14}
+ to dn.subtree="ou=people,ou=london,dc=example,dc=org"
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=london,dc=example,dc=org" search
+  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=london,dc=example,dc=org" search
+  by * break
+olcAccess: {15}
+ to dn.subtree="ou=people,ou=manchester,dc=example,dc=org"
+  by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" search
+  by group/organizationalRole/roleOccupant="cn=bindUserAuth,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" search
+  by * break
+olcAccess: {16}
  to dn.subtree="ou=departments,ou=london,dc=example,dc=org"
   by dn.regex="uid=[^,]+,ou=people,ou=london,dc=example,dc=org" read
   by * break
-olcAccess: {15}
+olcAccess: {17}
  to dn.subtree="ou=departments,ou=manchester,dc=example,dc=org"
   by dn.regex="uid=[^,]+,ou=people,ou=manchester,dc=example,dc=org" read
   by * break
-olcAccess: {16}
+olcAccess: {18}
  to dn.regex="(.+,)?uid=([^,]+),ou=people,dc=example,dc=org"
   by dn.exact,expand="uid=$2,ou=people,dc=example,dc=org" write
   by * break
-olcAccess: {17}
+olcAccess: {19}
  to dn.regex="(.+,)?uid=([^,]+),ou=people,ou=london,dc=example,dc=org"
   by dn.exact,expand="uid=$2,ou=people,ou=london,dc=example,dc=org" write
   by * break
-olcAccess: {18}
+olcAccess: {20}
  to dn.regex="(.+,)?uid=([^,]+),ou=people,ou=manchester,dc=example,dc=org"
   by dn.exact,expand="uid=$2,ou=people,ou=manchester,dc=example,dc=org" write
   by * break
-olcAccess: {19}
+olcAccess: {21}
  to dn.regex="uid=[^,]+,ou=people,dc=example,dc=org" attrs=entry,uid,uniqueIdentifier,audio,businessCategory,c,cn,carLicense,departmentNumber,destinationIndicator,employeeNumber,employeeType,homePostalAddress,initials,internationaliSDNNumber,jpegPhoto,manager,photo,physicalDeliveryOfficeName,postalAddress,preferredDeliveryMethod,preferredLanguage,registeredAddress,roomNumber,teletexTerminalIdentifier,telexNumber
   by dn.regex="uid=[^,]+,ou=people(,[^,]+)?,dc=example,dc=org" read
   by * break
-olcAccess: {20}
+olcAccess: {22}
  to dn.regex="uid=[^,]+,ou=people,ou=london,dc=example,dc=org" attrs=entry,uid,uniqueIdentifier,audio,businessCategory,c,cn,carLicense,departmentNumber,destinationIndicator,employeeNumber,employeeType,homePostalAddress,initials,internationaliSDNNumber,jpegPhoto,manager,photo,physicalDeliveryOfficeName,postalAddress,preferredDeliveryMethod,preferredLanguage,registeredAddress,roomNumber,teletexTerminalIdentifier,telexNumber
   by dn.regex="uid=[^,]+,ou=people,ou=london,dc=example,dc=org" read
   by * break
-olcAccess: {21}
+olcAccess: {23}
  to dn.regex="uid=[^,]+,ou=people,ou=manchester,dc=example,dc=org" attrs=entry,uid,uniqueIdentifier,audio,businessCategory,c,cn,carLicense,departmentNumber,destinationIndicator,employeeNumber,employeeType,homePostalAddress,initials,internationaliSDNNumber,jpegPhoto,manager,photo,physicalDeliveryOfficeName,postalAddress,preferredDeliveryMethod,preferredLanguage,registeredAddress,roomNumber,teletexTerminalIdentifier,telexNumber
   by dn.regex="uid=[^,]+,ou=people,ou=manchester,dc=example,dc=org" read
   by * break
-olcAccess: {22}
+olcAccess: {24}
  to dn.subtree="ou=people,dc=example,dc=org"
   by dn.regex="uid=[^,]+,ou=people(,ou=[^,]+)?,dc=example,dc=org" search
   by * break
-olcAccess: {23}
+olcAccess: {25}
  to dn.subtree="ou=people,ou=london,dc=example,dc=org"
   by dn.regex="uid=[^,]+,ou=people,ou=london,dc=example,dc=org" search
   by * break
-olcAccess: {24}
+olcAccess: {26}
  to dn.subtree="ou=people,ou=manchester,dc=example,dc=org"
   by dn.regex="uid=[^,]+,ou=people,ou=manchester,dc=example,dc=org" search
   by * break
-olcAccess: {25}
+olcAccess: {27}
  to dn.base=""
   by * read
-olcAccess: {26}
+olcAccess: {28}
  to *
   by self write
   by dn="cn=admin,dc=example,dc=org" write
