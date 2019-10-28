@@ -1,100 +1,86 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Connections
+|--------------------------------------------------------------------------
+|
+| Predefined LDAP connection settings for Laravel authentication.
+*/
+$ldap1 = [
+    'uri' => env('LDAP1_AUTH_URI', 'ldap://cruftman.local'),
+    'options' => []
+];
+
+/*
+|--------------------------------------------------------------------------
+| Bindings
+|--------------------------------------------------------------------------
+|
+| Predefined credentials used to bind to LDAP databases in order to perform
+| necessary operations like searching for user entries or authenticating
+| them.
+*/
+$bindAuthLondon = [
+    'dn' => env('LDAP_LONDON_USER_AUTH_BIND_DN'),
+    'password' => env('LDAP_LONDON_USER_AUTH_PASSWORD'),
+];
+
+$bindAuthManchester = [
+    'dn' => env('LDAP_MANCHESTER_USER_AUTH_BIND_DN'),
+    'password' => env('LDAP_MANCHESTER_USER_AUTH_PASSWORD'),
+];
+
+$bindListLondon = [
+    'dn' => env('LDAP_LONDON_USER_LIST_BIND_DN'),
+    'password' => env('LDAP_LONDON_USER_LIST_PASSWORD'),
+];
+
+$bindListManchester = [
+    'dn' => env('LDAP_MANCHESTER_USER_LIST_BIND_DN'),
+    'password' => env('LDAP_MANCHESTER_USER_LIST_PASSWORD'),
+];
+
+/*
+|--------------------------------------------------------------------------
+| Filters
+|--------------------------------------------------------------------------
+|
+| Predefined filters used when searching LDAP databases for users.
+*/
+$filterCruftmanUsers = '(&(accountstatus=enabled)(enabledservice=cruftman))';
+
+
+/*
+|--------------------------------------------------------------------------
+| Searches
+|--------------------------------------------------------------------------
+|
+| Predefined searches. A search is defined by one or more LDAP connections,
+| base_dn, filter and search options.
+*/
+$searchPeople = [
+    'connection' => $ldap1,
+    'base_dn' => 'ou=people,dc=example,dc=org',
+    'filter' => $filterCruftmanUsers,
+    'options' => ['scope' => 'one']
+];
+
+$searchLondonPeople = [
+    'connection' => $ldap1,
+    'base_dn' => 'ou=people,ou=london,dc=example,dc=org',
+    'filter' => $filterCruftmanUsers,
+    'options' => ['scope' => 'one']
+];
+
+$searchManchesterPeople = [
+    'connection' => $ldap1,
+    'base_dn' => 'ou=people,ou=manchester,dc=example,dc=org',
+    'filter' => $filterCruftmanUsers,
+    'options' => ['scope' => 'one']
+];
+
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Connections
-    |--------------------------------------------------------------------------
-    |
-    | Predefined LDAP connection settings for Laravel authentication. These
-    | connection parameters may be referenced from other pieces of this
-    | configuration array.
-    */
-    'connections' => [
-        'ldap1' => [
-            'uri' => env('LDAP1_AUTH_URI', 'ldap://cruftman.local'),
-            // 'options' => [],
-            // 'factory' => \Korowai\Lib\Ldap\Adapter\ExtLdap\AdapterFactory::class
-        ]
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Bindings
-    |--------------------------------------------------------------------------
-    |
-    | Predefined credentials used to bind to LDAP databases in order to perform
-    | necessary operations like searching for user entries or authenticating
-    | them. These binding parameters may be referenced from other pieces of this
-    | configuration array.
-    */
-    'bindings' => [
-        'user-auth@london' => [
-            'dn' => env('LDAP_LONDON_USER_AUTH_BIND_DN'),
-            'password' => env('LDAP_LONDON_USER_AUTH_PASSWORD'),
-        ],
-        'user-auth@manchester' => [
-            'dn' => env('LDAP_MANCHESTER_USER_AUTH_BIND_DN'),
-            'password' => env('LDAP_MANCHESTER_USER_AUTH_PASSWORD'),
-        ],
-        'user-list@london' => [
-            'dn' => env('LDAP_LONDON_USER_LIST_BIND_DN'),
-            'password' => env('LDAP_LONDON_USER_LIST_PASSWORD'),
-        ],
-        'user-list@manchester' => [
-            'dn' => env('LDAP_MANCHESTER_USER_LIST_BIND_DN'),
-            'password' => env('LDAP_MANCHESTER_USER_LIST_PASSWORD'),
-        ]
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Filters
-    |--------------------------------------------------------------------------
-    |
-    | Predefined filters used when searching LDAP databases for users. These
-    | filters may be referenced from other pieces of this configuration array.
-    */
-    'filters' => [
-        'cruftman-users' => '(&(objectclass=inetorgperson)'.
-                              '(objectclass=mailuser)'.
-                              '(accountstatus=enabled)'.
-                              '(enabledservice=cruftman))',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Searches
-    |--------------------------------------------------------------------------
-    |
-    | Predefined searches. A search is defined by one or more LDAP connections,
-    | base_dn, filter and search options. These predefined searches may be
-    | referenced from other parts of this config arrays.
-    */
-    'searches' => [
-        'people@top' => [
-            'connection' => 'ldap1',
-            'base_dn' => 'ou=people,dc=example,dc=org',
-            'filter' => 'cruftman-users',
-            'options' => ['scope' => 'one']
-        ],
-        'people@london' => [
-            'connection' => 'ldap1',
-            'base_dn' => 'ou=people,ou=london,dc=example,dc=org',
-            'filter' => 'cruftman-users',
-            'select' => 'uid=%username%',
-            'options' => ['scope' => 'one']
-        ],
-        'people@manchester' => [
-            'connection' => 'ldap1',
-            'base_dn' => 'ou=people,ou=manchester,dc=example,dc=org',
-            'filter' => 'cruftman-users',
-            'select' => 'uid=%username%',
-            'options' => ['scope' => 'one']
-        ]
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | ???
@@ -104,12 +90,12 @@ return [
     */
     'user-list' => [
         [
-            'bind' => 'user-list@london',
-            'search' => ['people@top', 'people@london'],
+            'bind' => $bindListLondon,
+            'search' => [$searchPeople, $searchLondonPeople],
         ],
         [
-            'bind' => 'user-list@manchester',
-            'search' => 'people@manchester',
+            'bind' => $bindListManchester,
+            'search' => $searchManchesterPeople,
         ]
     ],
 
@@ -122,13 +108,13 @@ return [
     */
     'user-find' => [
         [
-            'bind' => 'user-auth@london',
-            'search' => ['people@top', 'people@london'],
+            'bind' => $bindAuthLondon,
+            'search' => [$searchPeople, $searchLondonPeople],
             'select' => 'uid=${username}'
         ],
         [
-            'bind' => 'user-auth@manchester',
-            'search' => 'people@manchester',
+            'bind' => $bindAuthManchester,
+            'search' => $searchManchesterPeople,
             'select' => 'uid=${username}'
         ]
     ],
@@ -142,13 +128,13 @@ return [
     */
     'user-auth' => [
         [
-            'bind' => 'user-auth@london',
-            'search' => ['people@top', 'people@london'],
+            'bind' => $bindAuthLondon,
+            'search' => [$searchPeople, $searchLondonPeople],
             'select' => 'entryuuid=${objectguid}'
         ],
         [
-            'bind' => 'user-auth@manchester',
-            'search' => 'people@manchester',
+            'bind' => $bindAuthManchester,
+            'search' => $searchManchesterPeople,
             'select' => 'entryuuid=${objectguid}'
         ]
     ],

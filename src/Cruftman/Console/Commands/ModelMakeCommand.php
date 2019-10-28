@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Console;
+namespace Cruftman\Console\Commands;
 
 use Illuminate\Foundation\Console\ModelMakeCommand as IlluminateModelMakeCommand;
 

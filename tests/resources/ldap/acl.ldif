@@ -34,12 +34,12 @@ olcAccess: {6}
   by * break
 olcAccess: {7}
  to dn.regex="uid=[^,]+,ou=people(,ou=london)?,dc=example,dc=org"
-  attrs=entry,uid,entryuuid
+  attrs=entry,uid,cn,entryuuid
   by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=london,dc=example,dc=org" read
   by * break
 olcAccess: {8}
  to dn.regex="uid=[^,]+,ou=people(,ou=manchester)?,dc=example,dc=org"
-  attrs=entry,uid,entryuuid
+  attrs=entry,uid,cn,entryuuid
   by group/organizationalRole/roleOccupant="cn=bindUserList,ou=roles,ou=systems,ou=manchester,dc=example,dc=org" read
   by * break
 olcAccess: {9}

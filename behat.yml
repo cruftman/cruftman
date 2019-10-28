@@ -1,13 +1,13 @@
 # behat.yml
 default:
   autoload:
-    - "%paths.base%/tests/Cruftman/Behat"
+    - "%paths.base%/tests/Behat"
   suites:
     ldap:
       paths:
-        - "%paths.base%/tests/Cruftman/Behat"
+        - "%paths.base%/tests/Behat"
       contexts:
-        - "Cruftman\\Behat\\ExampleContext"
+        - "Tests\\Behat\\ExampleContext"
   extensions:
       Behat\MinkExtension:
 #        Must comment-out for BEHAT_PARAMS to be effective

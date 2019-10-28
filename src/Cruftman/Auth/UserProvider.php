@@ -63,7 +63,9 @@ class UserProvider extends EloquentUserProvider
     public function retrieveByCredentials(array $credentials)
     {
         dump(['retrieveByCredentials', $credentials]);
-        $user = parent::retrieveByCredentials($credentials);
+        if (($user = parent::retrieveByCredentials($credentials)) === null) {
+            $user = $this->addFromLdap($credentials);
+        }
         dump(['retrieveByCredentials -> ', $user]);
         return $user;
     }
@@ -79,6 +81,10 @@ class UserProvider extends EloquentUserProvider
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
         dump(['validateCredentials', $user, $credentials]);
+    }
+
+    protected function addFromLdap($credentials)
+    {
     }
 }
 

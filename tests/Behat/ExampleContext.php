@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Behat;
+namespace Tests\Behat;
 
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Behat\Context\Context;

@@ -4,7 +4,7 @@ namespace Cruftman\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-use Cruftman\Console\ModelMakeCommand;
+use Cruftman\Console\Commands\ModelMakeCommand;
 use Illuminate\Console\Application as Artisan;
 
 class ArtisanServiceProvider extends ServiceProvider

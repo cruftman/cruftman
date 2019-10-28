@@ -39,7 +39,7 @@ services:
     environment:
       - APACHE_DOCUMENT_ROOT=${CRUFT_CODE:-/code}/public
     ports:
-      - "${CRUFT_HTTP_PORT:-8000}:80"
+      - "${CRUFT_HTTP_PORT:-8003}:80"
     volumes:
       - ..:${CRUFT_CODE:-/code}
 

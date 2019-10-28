@@ -29,7 +29,6 @@ class AuthServiceProvider extends ServiceProvider
 
         //
         Auth::provider('cruft', function ($app, array $config) {
-            dump(['providerCreateCallback', $config]);
             return new UserProvider($app['hash'], $config['model']);
         });
     }

@@ -165,8 +165,8 @@ return [
         /*
          * Package Service Providers...
          */
-        //Adldap\Laravel\AdldapServiceProvider::class,
-        //Adldap\Laravel\AdldapAuthServiceProvider::class,
+//        Adldap\Laravel\AdldapServiceProvider::class,
+//        Adldap\Laravel\AdldapAuthServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -177,6 +177,7 @@ return [
         // Cruftman\Providers\BroadcastServiceProvider::class,
         Cruftman\Providers\EventServiceProvider::class,
         Cruftman\Providers\RouteServiceProvider::class,
+        Cruftman\Providers\LdapServiceProvider::class,
 
     ],
 
@@ -230,7 +231,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         // Aliases for package facades
-        'Adldap' => Adldap\Laravel\Facades\Adldap::class,
+//        'Adldap' => Adldap\Laravel\Facades\Adldap::class,
     ],
 
 ];

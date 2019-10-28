@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('person_id')->nullable();
 //            $table->string('name', 256)->nullable();
             $table->string('username', 256)->nullable(false);
-            $table->string('password', 256);
+            $table->string('password', 256)->nullable();
 //            $table->boolean('enabled')->default(true);
             $table->rememberToken();
             $table->timestamps();

@@ -19,7 +19,7 @@ namespace Cruftman\Http\Controllers;
 class LocationOccupantsController extends NestedModelController
 {
     protected $rootModelClass = \Cruftman\Models\Locations::class;
-    protected $relatedModelClass = \Cruftman\Models\Person::class
+    protected $relatedModelClass = \Cruftman\Models\Person::class;
     protected $relationName = 'occupants';
 }
 

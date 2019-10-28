@@ -41,11 +41,8 @@
         }
     },
     "autoload-dev": {
-        "classmap": [
-            "tests/"
-        ],
         "psr-4": {
-          "Cruftman\\": "tests/Cruftman/",
+          "Tests\\": "tests/",
           "Cruftman\\Docs\\Behat\\":  "docs/sphinx/Behat/"
         }
     },
