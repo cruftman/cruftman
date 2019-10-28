@@ -14,9 +14,6 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Traits;
 
 use Cruftman\Ldap\Service;
-use Cruftman\Ldap\SearchQueryTemplate;
-use Cruftman\Ldap\AuthSource;
-use Korowai\Lib\Ldap\LdapInterface;
 
 /**
  * @todo Write documentation.
@@ -48,39 +45,6 @@ trait HasLdapService
     public function getLdapService() : Service
     {
         return $this->ldapService;
-    }
-
-    /**
-     * Returns a named instance of LdapInterface.
-     *
-     * @param  string $name
-     * @return \Korowai\Lib\Ldap\LdapInterface
-     */
-    public function getLdapInstance(string $name) : LdapInterface
-    {
-        return $this->getLdapService()->getLdapInstance($name);
-    }
-
-    /**
-     * Returns a named instance of SearchQueryTemplate.
-     *
-     * @param  string $name
-     * @return \Cruftman\Ldap\SearchQueryTemplate
-     */
-    public function getSearchQuery(string $name) : SearchQueryTemplate
-    {
-        return $this->getLdapService()->getSearchQuery($name);
-    }
-
-    /**
-     * Returns a named instance of AuthSource.
-     *
-     * @param  string $name
-     * @return \Cruftman\Ldap\AuthSource
-     */
-    public function getAuthSource(string $name) : AuthSource
-    {
-        return $this->getLdapService()->getAuthSource($name);
     }
 }
 

@@ -43,21 +43,47 @@ trait HasTemplateOptions
     /**
      * Returns the $templateOptions.
      *
-     * @return array
+     * @return \Cruftman\Support\TemplateArray
      */
     public function getOptions() : TemplateArray
     {
         return $this->templateOptions;
     }
 
+    /**
+     * Get a single option (without substituting placeholders) using "dot" notation.
+     *
+     * @param  string $key
+     * @param  mixed $default
+     * @return mixed
+     */
+    public function getOption(string $key, $default = null)
+    {
+        return $this->getOptions()->get($key, $default);
+    }
+
+    /**
+     * Returns the options array with all placeholders substituted.
+     *
+     * @param  array $dict
+     * @return array
+     */
     public function substOptions(array $dict = [])
     {
         return $this->getOptions()->substitute($dict);
     }
 
+    /**
+     * Get an option using "dot" notation with all placeholders substituted.
+     *
+     * @param  string $key
+     * @param  array $dict
+     * @param  mixed $default
+     * @return mixed
+     */
     public function substOption(string $key, array $dict = [], $default = null)
     {
-        return $this->getOptions()->substitute($dict, $key, $default);
+        return $this->getOptions()->substItem($key, $dict, $default);
     }
 }
 

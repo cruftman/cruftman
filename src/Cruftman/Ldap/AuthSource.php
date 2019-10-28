@@ -65,7 +65,7 @@ class AuthSource
     public function search(array $credentials)
     {
         $options = $this->getOptions();
-        if (isset($options['search'])) {
+        if ($this->getOption('search') !== null) {
             $queries = $this->getSearchQueries($credentials);
             $entries = $this->executeSearchQueries($queries, $credentials);
         } else {
@@ -76,12 +76,12 @@ class AuthSource
 
     protected function getSearchQueries(array $credentials)
     {
-        $names = $this->getOptions()->substitute($credentials, 'search');
+        $names = $this->substOption('search', $credentials);
         if (is_string($names)) {
             $names = [$names];
         }
         return array_map(function ($name) {
-            return $this->getSearchQuery($name);
+            return $this->getLdapService()->getSearchQuery($name);
         }, $names);
     }
 

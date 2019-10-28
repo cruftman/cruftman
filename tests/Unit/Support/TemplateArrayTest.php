@@ -163,6 +163,23 @@ class TemplateArrayTest extends TestCase
     }
 
     /**
+     * Ensure that ``get()`` works.
+     *
+     * @return void
+     */
+    public function test__get()
+    {
+        $template = ['filter' => '(uid=${username})', 'options' => ['scope' => '${scope}']];
+
+        $tarr = new TemplateArray($template);
+        $this->assertSame('(uid=${username})', $tarr->get('filter'));
+        $this->assertSame(['scope' => '${scope}'], $tarr->get('options'));
+        $this->assertSame('${scope}', $tarr->get('options.scope'));
+        $this->assertNull($tarr->get('foo'));
+        $this->assertSame('DEFAULT', $tarr->get('foo.bar', 'DEFAULT'));
+    }
+
+    /**
      * Ensure that ``substitute()`` works with default settings.
      *
      * @return void
@@ -418,6 +435,120 @@ class TemplateArrayTest extends TestCase
         $this->assertSame('(uid=jsmith)', $tarr->substitute(['username' => 'jsmith'], 'filter'));
         $this->assertSame(['scope' => 'one'], $tarr->substitute(['scope' => 'one'], 'options'));
         $this->assertSame(['bottom' => ['FOO']], $tarr->substitute(['value' => 'FOO'], 'top'));
+        $this->assertSame(['FOO'], $tarr->substitute(['value' => 'FOO'], 'top.bottom'));
+        $this->assertSame('FOO', $tarr->substitute(['value' => 'FOO'], 'top.bottom.0'));
+    }
+
+    /*
+     * Ensure that ``substItem()`` works.
+     *
+     * @return void
+     */
+    public function test__substItem()
+    {
+        $template = ['filter' => '(uid=${username})', 'options' => ['scope' => '${scope}'], 'number' => 123];
+
+        $tarr = new TemplateArray($template);
+
+        $this->assertSame('(uid=jsmith)', $tarr->substItem('filter', ['username' => 'jsmith', 'scope' => 'one']));
+        $this->assertSame('(uid=jsmith)', $tarr->substItem('filter', ['username' => 'jsmith']));
+
+        $this->assertSame(['scope' => 'one'], $tarr->substItem('options', ['username' => 'jsmith', 'scope' => 'one']));
+        $this->assertSame(['scope' => 'one'], $tarr->substItem('options', ['scope' => 'one']));
+
+        $this->assertSame('one', $tarr->substitute(['username' => 'jsmith', 'scope' => 'one'], 'options.scope'));
+        $this->assertSame('one', $tarr->substitute(['scope' => 'one'], 'options.scope'));
+
+        $this->assertSame(123, $tarr->substitute([], 'number'));
+
+        $this->assertNull($tarr->substitute([], 'inexistent'));
+        $this->assertSame(123, $tarr->substitute([], 'inexistent', 123));
+    }
+
+    /*
+     * Ensure that ``substItem()`` throws TemplateArrayException.
+     *
+     * @return void
+     */
+    public function test__substItem__throwsTemplateArrayException01()
+    {
+        $template = ['filter' => '(uid=${username})', 'options' => ['scope' => '${scope}']];
+
+        $tarr = new TemplateArray($template);
+
+        $this->assertSame(['scope' => 'one'], $tarr->substItem('options', ['scope' => 'one']));
+        $this->assertSame('one', $tarr->substitute(['scope' => 'one'], 'options.scope'));
+
+        $this->expectException(TemplateArrayException::class);
+        $this->expectExceptionMessage('undefined value for ${username} placeholder');
+
+        $tarr->substItem('filter', ['scope' => 'one']);
+    }
+
+    /*
+     * Ensure that ``substItem()`` throws TemplateArrayException.
+     *
+     * @return void
+     */
+    public function test__substItem__throwsTemplateArrayException02()
+    {
+        $template = ['filter' => '(uid=${username})', 'options' => ['scope' => '${scope}']];
+
+        $tarr = new TemplateArray($template);
+
+        $this->assertSame('(uid=jsmith)', $tarr->substItem('filter', ['username' => 'jsmith']));
+
+        $this->expectException(TemplateArrayException::class);
+        $this->expectExceptionMessage('undefined value for ${scope} placeholder');
+
+        $tarr->substItem('options', ['username' => 'jsmith']);
+    }
+
+    /*
+     * Ensure that ``substItem()`` throws TemplateArrayException.
+     *
+     * @return void
+     */
+    public function test__substItem__throwsTemplateArrayException03()
+    {
+        $template = ['filter' => '(uid=${username})', 'options' => ['scope' => '${scope}']];
+
+        $tarr = new TemplateArray($template);
+
+        $this->expectException(TemplateArrayException::class);
+        $this->expectExceptionMessage('undefined value for ${scope} placeholder');
+
+        $tarr->substitute(['username' => 'jsmith'], 'options.scope');
+    }
+
+    /**
+     * Ensure that ``substItem()`` respects "recursive" flag.
+     *
+     * @return void
+     */
+    public function test__substItem__respectsRecursiveFlag()
+    {
+        $template = [
+            'filter' => '(uid=${username})',
+            'options' => ['scope' => '${scope}'],
+            'top' => ['bottom' => ['${value}']]
+        ];
+
+        $tarr = new TemplateArray($template);
+
+        $this->assertSame('(uid=jsmith)', $tarr->substItem('filter', ['username' => 'jsmith', 'scope' => 'one']));
+
+        $tarr->setRecursive(false);
+        $this->assertSame('(uid=jsmith)', $tarr->substItem('filter', ['username' => 'jsmith']));
+        $this->assertSame(['scope' => 'one'], $tarr->substItem('options', ['scope' => 'one']));
+        $this->assertSame(['bottom' => ['${value}']], $tarr->substItem('top', ['value' => 'FOO']));
+        $this->assertSame(['FOO'], $tarr->substitute(['value' => 'FOO'], 'top.bottom'));
+        $this->assertSame('FOO', $tarr->substitute(['value' => 'FOO'], 'top.bottom.0'));
+
+        $tarr->setRecursive();
+        $this->assertSame('(uid=jsmith)', $tarr->substItem('filter', ['username' => 'jsmith']));
+        $this->assertSame(['scope' => 'one'], $tarr->substItem('options', ['scope' => 'one']));
+        $this->assertSame(['bottom' => ['FOO']], $tarr->substItem('top', ['value' => 'FOO']));
         $this->assertSame(['FOO'], $tarr->substitute(['value' => 'FOO'], 'top.bottom'));
         $this->assertSame('FOO', $tarr->substitute(['value' => 'FOO'], 'top.bottom.0'));
     }

@@ -192,9 +192,23 @@ class TemplateArray extends \ArrayObject
     }
 
     /**
-     * Return the configuration array with all placeholders substituted.
+     * Get array item using "dot" notation.
+     *
+     * @param  string $key
+     * @param  mixed $default
+     * @return mixed
+     */
+    public function get(string $key, $default = null)
+    {
+        return Arr::get($this, $key, $default);
+    }
+
+    /**
+     * Get the configuration array or its item (using "dot" notation) with all placeholders substituted.
      *
      * @param  array $dict
+     * @param  string $key
+     * @param  mixed $default
      * @return mixed
      * @throws TemplateArrayException
      */
@@ -203,12 +217,12 @@ class TemplateArray extends \ArrayObject
         if ($key === null) {
             return $this->substInArray($this->getArrayCopy(), $dict);
         } else {
-            return $this->substInItem($key, $dict, $default);
+            return $this->substItem($key, $dict, $default);
         }
     }
 
     /**
-     * Get a substituted item value from configuration array using "dot" notation.
+     * Get substituted array item using "dot" notation.
      *
      * @param  string $key
      * @param  array $dict
@@ -216,9 +230,9 @@ class TemplateArray extends \ArrayObject
      * @return mixed
      * @throws TemplateArrayException
      */
-    protected function substInItem(string $key, array $dict = [], $default = null)
+    public function substItem(string $key, array $dict = [], $default = null)
     {
-        $item = Arr::get($this, $key, $default);
+        $item = $this->get($key, $default);
         if (is_array($item)) {
             $item = $this->substInArray($item, $dict);
         } elseif (is_string($item)) {
