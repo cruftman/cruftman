@@ -2,6 +2,12 @@ language: php
 php:
   - '7.2'
   - '7.3'
+services:
+  - mysql
+before_install:
+  - mysql -e "CREATE DATABASE cruftman;"
+  - mysql -e "CREATE USER cruftman IDENTIFIED BY 'cruftman';"
+  - mysql -e 'GRANT ALL ON cruftman.* TO cruftman;'
 install:
   - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --no-interaction
 script:
