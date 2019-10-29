@@ -74,7 +74,7 @@ class SearchQueryTemplate
 
         $ldap = $this->getLdapService()->getLdapInstance($instance);
 
-        $query = $ldap->createSearchQuery($base, $filter, $options)
+        $query = $ldap->createSearchQuery($base, $filter, $options);
         return new SearchQuery($query, $ldap);
     }
 
