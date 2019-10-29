@@ -20,10 +20,7 @@ use Cruftman\Support\TemplateArray;
  */
 trait HasTemplateOptions
 {
-    /**
-     * @var \Cruftman\Support\TemplateArray
-     */
-    protected $templateOptions = null;
+    use HasOptions;
 
     /**
      * Sets $templateOptions to the object.
@@ -31,35 +28,9 @@ trait HasTemplateOptions
      * @param  \Cruftman\Support\TemplateArray $templateOptions
      * @return $this
      */
-    public function setOptions(array $options)
+    protected function wrapOptions(array $options)
     {
-        if (method_exists($this, 'validateOptions')) {
-            $options = $this->validateOptions($options);
-        }
-        $this->templateOptions = new TemplateArray($options);
-        return $this;
-    }
-
-    /**
-     * Returns the $templateOptions.
-     *
-     * @return \Cruftman\Support\TemplateArray
-     */
-    public function getOptions() : TemplateArray
-    {
-        return $this->templateOptions;
-    }
-
-    /**
-     * Get a single option (without substituting placeholders) using "dot" notation.
-     *
-     * @param  string $key
-     * @param  mixed $default
-     * @return mixed
-     */
-    public function getOption(string $key, $default = null)
-    {
-        return $this->getOptions()->get($key, $default);
+        return new TemplateArray($options);
     }
 
     /**
