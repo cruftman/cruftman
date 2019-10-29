@@ -16,12 +16,28 @@ namespace Cruftman\Support\Traits;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @todo Write documentation.
+ * Adds options validation functionality to an object.
+ *
+ * Works with <a href="HasOptions.html">HasOptions</a> trait. Once added to
+ * a class, the validation is triggered automatically from ``HasOptions`` each
+ * time the <a href="HasOptions.html#method_setOptions">HasOptions::setOptions()</a>
+ * is called. The receiving class must implement
+ * <a href="#method_configureOptionsResolver">configureOptionsResolver()</a> method.
  */
 trait ValidatesOptions
 {
+    /**
+     * An array of options resolvers, one item per class in a hierarchy.
+     *
+     * @var array
+     */
     protected static $optionsResolversByClass = [];
 
+    /**
+     * Returns options resolver for the current class.
+     *
+     * @return OptionsResolver
+     */
     protected function getOptionsResolver() : OptionsResolver
     {
         if (!isset(self::$optionsResolversByClass[static::class])) {
@@ -30,6 +46,11 @@ trait ValidatesOptions
         return self::$optionsResolversByClass[static::class];
     }
 
+    /**
+     * Creates new options resolver.
+     *
+     * @return OptionsResolver
+     */
     protected function createOptionsResolver() : OptionsResolver
     {
         $resolver = new OptionsResolver();
@@ -37,13 +58,20 @@ trait ValidatesOptions
         return $resolver;
     }
 
+    /**
+     * Configure options resolver to validate and resolve options (the
+     * receiving class must implement this method).
+     *
+     * @param  OptionsResolver $resolver
+     */
     abstract protected function configureOptionsResolver(OptionsResolver $resolver);
 
     /**
-     * Validates config template.
+     * Validates and resolves options using the options resolver
+     * (see <a href="#method_getOptionsResolver">getOptionsResolver()</a>).
      *
      * @param  \Cruftman\Support\TemplateArray $options
-     * @throws \Exception
+     * @return array the resolved options
      */
     protected function validateOptions(array $options)
     {

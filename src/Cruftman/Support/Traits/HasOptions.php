@@ -16,20 +16,37 @@ namespace Cruftman\Support\Traits;
 use Illuminate\Support\Arr;
 
 /**
- * @todo Write documentation.
+ * Adds protected attribute named ``$options`` and few function to access it.
+ *
+ * Also works with <a href="ValidatesOptions.html">ValidatesOptions</a> trait.
  */
 trait HasOptions
 {
     /**
-     * @var \Cruftman\Support\TemplateArray
+     * The options.
+     *
+     * @var mixed
      */
     protected $options = null;
 
     /**
-     * Sets $options to the object.
+     * Sets ``$options`` to ``$this->options``.
      *
-     * @param  \Cruftman\Support\TemplateArray $options
-     * @return $this
+     * If a method named ``validateOptions()`` exists, then the following
+     * transformation is performed:
+     *
+     *      $options = $this->valdateOptions($options);
+     *
+     * Similarly, if a method named ``wrapOptions()`` exists, then it gets
+     * called as follows:
+     *
+     *      $options = $this->wrapOptions($options);
+     *
+     * The final result of these two transformations (in the order mentioned)
+     * is assigned to ``$this->options``.
+     *
+     * @param  array $options
+     * @return object $this
      */
     public function setOptions(array $options)
     {
@@ -44,7 +61,9 @@ trait HasOptions
     }
 
     /**
-     * Returns the $options.
+     * Returns ``$this->options``.
+     *
+     * @return mixed
      */
     public function getOptions()
     {

@@ -16,7 +16,8 @@ namespace Cruftman\Support\Traits;
 use Cruftman\Support\TemplateArray;
 
 /**
- * @todo Write documentation.
+ * Similar to <a href="HasOptions.html">HasOptions</a> trait, but wraps
+ * options with \Cruftman\Support\TemplateArray object.
  */
 trait HasTemplateOptions
 {
