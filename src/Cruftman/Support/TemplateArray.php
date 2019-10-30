@@ -233,12 +233,25 @@ class TemplateArray extends \ArrayObject
     public function substItem(string $key, array $dict = [], $default = null)
     {
         $item = $this->get($key, $default);
-        if (is_array($item)) {
-            $item = $this->substInArray($item, $dict);
-        } elseif (is_string($item)) {
-            $item = $this->substInString($item, $dict);
+        return $this->substValue($item, $dict);
+    }
+
+    /**
+     * Substitute placeholders in a value (string, array).
+     *
+     * @param  mixed $value
+     * @param  array $dict
+     * @return mixed
+     * @throws TemplateArrayException
+     */
+    public function substValue($value, array $dict = [])
+    {
+        if (is_array($value)) {
+            $value = $this->substInArray($value, $dict);
+        } elseif (is_string($value)) {
+            $value = $this->substInString($value, $dict);
         }
-        return $item;
+        return $value;
     }
 
     protected function substInString(string $value, array $dict) : string

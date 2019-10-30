@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Cruftman\Ldap;
 
 use Korowai\Lib\Ldap\LdapInterface;
-//use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
+use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Adapter\ResultInterface;
 
 use Cruftman\Support\Traits\HasTemplateOptions;
@@ -34,8 +34,6 @@ class SearchQueryTemplate
     use HasTemplateOptions,
         ValidatesOptions,
         HasLdapService;
-
-    protected static $templateOptionsResolver = null;
 
     /**
      * Initializes the service object.
@@ -63,9 +61,9 @@ class SearchQueryTemplate
      * Creates and returns the actual search query.
      *
      * @param  array $arguments
-     * @return \Korowai\Ldap\SearchQuery
+     * @return \Korowai\Lib\Ldap\Adapter\SearchQueryInterface
      */
-    public function createSearchQuery(array $arguments = []) : SearchQuery
+    public function createSearchQuery(array $arguments = []) : SearchQueryInterface
     {
         $base = $this->substOption('base', $arguments);
         $filter = $this->substOption('filter', $arguments);
@@ -74,8 +72,7 @@ class SearchQueryTemplate
 
         $ldap = $this->getLdapService()->getLdapInstance($instance);
 
-        $query = $ldap->createSearchQuery($base, $filter, $options);
-        return new SearchQuery($query, $ldap);
+        return $ldap->createSearchQuery($base, $filter, $options);
     }
 
     /**

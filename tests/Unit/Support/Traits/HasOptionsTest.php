@@ -5,6 +5,7 @@ namespace Tests\Unit\Support\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Support\Traits\HasOptions;
+use Cruftman\Support\Exceptions\OptionNotFoundException;
 
 class HasOptionsTest extends TestCase
 {
@@ -53,5 +54,33 @@ class HasOptionsTest extends TestCase
 
         $this->assertSame($object, $object->setOptions(['foo' => 'FOO']));
         $this->assertSame([['foo' => 'FOO']], $object->getOptions());
+    }
+
+    public function test__HasOptions__getOptionOrFail()
+    {
+        $object = new class {
+            use HasOptions;
+        };
+
+        $object->setOptions(['foo' => 'FOO', 'bar' => ['geez' => 'GEEZ'], 'null' => null]);
+
+        $this->assertSame('FOO', $object->getOptionOrFail('foo'));
+        $this->assertSame(['geez' => 'GEEZ'], $object->getOptionOrFail('bar'));
+        $this->assertSame('GEEZ', $object->getOptionOrFail('bar.geez'));
+        $this->assertNull($object->getOptionOrFail('null'));
+    }
+
+    public function test__HasOptions__getOptionOrFail__throwsOptionNotFoundException()
+    {
+        $object = new class {
+            use HasOptions;
+        };
+
+        $object->setOptions(['foo' => 'FOO']);
+
+        $this->expectException(OptionNotFoundException::class);
+        $this->expectExceptionMessage('option "bar" not found');
+
+        $object->getOptionOrFail('bar');
     }
 }

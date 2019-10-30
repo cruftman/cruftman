@@ -57,6 +57,19 @@ trait HasTemplateOptions
     {
         return $this->getOptions()->substItem($key, $dict, $default);
     }
+
+    /**
+     * Get an option using "dot" notation with all placeholders substituted.
+     *
+     * @param  string $key
+     * @param  array $dict
+     * @return mixed
+     * @throws \Cruftman\Support\Exceptions\UndefinedOptionException
+     */
+    public function substOptionOrFail(string $key, array $dict = [])
+    {
+        return $this->getOptions()->substValue($this->getOptionOrFail($key), $dict);
+    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

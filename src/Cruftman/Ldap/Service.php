@@ -17,16 +17,28 @@ use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Ldap;
 
 use Illuminate\Support\Arr;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+use Cruftman\Support\Traits\HasOptions;
+use Cruftman\Support\Traits\ValidatesOptions;
 
 /**
  * @todo Write documentation
  */
 class Service
 {
+    use HasOptions,
+        ValidatesOptions;
+
     /**
      * @var array
      */
-    protected $config;
+    protected $connections = [];
+
+    /**
+     * @var array
+     */
+    protected $bindings = [];
 
     /**
      * @var array
@@ -46,48 +58,71 @@ class Service
     /**
      * Initializes the service object.
      *
-     * @param array $config
+     * @param array $confi$valueg
      */
-    public function __construct(array $config = [])
+    public function __construct(array $options = [])
     {
-        $this->config = $config;
-        $this->instances = [];
+        $this->setOptions($options);
     }
 
     /**
-     * Returns the whole $config.
+     * Ensure that array keys are integers or a strings without ``'.'``.
+     *
+     * @param  array $array
+     * @return bool
+     */
+    protected function hasValidKeys(array $array)
+    {
+        foreach ($array as $key => $value) {
+            if ((!is_string($key) && !is_int($key)) || (is_string($key) && strpos($key, '.') !== false)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureOptionsResolver(OptionsResolver $resolver)
+    {
+        $options = [
+            'connections',
+            'bindings',
+            'instances',
+            'searches',
+            'auth_sources'
+        ];
+
+        $hasValidKeys = function ($array) {
+            return $this->hasValidKeys($array);
+        };
+
+        $resolver->setDefined($options);
+        foreach ($options as $option) {
+            $resolver->setAllowedTypes($option, 'array[]');
+            $resolver->setAllowedValues($option, $hasValidKeys);
+        }
+    }
+
+    /**
+     * Returns a list of available Ldap connection templates.
      *
      * @return array
      */
-    public function getConfig() : array
+    public function getConnectionNames() : array
     {
-        return $this->config;
+        return $this->getEntityNames($this->getOption('connections', []), $this->connections);
     }
 
     /**
-     * Get an item from configuration array using "dot" notation.
+     * Returns a list of available Ldap binding templates.
      *
-     * @param  string $key
-     * @param  $default
+     * @return array
      */
-    public function getConfigItem(string $key, $default = null)
+    public function getBindingNames() : array
     {
-        return Arr::get($this->getConfig(), $key, $default);
-    }
-
-    /**
-     * Get an item from configuration array using "dot" notation.
-     *
-     * @param  string $key
-     * @param  $default
-     */
-    public function getConfigItemOrFail(string $key)
-    {
-        if (($item = $this->getConfigItem($key)) === null) {
-            // FIXME: specialized exception?
-            throw new \Exception('configuration for "ldap.'.$key.'" does not exist');
-        }
-        return $item;
+        return $this->getEntityNames($this->getOption('bindings', []), $this->bindings);
     }
 
     /**
@@ -100,7 +135,7 @@ class Service
      */
     public function getLdapInstanceNames() : array
     {
-        return $this->getEntityNames($this->getConfigItem('instances', []), $this->instances);
+        return $this->getEntityNames($this->getOption('instances', []), $this->instances);
     }
 
     /**
@@ -110,7 +145,7 @@ class Service
      */
     public function getSearchQueryNames() : array
     {
-        return $this->getEntityNames($this->getConfigItem('searches', []), $this->queries);
+        return $this->getEntityNames($this->getOption('searches', []), $this->queries);
     }
 
     /**
@@ -120,7 +155,7 @@ class Service
      */
     public function getAuthSourceNames() : array
     {
-        return $this->getEntityNames($this->getConfigItem('auth.sources', []), $this->authSources);
+        return $this->getEntityNames($this->getOption('auth_sources', []), $this->authSources);
     }
 
     /**
@@ -136,17 +171,47 @@ class Service
     }
 
     /**
+     * Returns preconfigured instance of ConnectionTemplate.
+     *
+     * @param string $name
+     *
+     * @return ConnectionTemplate
+     */
+    public function getConnection(string $name) : ConnectionTemplate
+    {
+        if (($this->connections[$name] ?? null) === null) {
+            $this->connections[$name] = $this->createConnection($name);
+        }
+        return $this->connections[$name];
+    }
+
+    /**
+     * Returns preconfigured instance of BindingTemplate.
+     *
+     * @param string $name
+     *
+     * @return BindingTemplate
+     */
+    public function getBinding(string $name) : BindingTemplate
+    {
+        if (($this->bindings[$name] ?? null) === null) {
+            $this->bindings[$name] = $this->createBinding($name);
+        }
+        return $this->bindings[$name];
+    }
+
+    /**
      * Returns preconfigured instance of LdapInterface.
      *
-     * @param string $name Instance name - one of the keys.
+     * @param  string $name
+     * @param  array $arguments
      *
      * @return \Korowai\Lib\Ldap\LdapInterface
-     * @throws \OutOfBoundsException
      */
-    public function getLdapInstance(string $name) : LdapInterface
+    public function getLdapInstance(string $name, array $arguments = []) : LdapInterface
     {
         if (($this->instances[$name] ?? null) === null) {
-            $this->instances[$name] = $this->createLdapInstance($name);
+            $this->instances[$name] = $this->createLdapInstance($name, $arguments);
         }
         return $this->instances[$name];
     }
@@ -156,7 +221,6 @@ class Service
      *
      * @param  string $name
      * @return SearchQueryTemplate
-     * @throws \OutOfBoundsException
      */
     public function getSearchQuery(string $name) : SearchQueryTemplate
     {
@@ -171,7 +235,6 @@ class Service
      *
      * @param  string $name
      * @return SearchQueryTemplate
-     * @throws \OutOfBoundsException
      */
     public function getAuthSource(string $name) : AuthSource
     {
@@ -182,113 +245,73 @@ class Service
     }
 
     /**
-     * Creates and returns an instance of LdapInterface
+     * Creates and returns an instance of ConnectionTemplate
      *
      * @param  string $name
-     * @return \Korowai\Lib\Ldap\LdapInterface
-     * @throws \OutOfBoundsException
+     * @return ConnectionTemplate
      */
-    protected function createLdapInstance(string $name) : LdapInterface
+    protected function createConnection(string $name)
     {
-        $instancePath = 'instances.'.$name;
-        $instanceConfig = $this->getConfigItemOrFail($instancePath);
+        $options = $this->getOptionOrFail('connections.'.$name);
+        return new ConnectionTemplate($this, $options);
+    }
 
-        $connectionName = $this->getConfigItemOrFail($instancePath.'.connection');
-        $connectionPath = 'connections.'.$connectionName;
-        $connectionConfig = $this->getConfigItemOrFail($connectionPath);
+    /**
+     * Creates and returns an instance of BindingTemplate
+     *
+     * @param  string $name
+     * @return BindingTemplate
+     */
+    protected function createBinding(string $name)
+    {
+        $options = $this->getOptionOrFail('bindings.'.$name);
+        return new BindingTemplate($this, $options);
+    }
 
-        $ldap = Ldap::createWithConfig($connectionConfig);
+    /**
+     * Creates and returns an instance of LdapInterface.
+     *
+     * @param  string $name
+     * @param  @array $arguments
+     * @return \Korowai\Lib\Ldap\LdapInterface
+     */
+    protected function createLdapInstance(string $name, array $arguments = []) : LdapInterface
+    {
+        $connectionName = $this->getOptionOrFail('instances.'.$name.'.connection');
+        $connection = $this->getConnection($connectionName);
 
-        if (($bindingName = $this->getConfigItem($instancePath.'.bind')) !== null) {
-            $bindingPath = 'bindings.'.$bindingName;
-            $bindDn = $this->getConfigItemOrFail($bindingPath.'.0');
-            $bindPw = $this->getConfigItemOrFail($bindingPath.'.1');
-            $ldap->bind($bindDn, $bindPw);
+        $ldap = $connection->createLdapInstance();
+
+        if (($bindingName = $this->getOption('instances.'.$name.'.bind')) !== null) {
+            $binding = $this->getBinding($bindingName);
+            $binding->bindLdapInstance($ldap, $arguments);
         }
         return $ldap;
     }
 
+    /**
+     * Creates and returns an instance of SearchQueryTemplate.
+     *
+     * @param  @array $arguments
+     * @return SearchQueryTemplate
+     */
     protected function createSearchQuery(string $name) : SearchQueryTemplate
     {
-        $path = 'searches.'.$name;
-        $config = $this->getConfigItemOrFail($path);
-        return new SearchQueryTemplate($this, $config);
+        $options = $this->getOptionOrFail('searches.'.$name);
+        return new SearchQueryTemplate($this, $options);
     }
 
+    /**
+     * Creates and returns an instance of AuthSource.
+     *
+     * @param  @array $arguments
+     * @return SearchQueryTemplate
+     */
     protected function createAuthSource(string $name) : AuthSource
     {
-        $path = 'auth.sources.'.$name;
-        $config = $this->getConfigItemOrFail($path);
-        return new AuthSource($this, $config);
+        $options = $this->getOptionOrFail('auth_sources.'.$name);
+        return new AuthSource($this, $options);
     }
-
-//    /**
-//     * Returns a configuration array for named instance.
-//     *
-//     * @param  string $name
-//     * @return array
-//     * @throws \OutOfBoundsException
-//     */
-//    protected function getInstanceConfig(string $name) : array
-//    {
-//        $instances = $this->getConfigItem('instances', []);
-//        if (!array_key_exists($name, $instances)) {
-//            // FIXME: specialized exception?
-//            throw new \OutOfBoundsException('undefined LDAP instance: "'.$name.'"');
-//        }
-//        return $instances[$name];
-//    }
-//
-//    /**
-//     * Returns a configuration array for named connection.
-//     *
-//     * @param  string $name
-//     * @return array
-//     * @throws \OutOfBoundsException
-//     */
-//    protected function getConnectionConfig(string $name) : array
-//    {
-//        $connections = $this->getConfigItem('connections', []);
-//        if (!array_key_exists($name, $connections)) {
-//            // FIXME: specialized exception?
-//            throw new \OutOfBoundsException('undefined LDAP connection: "'.$name.'"');
-//        }
-//        return $connections[$name];
-//    }
-//
-//    /**
-//     * Returns a configuration array for named connection.
-//     *
-//     * @param  string $name
-//     * @return array
-//     * @throws \OutOfBoundsException
-//     */
-//    protected function getBindingConfig(string $name) : array
-//    {
-//        $bindings = $this->getConfigItem('bindings', []);
-//        if (!array_key_exists($name, $bindings)) {
-//            // FIXME: specialized exception?
-//            throw new \OutOfBoundsException('undefined LDAP binding: "'.$name.'"');
-//        }
-//        return $bindings[$name];
-//    }
-//
-//    /**
-//     * Returns a configuration array for named connection.
-//     *
-//     * @param  string $name
-//     * @return array
-//     * @throws \OutOfBoundsException
-//     */
-//    protected function getSearchConfig(string $name) : array
-//    {
-//        $bindings = $this->getConfigItem('searches', []);
-//        if (!array_key_exists($name, $bindings)) {
-//            // FIXME: specialized exception?
-//            throw new \OutOfBoundsException('undefined LDAP search: "'.$name.'"');
-//        }
-//        return $bindings[$name];
-//    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

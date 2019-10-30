@@ -22,7 +22,7 @@ return [
     'connections' => [
         'default' => [
             'uri' => env('LDAP_DEFAULT_URI', 'ldap://cruftman.local')
-        ]
+        ],
     ],
 
     /*
@@ -50,6 +50,12 @@ return [
         'manchester-user-authenticator' => [env('LDAP_2_BIND_DN'), env('LDAP_2_PASSWORD')],
         'london-user-finder'            => [env('LDAP_3_BIND_DN'), env('LDAP_3_PASSWORD')],
         'manchester-user-finder'        => [env('LDAP_4_BIND_DN'), env('LDAP_4_PASSWORD')],
+
+        // Template bindings used by auth_sources.
+        'global-person'     => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
+        'london-person'     => ['uid=${username},ou=people,ou=london,dc=example,dc=org', '${password}'],
+        'manchester-person' => ['uid=${username},ou=people,ou=manchester,dc=example,dc=org', '${password}'],
+        'entry'             => ['${dn}', '${password}']
     ],
 
     /*
@@ -132,87 +138,85 @@ return [
         'london-users@default' => [
             'instance' => 'london-user-finder@default',
             'base' => 'ou=people,ou=london,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
-            'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'manchester-users@default' => [
-            'instance' => 'manchester-user-finder@default',
-            'base' => 'ou=people,ou=manchester,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
-            'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+            'instance'  => 'manchester-user-finder@default',
+            'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         // locate single user using ldap account for searching
         'global-user@default' => [
-            'instance' => 'london-user-finder@default',
-            'base' => 'ou=people,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+            'instance'  => 'london-user-finder@default',
+            'base'      => 'ou=people,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'london-user@default' => [
-            'instance' => 'london-user-finder@default',
-            'base' => 'ou=people,ou=london,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+            'instance'  => 'london-user-finder@default',
+            'base'      => 'ou=people,ou=london,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'manchester-user@default' => [
-            'instance' => 'manchester-user-finder@default',
-            'base' => 'ou=people,ou=manchester,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+            'instance'  => 'manchester-user-finder@default',
+            'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         // locate single user using ldap account for authentication
         'global-auth@default' => [
-            'instance' => 'london-user-authenticator@default',
-            'base' => 'ou=people,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options' => ['scope' => 'one', 'attributes' => []],
+            'instance'  => 'london-user-authenticator@default',
+            'base'      => 'ou=people,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
+            'options'   => ['scope' => 'one', 'attributes' => []],
         ],
         'london-auth@default' => [
-            'instance' => 'london-user-authenticator@default',
-            'base' => 'ou=people,ou=london,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options' => ['scope' => 'one', 'attributes' => []],
+            'instance'  => 'london-user-authenticator@default',
+            'base'      => 'ou=people,ou=london,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
+            'options'   => ['scope' => 'one', 'attributes' => []],
         ],
         'manchester-auth@default' => [
-            'instance' => 'manchester-user-authenticator@default',
-            'base' => 'ou=people,ou=manchester,dc=example,dc=org',
-            'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options' => ['scope' => 'one', 'attributes' => []],
+            'instance'  => 'manchester-user-authenticator@default',
+            'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
+            'options'   => ['scope' => 'one', 'attributes' => []],
         ],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Authentication
+    | Authentication sources
     |--------------------------------------------------------------------------
     |
-    | This array organizes whole LDAP authentication procedure.
-    |
-    |
-    |
-    |
-    |
-    |
     */
-    'auth' => [
-        'sources' => [
-            'default' => [
-                'search' => [
-                    'global-auth@default',
-                    'london-auth@default',
-                    'manchester-auth@default'
-                ],
-                'notfound' => 'stop',
-                'unavailable' => 'stop',
-                'attempt' => [
-                    'bind' => ['${dn}', '${password}']
-                ]
+    'auth_sources' => [
+        'default' => [
+            'sequence' => [
+
+                //['connection' => 'default', 'bind' => 'global-person'],
+                /* ['search' => 'global-auth@default', 'connection' => 'default', 'bind' => 'entry'], */
+                ['search' => 'london-auth@default', 'connection' => 'default', 'bind' => 'entry'],
+                ['search' => 'manchester-auth@default', 'connection' => 'default', 'bind' => 'entry']
             ],
         ],
-        'order' => [
-            'default'
-        ]
-    ]
+    ],
+
+
+//    /*
+//    |--------------------------------------------------------------------------
+//    | Authentication schema
+//    |--------------------------------------------------------------------------
+//    |
+//    */
+//    'auth' => [
+//        'sources' => [
+//            ['default', /* ... fallback sources ... */]
+//        ]
+//    ]
 //
 //    /*
 //    |--------------------------------------------------------------------------

@@ -15,6 +15,8 @@ namespace Cruftman\Support\Traits;
 
 use Illuminate\Support\Arr;
 
+use Cruftman\Support\Exceptions\OptionNotFoundException;
+
 /**
  * Adds protected attribute named ``$options`` and few function to access it.
  *
@@ -80,6 +82,23 @@ trait HasOptions
     public function getOption(string $key, $default = null)
     {
         return Arr::get($this->getOptions(), $key, $default);
+    }
+
+    /**
+     * Get an option using "dot" notation.
+     *
+     * @param  string $key
+     * @return mixed
+     * @throws \Cruftman\Support\Exceptions\UndefinedOptionException
+     */
+    public function getOptionOrFail(string $key)
+    {
+        $notfound = new class {};
+        $option = $this->getOption($key, $notfound);
+        if ($option === $notfound) {
+            throw new OptionNotFoundException('option "'.$key.'" not found');
+        }
+        return $option;
     }
 }
 
