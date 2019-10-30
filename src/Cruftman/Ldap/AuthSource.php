@@ -36,6 +36,11 @@ class AuthSource
         HasLdapService;
 
     /**
+     * @var AuthRequestTemplate[]
+     */
+    protected $requests = [];
+
+    /**
      * Initializes the service object.
      *
      * @param Service $ldap ldap service
@@ -45,31 +50,71 @@ class AuthSource
     {
         $this->setLdapService($ldapService);
         $this->setOptions($options);
+        $this->initRequests($options['requests']);
     }
 
-    protected function isValidSequence(array $array)
+    protected function initRequests($requestsOptions)
     {
-        foreach ($array as $step) {
-            if (!is_string($step['connection'] ?? null) || !is_string($step['bind'] ?? null)) {
-                return false;
-            }
-            $search = $step['search'] ?? null;
-            if (!is_string($search) && !is_null($search)) {
-                return false;
-            }
-        }
-        return true;
+        $this->requests = $this->createRequests($requestsOptions);
     }
 
+    protected function createRequests(array $requestsOptions)
+    {
+        $service = $this->getLdapService();
+        $requests = $requestsOptions;
+        array_walk($requests, function (&$request, $key) use ($service) {
+            $request = new AuthRequestTemplate($service, $request);
+        });
+        return $requests;
+    }
+
+    /**
+     * Get the array of auth request templates.
+     *
+     * @return array
+     */
+    public function getRequests() : array
+    {
+        return $this->requests;
+    }
+
+//    /**
+//     * Check if ``$array`` contains valid definition or authentication step.
+//     *
+//     * @param  array $array
+//     * @return bool
+//     */
+//    protected function isValidStep(array $array)
+//    {
+//        return is_string($array['connection'] ?? null) &&
+//               is_string($array['bind'] ?? null) &&
+//               is_string($array['search'] ?? '');
+//
+//    }
+//
+//    /**
+//     * Check if $array contains valid definition or authentication sequence.
+//     *
+//     * @param  array $array
+//     * @return bool
+//     */
+//    protected function isValidSequence(array $array)
+//    {
+//        return count(array_filter($array, function ($step) {
+//            return !$this->isValidStep($step);
+//        }) === 0;
+//    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
-        $resolver->setRequired(['sequence'])
-                 ->setAllowedTypes('sequence', 'array[]')
-                 ->setAllowedValues('sequence', function ($array) {
-                     return $this->isValidSequence($array);
-                 });
+        $resolver->setRequired(['requests'])
+                 ->setAllowedTypes('requests', 'array[]');
     }
 
+    /*
     public function attempt(array $credentials)
     {
         $result = [];
@@ -131,7 +176,7 @@ class AuthSource
             );
         }
         return $result;
-    }
+    } */
 
     /*
     public function search(array $credentials)

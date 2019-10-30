@@ -287,17 +287,14 @@ class TemplateArray extends \ArrayObject
                 return function ($matches) use ($dict) {
                     return $this->getReplacementOrFail($dict, $matches[1]);
                 };
-                break;
             case self::UNDEF_SKIP:
                 return function ($matches) use ($dict) {
                     return $this->getReplacement($dict, $matches[1], $matches[0]);
                 };
-                break;
             default:
                 return function ($matches) use ($dict) {
                     return $this->getReplacement($dict, $matches[1]);
                 };
-                break;
         }
     }
 

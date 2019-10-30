@@ -68,7 +68,13 @@ trait HasTemplateOptions
      */
     public function substOptionOrFail(string $key, array $dict = [])
     {
-        return $this->getOptions()->substValue($this->getOptionOrFail($key), $dict);
+        $notfound = new class() {
+        };
+        $option = $this->substOption($key, $dict, $notfound);
+        if ($option === $notfound) {
+            throw new OptionNotFoundException('option "'.$key.'" not found');
+        }
+        return $option;
     }
 }
 

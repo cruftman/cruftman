@@ -31,8 +31,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Bind parameters for predefined LDAP accounts. Define as many bindings as
-    | you need. These named credentials may be later referenced from within
-    | 'instances' array.
+    | you need. These named credentials may be later referenced from other
+    | parts of the ldap config. Template bindings are supported as well.
     |
     | Each binding is a two-element array, with bind DN at offset 0 and
     | password at offset 1.
@@ -51,7 +51,7 @@ return [
         'london-user-finder'            => [env('LDAP_3_BIND_DN'), env('LDAP_3_PASSWORD')],
         'manchester-user-finder'        => [env('LDAP_4_BIND_DN'), env('LDAP_4_PASSWORD')],
 
-        // Template bindings used by auth_sources.
+        // Template bindings
         'global-person'     => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
         'london-person'     => ['uid=${username},ou=people,ou=london,dc=example,dc=org', '${password}'],
         'manchester-person' => ['uid=${username},ou=people,ou=manchester,dc=example,dc=org', '${password}'],
@@ -195,9 +195,9 @@ return [
     */
     'auth_sources' => [
         'default' => [
-            'sequence' => [
+            'requests' => [
 
-                //['connection' => 'default', 'bind' => 'global-person'],
+                ['connection' => 'default', 'bind' => 'global-person'],
                 /* ['search' => 'global-auth@default', 'connection' => 'default', 'bind' => 'entry'], */
                 ['search' => 'london-auth@default', 'connection' => 'default', 'bind' => 'entry'],
                 ['search' => 'manchester-auth@default', 'connection' => 'default', 'bind' => 'entry']

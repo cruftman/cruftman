@@ -93,7 +93,8 @@ trait HasOptions
      */
     public function getOptionOrFail(string $key)
     {
-        $notfound = new class {};
+        $notfound = new class {
+        };
         $option = $this->getOption($key, $notfound);
         if ($option === $notfound) {
             throw new OptionNotFoundException('option "'.$key.'" not found');
