@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Config/TemplateArray.php
+ * @file src/Cruftman/Support/TemplateArray.php
  *
  * This file is part of the Cruftman package
  *

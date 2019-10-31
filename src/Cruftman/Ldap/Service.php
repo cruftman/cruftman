@@ -13,17 +13,24 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap;
 
-use Korowai\Lib\Ldap\LdapInterface;
-use Korowai\Lib\Ldap\Ldap;
-
+use Cruftman\Support\Traits\HasOptions;
+use Cruftman\Support\Traits\ValidatesOptions;
+use Cruftman\Ldap\Preset\AuthRequest;
+use Cruftman\Ldap\Preset\AuthSource;
+use Cruftman\Ldap\Preset\Binding;
+use Cruftman\Ldap\Preset\Connection;
+use Cruftman\Ldap\Preset\Ldap;
+use Cruftman\Ldap\Preset\SearchQuery;
 use Illuminate\Support\Arr;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Cruftman\Support\Traits\HasOptions;
-use Cruftman\Support\Traits\ValidatesOptions;
-
 /**
- * @todo Write documentation
+ * Cruftman LDAP service.
+ *
+ * The main purpose of Service object is to maintain object we call Presets.
+ * A Preset represents certain part of the "ldap" config. For example,
+ * ``config('ldap.connections.xyz')`` is a part of ldap config and provides
+ * configuration parameters for ldap connections.
  */
 class Service
 {
@@ -33,27 +40,13 @@ class Service
     /**
      * @var array
      */
-    protected $connections = [];
-
-    /**
-     * @var array
-     */
-    protected $bindings = [];
-
-    /**
-     * @var array
-     */
-    protected $instances = [];
-
-    /**
-     * @var array
-     */
-    protected $queries = [];
-
-    /**
-     * @var array
-     */
-    protected $authSources = [];
+    protected $presets = [
+        'connections' => [],
+        'bindings' => [],
+        'instances' => [],
+        'searches' => [],
+        'auth_sources' => []
+    ];
 
     /**
      * Initializes the service object.
@@ -99,14 +92,7 @@ class Service
      */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
-        $options = [
-            'connections',
-            'bindings',
-            'instances',
-            'searches',
-            'auth_sources'
-        ];
-
+        $options = array_keys($this->presets);
         $resolver->setDefined($options);
         foreach ($options as $option) {
             $resolver->setAllowedTypes($option, 'array[]');
@@ -117,157 +103,160 @@ class Service
     }
 
     /**
-     * Returns a list of available Ldap connection templates.
+     * Returns a list of available connection presets.
      *
      * @return array
      */
-    public function getConnectionNames() : array
+    public function connections() : array
     {
-        return $this->getEntityNames($this->getOption('connections', []), $this->connections);
+        return $this->getPresets('connections');
     }
 
     /**
-     * Returns a list of available Ldap binding templates.
+     * Returns a list of available binding presets.
      *
      * @return array
      */
-    public function getBindingNames() : array
+    public function bindings() : array
     {
-        return $this->getEntityNames($this->getOption('bindings', []), $this->bindings);
+        return $this->getPresets('bindings');
     }
 
     /**
-     * Returns a list of available Ldap instance names.
+     * Returns a list of available ldap presets.
      *
      * The returned array includes names of already created Ldap instances as
      * well as those defined in config but not yet created.
      *
      * @return array
      */
-    public function getLdapInstanceNames() : array
+    public function ldaps() : array
     {
-        return $this->getEntityNames($this->getOption('instances', []), $this->instances);
+        return $this->getPresets('instances');
     }
 
     /**
-     * Returns a list of available search query names.
+     * Returns a list of available search query presets.
      *
      * @return array
      */
-    public function getSearchQueryNames() : array
+    public function searchQueries() : array
     {
-        return $this->getEntityNames($this->getOption('searches', []), $this->queries);
+        return $this->getPresets('searches');
     }
 
     /**
-     * Returns a list of available search query names.
+     * Returns a list of available authentication source presets.
      *
      * @return array
      */
-    public function getAuthSourceNames() : array
+    public function authSources() : array
     {
-        return $this->getEntityNames($this->getOption('auth_sources', []), $this->authSources);
+        return $this->getPresets('auth_sources');
     }
 
     /**
-     * Returns preconfigured instance of ConnectionTemplate.
+     * Returns a Connection preset.
      *
      * @param string $name
      *
-     * @return ConnectionTemplate
+     * @return Connection
      */
-    public function getConnection(string $name) : ConnectionTemplate
+    public function connection(string $name) : Connection
     {
-        return $this->getNamedEntity($name, $this->connections, 'connections', ConnectionTemplate::class);
+        return $this->getPreset('connections', $name, Connection::class);
     }
 
     /**
-     * Returns preconfigured instance of BindingTemplate.
+     * Returns a Binding preset.
      *
      * @param string $name
      *
-     * @return BindingTemplate
+     * @return Binding
      */
-    public function getBinding(string $name) : BindingTemplate
+    public function binding(string $name) : Binding
     {
-        return $this->getNamedEntity($name, $this->bindings, 'bindings', BindingTemplate::class);
+        return $this->getPreset('bindings', $name, Binding::class);
     }
 
     /**
-     * Returns preconfigured instance of LdapInterface.
+     * Returns an Ldap preset.
      *
      * @param  string $name
      * @param  array $arguments
      *
-     * @return \Korowai\Lib\Ldap\LdapInterface
+     * @return Ldap
      */
-    public function getLdapInstance(string $name) : LdapInstance
+    public function ldap(string $name) : Ldap
     {
-        return $this->getNamedEntity($name, $this->instances, 'instances', LdapInstance::class);
+        return $this->getPreset('instances', $name, Ldap::class);
     }
 
     /**
-     * Returns preconfigured LDAP search query.
+     * Returns a SearchQuery preset.
      *
      * @param  string $name
-     * @return SearchQueryTemplate
+     * @return SearchQuery
      */
-    public function getSearchQuery(string $name) : SearchQueryTemplate
+    public function searchQuery(string $name) : SearchQuery
     {
-        return $this->getNamedEntity($name, $this->queries, 'searches', SearchQueryTemplate::class);
+        return $this->getPreset('searches', $name, SearchQuery::class);
     }
 
     /**
-     * Returns preconfigured LDAP search query.
+     * Returns an AuthSource preset.
      *
      * @param  string $name
      * @return AuthSource
      */
-    public function getAuthSource(string $name) : AuthSource
+    public function authSource(string $name) : AuthSource
     {
-        return $this->getNamedEntity($name, $this->authSources, 'auth_sources', AuthSource::class);
+        return $this->getPreset('auth_sources', $name, AuthSource::class);
     }
 
     /**
-     * A helper method for other ``getXxxNames()`` methods (e.g. ``getLdapInstanceNames()``).
+     * Generates an array of presets' names for a given preset type.
      *
-     * @param  array $config part of the config which defines named entities,
-     * @param  array $entities an array of already initialized entities/instances.
+     * @param  string $scope
      * @return array
      */
-    protected function getEntityNames(array $config, array $entities) : array
+    protected function getPresets(string $scope) : array
     {
-        return array_unique(array_merge(array_keys($config), array_keys($entities)));
+        $optionKeys = array_keys($this->getOption($scope, []));
+        $presetKeys = array_keys(Arr::get($this->presets, $scope, []));
+
+        return array_unique(array_merge($optionKeys, $presetKeys));
     }
 
     /**
-     * Returns a named entity such as LdapInstance, ConnectionTemplate etc.
+     * Returns a named preset of a given type.
      *
-     * The entity gets created when it's requested for the first time.
+     * The preset object gets created when it's requested for the first time.
      *
-     * @param  string $name
-     * @param  array  $registry
      * @param  string $scope
+     * @param  string $name
      * @param  string $class
      * @return object
      */
-    protected function getNamedEntity(string $name, array &$registry, string $scope, string $class)
+    protected function getPreset(string $scope, string $name, string $class)
     {
-        if (($registry[$name] ?? null) === null) {
-            $registry[$name] = $this->createNamedEntity($scope, $name, $class);
+        $path = $scope.'.'.$name;
+        if (Arr::get($this->presets, $path) === null) {
+            $preset = $this->createPreset($scope, $name, $class);
+            Arr::set($this->presets, $path, $preset);
         }
-        return $registry[$name];
+        return Arr::get($this->presets, $path);
     }
 
     /**
-     * Creates a named entity.
+     * Creates a named preset.
      *
      * @param  string $scope
      * @param  string $name
      * @param  string $class
      * @return object
      */
-    protected function createNamedEntity(string $scope, string $name, string $class)
+    protected function createPreset(string $scope, string $name, string $class)
     {
         $options = $this->getOptionOrFail($scope.'.'.$name);
         return new $class($this, $options);

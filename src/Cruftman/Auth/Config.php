@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Auth/UserProvider.php
+ * @file src/Cruftman/Auth/Config.php
  *
  * This file is part of the Cruftman package
  *

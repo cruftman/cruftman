@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/BindingTemplate.php
+ * @file src/Cruftman/Ldap/Preset/Binding.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,17 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap;
+namespace Cruftman\Ldap\Preset;
 
 use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
+use Cruftman\Ldap\Service;
 use Cruftman\Ldap\Traits\HasLdapService;
 use Korowai\Lib\Ldap\Adapter\BindingInterface;
 
 /**
  * Parametrized LDAP connection.
  */
-class BindingTemplate
+class Binding
 {
     use HasTemplateOptions,
         HasLdapService;

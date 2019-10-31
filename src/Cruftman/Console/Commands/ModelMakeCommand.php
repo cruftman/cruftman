@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Models/Person.php
+ * @file src/Cruftman/Console/Commands/ModelMakeCommand.php
  *
  * This file is part of the Cruftman package
  *

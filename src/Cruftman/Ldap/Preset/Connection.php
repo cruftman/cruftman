@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/ConnectionTemplate.php
+ * @file src/Cruftman/Ldap/Preset/Connection.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,18 +11,19 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap;
+namespace Cruftman\Ldap\Preset;
 
 use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Traits\HasLdapService;
+use Cruftman\Ldap\Service;
 use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
 
 /**
  * Parametrized LDAP connection.
  */
-class ConnectionTemplate
+class Connection
 {
     use HasTemplateOptions,
         HasLdapService;

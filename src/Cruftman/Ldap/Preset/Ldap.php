@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/LdapInstance.php
+ * @file src/Cruftman/Ldap/Preset/Ldap.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,23 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap;
+namespace Cruftman\Ldap\Preset;
 
-use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
-
 use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
-
+use Cruftman\Ldap\Service;
 use Cruftman\Ldap\Traits\HasLdapService;
 use Cruftman\Ldap\Traits\ProvidesLdapInterface;
-
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Provides all methods of \Korowai\Lib\Ldap\LdapInterface.
  */
-class LdapInstance implements LdapInterface
+class Ldap implements LdapInterface
 {
     use HasTemplateOptions,
         ValidatesOptions,
@@ -40,7 +37,7 @@ class LdapInstance implements LdapInterface
     protected $arguments = [];
 
     /**
-     * Initializes the LdapInstance object.
+     * Initializes the Ldap object.
      *
      * @param  Service $ldap ldap service
      * @param  array $options

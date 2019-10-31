@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/AuthRequestTemplate.php
+ * @file src/Cruftman/Ldap/Preset/AuthRequest.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,17 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap;
-
-//use Korowai\Lib\Ldap\LdapInterface;
-//use Korowai\Lib\Ldap\Adapter\AuthRequestInterface;
-//use Korowai\Lib\Ldap\Adapter\ResultInterface;
+namespace Cruftman\Ldap\Preset;
 
 use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
-
+use Cruftman\Ldap\Service;
 use Cruftman\Ldap\Traits\HasLdapService;
-
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -29,7 +24,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * The actual query is created by providing additional arguments.
  */
-class AuthRequestTemplate
+class AuthRequest
 {
     use HasTemplateOptions,
         ValidatesOptions,
@@ -76,19 +71,19 @@ class AuthRequestTemplate
     /**
      * Returns the template search query being part of the auth request.
      */
-    public function getSearchQuery()
+    public function getSearchQuery() : SearchQuery
     {
         $name = $this->getOptionOrFail('search');
         return $this->getLdapService()->getSearchQuery($name);
     }
 
-    public function getConnection()
+    public function getConnection() : Connection
     {
         $name = $this->getOptionOrFail('connection');
         return $this->getLdapService()->getConnection($name);
     }
 
-    public function getBinding()
+    public function getBinding() : Binding
     {
         $name = $this->getOptionOrFail('bind');
         return $this->getLdapService()->getBinding($name);
@@ -96,13 +91,13 @@ class AuthRequestTemplate
 
     protected function directBind(array $credentials)
     {
-        $connectionTemplate = $this->getConnection();
-        $bindingTemplate = $this->getBinding();
+        $connection = $this->getConnection();
+        $binding = $this->getBinding();
 
-        $ldap = $connectionTemplate->createLdapInterface($credentials);
+        $ldap = $connection->createLdapInterface($credentials);
 
         try {
-            $bound = $bindingTemplate->bindLdapInterface($ldap, $credentials);
+            $bound = $binding->bindLdapInterface($ldap, $credentials);
         } catch (LdapException $e) {
             if ($e->getCode() !== 0x31) {
                 throw $e;
@@ -115,16 +110,16 @@ class AuthRequestTemplate
         return [
             'instance' => $ldap,
             'credentials' => $credentials,
-            'connection' => $connectionTemplate,
-            'binding' => $bindingTemplate->substOptions($credentials),
+            'connection' => $connection,
+            'binding' => $binding->substOptions($credentials),
             'bound' => $bound
         ];
     }
 
     protected function searchBind(array $credentials)
     {
-        $searchTemplate = $this->getSearchQuery();
-        $entries = $searchTemplate->execute($credentials)->getEntries(false);
+        $search = $this->getSearchQuery();
+        $entries = $search->execute($credentials)->getEntries(false);
 
         $result = [];
         foreach ($entries as $entry) {

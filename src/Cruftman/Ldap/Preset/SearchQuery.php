@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/SearchQueryTemplate.php
+ * @file src/Cruftman/Ldap/Preset/SearchQuery.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,17 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap;
+namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Adapter\ResultInterface;
-
 use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
-
+use Cruftman\Ldap\Service;
 use Cruftman\Ldap\Traits\HasLdapService;
-
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -29,7 +27,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * The actual query is created by providing additional arguments.
  */
-class SearchQueryTemplate
+class SearchQuery
 {
     use HasTemplateOptions,
         ValidatesOptions,
@@ -70,7 +68,7 @@ class SearchQueryTemplate
         $options = $this->substOption('options', $arguments, []);
         $instance = $this->substOption('instance', $arguments);
 
-        $ldap = $this->getLdapService()->getLdapInstance($instance);
+        $ldap = $this->getLdapService()->getLdap($instance);
 
         return $ldap->createSearchQuery($base, $filter, $options);
     }
