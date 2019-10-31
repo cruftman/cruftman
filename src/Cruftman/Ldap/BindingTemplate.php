@@ -45,7 +45,7 @@ class BindingTemplate
      * @param  array $arguments
      * @return \Korowai\Lib\Ldap\LdapInterface
      */
-    public function bindLdapInstance(BindingInterface $ldap, array $arguments = [])
+    public function bindLdapInterface(BindingInterface $ldap, array $arguments = [])
     {
         $dn = $this->substOptionOrFail('0', $arguments);
         $pw = $this->substOptionOrFail('1', $arguments);

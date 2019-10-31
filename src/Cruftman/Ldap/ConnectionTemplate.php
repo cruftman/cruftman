@@ -45,7 +45,7 @@ class ConnectionTemplate
      * @param  array $arguments
      * @return \Korowai\Lib\Ldap\LdapInterface
      */
-    public function createLdapInstance(array $arguments = []) : LdapInterface
+    public function createLdapInterface(array $arguments = []) : LdapInterface
     {
         $options = $this->substOptions($arguments);
         return Ldap::createWithConfig($options);

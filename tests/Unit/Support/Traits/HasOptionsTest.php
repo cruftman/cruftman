@@ -9,7 +9,7 @@ use Cruftman\Support\Exceptions\OptionNotFoundException;
 
 class HasOptionsTest extends TestCase
 {
-    public function test__HasOptions__methods()
+    public function test__methods()
     {
         $object = new class {
             use HasOptions;
@@ -26,7 +26,7 @@ class HasOptionsTest extends TestCase
         $this->assertSame('GEEZ', $object->getOption('bar.geez'));
     }
 
-    public function test__HasOptions__withValidation()
+    public function test__setOptions__withValidation()
     {
         $object = new class {
             use HasOptions;
@@ -41,7 +41,7 @@ class HasOptionsTest extends TestCase
         $this->assertSame(['foo' => 'FOO', 'validated' => true], $object->getOptions());
     }
 
-    public function test__HasOptions__withWrapper()
+    public function test__setOptions__withWrapper()
     {
         $object = new class {
             use HasOptions;
@@ -56,7 +56,7 @@ class HasOptionsTest extends TestCase
         $this->assertSame([['foo' => 'FOO']], $object->getOptions());
     }
 
-    public function test__HasOptions__getOptionOrFail()
+    public function test__getOptionOrFail()
     {
         $object = new class {
             use HasOptions;
@@ -70,7 +70,7 @@ class HasOptionsTest extends TestCase
         $this->assertNull($object->getOptionOrFail('null'));
     }
 
-    public function test__HasOptions__getOptionOrFail__throwsOptionNotFoundException()
+    public function test__getOptionOrFail__throwsOptionNotFoundException()
     {
         $object = new class {
             use HasOptions;

@@ -66,15 +66,28 @@ class Service
     }
 
     /**
-     * Ensure that array keys are integers or a strings without ``'.'``.
+     * Check if ``$arg`` may be safely used as array key in a laravel
+     * configuration file (it's integer or a string without dots).
+     *
+     * @param  mixed $arg
+     * @return bool
+     */
+    protected function isValidOptionKey($arg)
+    {
+        return is_int($arg) || (is_string($arg) && strpos($arg, '.') === false);
+    }
+
+    /**
+     * Check if ``$array`` keys can be safely used as array keys in a laravel
+     * configuration file (e.g. they don't have dots).
      *
      * @param  array $array
      * @return bool
      */
-    protected function hasValidKeys(array $array)
+    protected function allKeysAreValidOptionKeys(array $array)
     {
         foreach ($array as $key => $value) {
-            if ((!is_string($key) && !is_int($key)) || (is_string($key) && strpos($key, '.') !== false)) {
+            if (!$this->isValidOptionKey($key)) {
                 return false;
             }
         }
@@ -94,14 +107,12 @@ class Service
             'auth_sources'
         ];
 
-        $hasValidKeys = function ($array) {
-            return $this->hasValidKeys($array);
-        };
-
         $resolver->setDefined($options);
         foreach ($options as $option) {
             $resolver->setAllowedTypes($option, 'array[]');
-            $resolver->setAllowedValues($option, $hasValidKeys);
+            $resolver->setAllowedValues($option, function ($array) {
+                return $this->allKeysAreValidOptionKeys($array);
+            });
         }
     }
 
@@ -159,6 +170,65 @@ class Service
     }
 
     /**
+     * Returns preconfigured instance of ConnectionTemplate.
+     *
+     * @param string $name
+     *
+     * @return ConnectionTemplate
+     */
+    public function getConnection(string $name) : ConnectionTemplate
+    {
+        return $this->getNamedEntity($name, $this->connections, 'connections', ConnectionTemplate::class);
+    }
+
+    /**
+     * Returns preconfigured instance of BindingTemplate.
+     *
+     * @param string $name
+     *
+     * @return BindingTemplate
+     */
+    public function getBinding(string $name) : BindingTemplate
+    {
+        return $this->getNamedEntity($name, $this->bindings, 'bindings', BindingTemplate::class);
+    }
+
+    /**
+     * Returns preconfigured instance of LdapInterface.
+     *
+     * @param  string $name
+     * @param  array $arguments
+     *
+     * @return \Korowai\Lib\Ldap\LdapInterface
+     */
+    public function getLdapInstance(string $name) : LdapInstance
+    {
+        return $this->getNamedEntity($name, $this->instances, 'instances', LdapInstance::class);
+    }
+
+    /**
+     * Returns preconfigured LDAP search query.
+     *
+     * @param  string $name
+     * @return SearchQueryTemplate
+     */
+    public function getSearchQuery(string $name) : SearchQueryTemplate
+    {
+        return $this->getNamedEntity($name, $this->queries, 'searches', SearchQueryTemplate::class);
+    }
+
+    /**
+     * Returns preconfigured LDAP search query.
+     *
+     * @param  string $name
+     * @return AuthSource
+     */
+    public function getAuthSource(string $name) : AuthSource
+    {
+        return $this->getNamedEntity($name, $this->authSources, 'auth_sources', AuthSource::class);
+    }
+
+    /**
      * A helper method for other ``getXxxNames()`` methods (e.g. ``getLdapInstanceNames()``).
      *
      * @param  array $config part of the config which defines named entities,
@@ -171,146 +241,36 @@ class Service
     }
 
     /**
-     * Returns preconfigured instance of ConnectionTemplate.
+     * Returns a named entity such as LdapInstance, ConnectionTemplate etc.
      *
-     * @param string $name
-     *
-     * @return ConnectionTemplate
-     */
-    public function getConnection(string $name) : ConnectionTemplate
-    {
-        if (($this->connections[$name] ?? null) === null) {
-            $this->connections[$name] = $this->createConnection($name);
-        }
-        return $this->connections[$name];
-    }
-
-    /**
-     * Returns preconfigured instance of BindingTemplate.
-     *
-     * @param string $name
-     *
-     * @return BindingTemplate
-     */
-    public function getBinding(string $name) : BindingTemplate
-    {
-        if (($this->bindings[$name] ?? null) === null) {
-            $this->bindings[$name] = $this->createBinding($name);
-        }
-        return $this->bindings[$name];
-    }
-
-    /**
-     * Returns preconfigured instance of LdapInterface.
+     * The entity gets created when it's requested for the first time.
      *
      * @param  string $name
-     * @param  array $arguments
-     *
-     * @return \Korowai\Lib\Ldap\LdapInterface
+     * @param  array  $registry
+     * @param  string $scope
+     * @param  string $class
+     * @return object
      */
-    public function getLdapInstance(string $name, array $arguments = []) : LdapInterface
+    protected function getNamedEntity(string $name, array &$registry, string $scope, string $class)
     {
-        if (($this->instances[$name] ?? null) === null) {
-            $this->instances[$name] = $this->createLdapInstance($name, $arguments);
+        if (($registry[$name] ?? null) === null) {
+            $registry[$name] = $this->createNamedEntity($scope, $name, $class);
         }
-        return $this->instances[$name];
+        return $registry[$name];
     }
 
     /**
-     * Returns preconfigured LDAP search query.
+     * Creates a named entity.
      *
+     * @param  string $scope
      * @param  string $name
-     * @return SearchQueryTemplate
+     * @param  string $class
+     * @return object
      */
-    public function getSearchQuery(string $name) : SearchQueryTemplate
+    protected function createNamedEntity(string $scope, string $name, string $class)
     {
-        if (($this->queries[$name] ?? null) === null) {
-            $this->queries[$name] = $this->createSearchQuery($name);
-        }
-        return $this->queries[$name];
-    }
-
-    /**
-     * Returns preconfigured LDAP search query.
-     *
-     * @param  string $name
-     * @return SearchQueryTemplate
-     */
-    public function getAuthSource(string $name) : AuthSource
-    {
-        if (($this->authSources[$name] ?? null) === null) {
-            $this->authSources[$name] = $this->createAuthSource($name);
-        }
-        return $this->authSources[$name];
-    }
-
-    /**
-     * Creates and returns an instance of ConnectionTemplate
-     *
-     * @param  string $name
-     * @return ConnectionTemplate
-     */
-    protected function createConnection(string $name)
-    {
-        $options = $this->getOptionOrFail('connections.'.$name);
-        return new ConnectionTemplate($this, $options);
-    }
-
-    /**
-     * Creates and returns an instance of BindingTemplate
-     *
-     * @param  string $name
-     * @return BindingTemplate
-     */
-    protected function createBinding(string $name)
-    {
-        $options = $this->getOptionOrFail('bindings.'.$name);
-        return new BindingTemplate($this, $options);
-    }
-
-    /**
-     * Creates and returns an instance of LdapInterface.
-     *
-     * @param  string $name
-     * @param  @array $arguments
-     * @return \Korowai\Lib\Ldap\LdapInterface
-     */
-    protected function createLdapInstance(string $name, array $arguments = []) : LdapInterface
-    {
-        $connectionName = $this->getOptionOrFail('instances.'.$name.'.connection');
-        $connection = $this->getConnection($connectionName);
-
-        $ldap = $connection->createLdapInstance();
-
-        if (($bindingName = $this->getOption('instances.'.$name.'.bind')) !== null) {
-            $binding = $this->getBinding($bindingName);
-            $binding->bindLdapInstance($ldap, $arguments);
-        }
-        return $ldap;
-    }
-
-    /**
-     * Creates and returns an instance of SearchQueryTemplate.
-     *
-     * @param  @array $arguments
-     * @return SearchQueryTemplate
-     */
-    protected function createSearchQuery(string $name) : SearchQueryTemplate
-    {
-        $options = $this->getOptionOrFail('searches.'.$name);
-        return new SearchQueryTemplate($this, $options);
-    }
-
-    /**
-     * Creates and returns an instance of AuthSource.
-     *
-     * @param  @array $arguments
-     * @return SearchQueryTemplate
-     */
-    protected function createAuthSource(string $name) : AuthSource
-    {
-        $options = $this->getOptionOrFail('auth_sources.'.$name);
-        return new AuthSource($this, $options);
+        $options = $this->getOptionOrFail($scope.'.'.$name);
+        return new $class($this, $options);
     }
 }
 

@@ -99,10 +99,10 @@ class AuthRequestTemplate
         $connectionTemplate = $this->getConnection();
         $bindingTemplate = $this->getBinding();
 
-        $ldap = $connectionTemplate->createLdapInstance($credentials);
+        $ldap = $connectionTemplate->createLdapInterface($credentials);
 
         try {
-            $bound = $bindingTemplate->bindLdapInstance($ldap, $credentials);
+            $bound = $bindingTemplate->bindLdapInterface($ldap, $credentials);
         } catch (LdapException $e) {
             if ($e->getCode() !== 0x31) {
                 throw $e;
@@ -111,6 +111,7 @@ class AuthRequestTemplate
             $bound = false;
         }
 
+        // FIXME: this is ugly, but it's an experiment
         return [
             'instance' => $ldap,
             'credentials' => $credentials,

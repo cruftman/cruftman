@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cruftman\Support\Traits;
 
 use Cruftman\Support\TemplateArray;
+use Cruftman\Support\Exceptions\OptionNotFoundException;
 
 /**
  * Similar to <a href="HasOptions.html">HasOptions</a> trait, but wraps
