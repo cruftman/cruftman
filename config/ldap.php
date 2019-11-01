@@ -6,13 +6,12 @@ return [
     | Connections
     |--------------------------------------------------------------------------
     |
-    | Configuration parameters for LDAP connections created by application's
-    | LDAP service. Define as many connections as you need. These named
-    | connections may be later referenced from within 'instances' array.
+    | Configuration parameters for LDAP connections. Define as many connections
+    | as you need. These named connections may be later referenced from other
+    | parts of this config.
     |
     | Detailed documentation of supported connection parameters may be found
-    | in the documentation of the korowai framework package (see the following
-    | link).
+    | in the documentation of the korowai framework (see the following link).
     |
     |   https://korowai-framework.readthedocs.io/en/latest/lib/ldap/config.html
     |
@@ -31,8 +30,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Bind parameters for predefined LDAP accounts. Define as many bindings as
-    | you need. These named credentials may be later referenced from other
-    | parts of the ldap config. Template bindings are supported as well.
+    | you need. These named presets may be later referenced from other parts of
+    | this config. Template bindings with ${placeholders} are supported as well.
     |
     | Each binding is a two-element array, with bind DN at offset 0 and
     | password at offset 1.
@@ -64,18 +63,18 @@ return [
     |--------------------------------------------------------------------------
     |
     | An array of predefined LDAP instances. Define as many instances as you
-    | need. An LDAP instance is an object that provide LDAP services via single
-    | LDAP connection. The instance is configured with connection settings and
-    | binding parameters.
+    | need. An LDAP instance is an object that interacts with LDAP server via
+    | single LDAP connection. The instance is configured with connection
+    | settings and binding parameters.
     |
     | Configuration options for a single instance:
     |
     |   - connection
     |       name of a connection used by the instance, must be one of the keys form
-    |       'ldap.connections' conifguration array,
+    |       'connections' array (above),
     |   - bind
     |       name of LDAP account binding used by the instance, must be one of
-    |       the keys from 'ldap.bindings' configuration array,
+    |       the keys from 'bindings' array (above),
     */
     'instances' => [
         'london-user-authenticator@default' => [
@@ -109,19 +108,19 @@ return [
     |
     |   - instance
     |       name of LDAP instance that should be used to perform query,
-    |       must be one of the keys from 'ldap.instances' configuration array,
+    |       must be one of the keys from 'instances' array,
     |   - base
     |       base DN used as search start point,
     |   - filter
-    |       search filter
+    |       search filter,
     |   - options
     |       other options such as search scope, attributes, etc.
     |
     | If a search query is parametrized within an application, the config may
     | introduce search parameters using ${placeholders}. For example, if there
     | is a search query which has parameter named 'username', the config can
-    | use the ${username} placeholder in any of the option value, for example
-    | in filter:
+    | use the ${username} placeholder in any of its options, for example in
+    | filter:
     |
     |   'filter' => '(uid=${username})'
     |

@@ -13,31 +13,13 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Preset;
 
-use Cruftman\Support\Traits\HasTemplateOptions;
-use Cruftman\Support\Traits\ValidatesOptions;
-use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Traits\HasLdapService;
 use Korowai\Lib\Ldap\Adapter\BindingInterface;
 
 /**
- * Parametrized LDAP connection.
+ * @todo Write documentation.
  */
-class Binding
+class Binding extends AbstractPreset
 {
-    use HasTemplateOptions,
-        HasLdapService;
-
-    /**
-     * Initializes the service object.
-     *
-     * @param Service $ldap ldap service
-     * @param array $templateOptions
-     */
-    public function __construct(Service $ldapService, array $options)
-    {
-        $this->setLdapService($ldapService);
-        $this->setOptions($options);
-    }
 
     /**
      * Creates and returns LDAP instance using on connection options.

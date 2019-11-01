@@ -14,21 +14,17 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\LdapInterface;
-use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Traits\HasLdapService;
 use Cruftman\Ldap\Traits\ProvidesLdapInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Provides all methods of \Korowai\Lib\Ldap\LdapInterface.
  */
-class Ldap implements LdapInterface
+class Ldap extends AbstractPreset implements LdapInterface
 {
-    use HasTemplateOptions,
-        ValidatesOptions,
-        HasLdapService,
+    use ValidatesOptions,
         ProvidesLdapInterface;
 
     /**
@@ -39,14 +35,13 @@ class Ldap implements LdapInterface
     /**
      * Initializes the Ldap object.
      *
-     * @param  Service $ldap ldap service
+     * @param  Service $ldapService
      * @param  array $options
      * @param  array $arguments
      */
     public function __construct(Service $ldapService, array $options, array $arguments = [])
     {
-        $this->setLdapService($ldapService);
-        $this->setOptions($options);
+        parent::__construct($ldapService, $options);
         $this->arguments = $arguments;
     }
 
@@ -68,12 +63,12 @@ class Ldap implements LdapInterface
         $service = $this->getLdapService();
 
         $connectionName = $this->getOptionOrFail('connection');
-        $connection = $service->getConnection($connectionName);
+        $connection = $service->connection($connectionName);
 
         $ldapInterface = $connection->createLdapInterface($this->arguments);
 
         if (($bindingName = $this->getOption('bind')) !== null)  {
-            $binding = $service->getBinding($bindingName);
+            $binding = $service->binding($bindingName);
             $binding->bindLdapInterface($ldapInterface, $this->arguments);
         }
 

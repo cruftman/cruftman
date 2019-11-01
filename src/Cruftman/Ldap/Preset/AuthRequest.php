@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Preset;
 
-use Cruftman\Support\Traits\HasTemplateOptions;
-use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Traits\HasLdapService;
+use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -24,23 +22,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * The actual query is created by providing additional arguments.
  */
-class AuthRequest
+class AuthRequest extends AbstractPreset
 {
-    use HasTemplateOptions,
-        ValidatesOptions,
-        HasLdapService;
-
-    /**
-     * Initializes the service object.
-     *
-     * @param Service $ldap ldap service
-     * @param array $templateOptions
-     */
-    public function __construct(Service $ldapService, array $options)
-    {
-        $this->setLdapService($ldapService);
-        $this->setOptions($options);
-    }
+    use ValidatesOptions;
 
     /**
      * {@inheritdoc}

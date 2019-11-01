@@ -25,9 +25,9 @@ trait HasTemplateOptions
     use HasOptions;
 
     /**
-     * Sets $templateOptions to the object.
+     * Wraps $options with TemplateArray object.
      *
-     * @param  \Cruftman\Support\TemplateArray $templateOptions
+     * @param  \Cruftman\Support\TemplateArray $options
      * @return $this
      */
     protected function wrapOptions(array $options)

@@ -13,13 +13,9 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Preset;
 
-use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Adapter\ResultInterface;
-use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
-use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Traits\HasLdapService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -27,23 +23,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * The actual query is created by providing additional arguments.
  */
-class SearchQuery
+class SearchQuery extends AbstractPreset
 {
-    use HasTemplateOptions,
-        ValidatesOptions,
-        HasLdapService;
+    use ValidatesOptions;
 
-    /**
-     * Initializes the service object.
-     *
-     * @param Service $ldap ldap service
-     * @param array $templateOptions
-     */
-    public function __construct(Service $ldapService, array $options)
-    {
-        $this->setLdapService($ldapService);
-        $this->setOptions($options);
-    }
 
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
@@ -68,7 +51,7 @@ class SearchQuery
         $options = $this->substOption('options', $arguments, []);
         $instance = $this->substOption('instance', $arguments);
 
-        $ldap = $this->getLdapService()->getLdap($instance);
+        $ldap = $this->getLdapService()->ldap($instance);
 
         return $ldap->createSearchQuery($base, $filter, $options);
     }

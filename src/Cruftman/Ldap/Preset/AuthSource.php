@@ -14,20 +14,16 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\Exception\LdapException;
-use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Traits\HasLdapService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @todo Write documentation
  */
-class AuthSource
+class AuthSource extends AbstractPreset
 {
-    use HasTemplateOptions,
-        ValidatesOptions,
-        HasLdapService;
+    use ValidatesOptions;
 
     /**
      * @var AuthRequest[]
@@ -37,13 +33,12 @@ class AuthSource
     /**
      * Initializes the service object.
      *
-     * @param Service $ldap ldap service
-     * @param array $config
+     * @param Service $ldapService
+     * @param array $options
      */
     public function __construct(Service $ldapService, array $options)
     {
-        $this->setLdapService($ldapService);
-        $this->setOptions($options);
+        parent::__construct($ldapService, $options);
         $this->initRequests($options['requests']);
     }
 
