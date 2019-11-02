@@ -48,9 +48,15 @@ class Ldap extends AbstractPreset implements LdapInterface
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
         $resolver->setRequired(['connection'])
-                 ->setDefined(['bind'])
+                 ->setDefined(['bind', 'fallback'])
                  ->setAllowedTypes('connection', 'string')
-                 ->setAllowedTypes('bind', 'string');
+                 ->setAllowedTypes('bind', 'string')
+                 ->setDefault('fallback', function (OptionsResolver $nested) {
+                     $nested->setRequired('instance')
+                            ->setDefined('errors')
+                            ->setAllowedTypes('instance', 'string')
+                            ->setAllowedTypes('errors', 'array');
+                 });
     }
 
     /**
@@ -73,6 +79,19 @@ class Ldap extends AbstractPreset implements LdapInterface
         }
 
         return $ldapInterface;
+    }
+
+    /**
+     * Returns fallback instance or null if there is no fallback.
+     *
+     * @return Ldap|null
+     */
+    public function getFallbackLdap() : ?Ldap
+    {
+        if (($fallbackName = $this->getOption('fallback.instance')) === null) {
+            return null;
+        }
+        return $this->getLdapService()->ldap($fallbackName);
     }
 }
 

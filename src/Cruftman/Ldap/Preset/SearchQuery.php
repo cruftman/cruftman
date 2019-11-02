@@ -15,6 +15,7 @@ namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Adapter\ResultInterface;
+use Korowai\Lib\Ldap\Exception\LdapException;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -38,11 +39,17 @@ class SearchQuery extends AbstractPreset
                  ->setAllowedTypes('options', 'array');
     }
 
+    public function isFallbackError(LdapException $exception)
+    {
+        static $fallbackCodes = [-1];
+        return in_array($exception->getErrorCode(), $fallbackCodes);
+    }
+
     /**
      * Creates and returns the actual search query.
      *
      * @param  array $arguments
-     * @return \Korowai\Lib\Ldap\Adapter\SearchQueryInterface
+     * @return SearchQueryInterface
      */
     public function createSearchQuery(array $arguments = []) : SearchQueryInterface
     {
@@ -56,15 +63,41 @@ class SearchQuery extends AbstractPreset
         return $ldap->createSearchQuery($base, $filter, $options);
     }
 
+    public function createFallbackSearchQuery(array $arguments = []) : ?self
+    {
+        $instance = $this->substOption('instance', $arguments);
+        $ldap = $this->getLdapService()->ldap($instance);
+        if (($fallbackName = $ldap->getOption('fallback.instance')) == null) {
+            return null;
+        }
+        $options = array_merge($this->getOptions()->getArrayCopy(), ['instance' => $fallbackName]);
+        return new self($this->getLdapService(), $options);
+    }
+
     /**
      * Creates the actual query and executes it.
      *
      * @param  array $arguments
-     * @return \Korowai\Lib\Ldap\Adapter\ResultInterface
+     * @return ResultInterface
      */
     public function execute(array $arguments = []) : ResultInterface
     {
         return $this->createSearchQuery($arguments)->execute();
+    }
+
+    /**
+     */
+    public function executeWithFallback(array $arguments = []) : ResultInterface
+    {
+        try {
+            return $this->execute($arguments);
+        } catch (LdapException $e) {
+            if (!$this->isFallbackError($e) ||
+                ($fallback = $this->createFallbackSearchQuery($arguments)) === null) {
+                throw $e;
+            }
+            return $fallback->executeWitFallback($arguments);
+        }
     }
 }
 

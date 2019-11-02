@@ -80,6 +80,7 @@ return [
         'london-user-authenticator@default' => [
             'connection' => 'default',
             'bind' => 'london-user-authenticator',
+            'fallback' => ['instance' => 'london-user-finder@default'],
         ],
         'manchester-user-authenticator@default' => [
             'connection' => 'default',
