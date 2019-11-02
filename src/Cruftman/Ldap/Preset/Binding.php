@@ -16,17 +16,17 @@ namespace Cruftman\Ldap\Preset;
 use Korowai\Lib\Ldap\Adapter\BindingInterface;
 
 /**
- * @todo Write documentation.
+ * Binding Preset.
  */
 class Binding extends AbstractPreset
 {
 
     /**
-     * Creates and returns LDAP instance using on connection options.
+     * Invokes ``bind()`` method on the *$ldap* object.
      *
-     * @param  \Korowai\Lib\Ldap\Adapter\BindingInterface $ldap
+     * @param  BindingInterface $ldap
      * @param  array $arguments
-     * @return \Korowai\Lib\Ldap\LdapInterface
+     * @return bool
      */
     public function bindLdapInterface(BindingInterface $ldap, array $arguments = [])
     {

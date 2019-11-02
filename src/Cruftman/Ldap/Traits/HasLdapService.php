@@ -16,7 +16,7 @@ namespace Cruftman\Ldap\Traits;
 use Cruftman\Ldap\Service;
 
 /**
- * Add a protected attribute named *$ldapService* and getter/setter methods.
+ * Add a protected attribute named *$ldapService* and getLdapService()/setLdapService() accessors.
  */
 trait HasLdapService
 {
@@ -28,8 +28,8 @@ trait HasLdapService
     /**
      * Sets $ldapService to the object.
      *
-     * @param  \Cruftman\Ldap\Service $ldapService
-     * @return $this
+     * @param  Service $ldapService
+     * @return object $this
      */
     public function setLdapService(Service $ldapService)
     {
@@ -40,9 +40,9 @@ trait HasLdapService
     /**
      * Returns the $ldapService.
      *
-     * @return array
+     * @return Service|null
      */
-    public function getLdapService() : Service
+    public function getLdapService() : ?Service
     {
         return $this->ldapService;
     }

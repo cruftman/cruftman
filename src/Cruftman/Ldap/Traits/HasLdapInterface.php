@@ -16,34 +16,43 @@ namespace Cruftman\Ldap\Traits;
 use Korowai\Lib\Ldap\LdapInterface;
 
 /**
- * Add a protected attribute named *$ldapInterface* and getter/setter methods.
+ * Add a protected attribute named *$ldapInterface* and geLdapInterface()/setLdapInterface() accessors.
+ *
+ * If
  */
 trait HasLdapInterface
 {
     /**
-     * @var \Korowai\Lib\Ldap\LdapInterface
+     * @var LdapInterface
      */
     protected $ldapInterface;
 
     /**
      * Sets $ldapInterface to the object.
      *
-     * @param  \Korowai\Lib\Ldap\LdapInterface $ldapInterface
+     * @param  LdapInterface|null $ldapInterface
      * @return object $this
      */
-    public function setLdapInterface(LdapInterface $ldapInterface)
+    public function setLdapInterface(?LdapInterface $ldapInterface)
     {
         $this->ldapInterface = $ldapInterface;
         return $this;
     }
 
     /**
-     * Returns the $ldapInterface.
+     * Returns the encapsulated *LdapInterface* instance.
      *
-     * @return LdapInterface
+     * If the instance was not set to this end and ``createLdapInstance()``
+     * method exists, the method gets called to create new instance of the
+     * *LdapInterface*.
+     *
+     * @return LdapInterface|null
      */
-    public function getLdapInterface() : LdapInterface
+    public function getLdapInterface() : ?LdapInterface
     {
+        if (!isset($this->ldapInterface) && method_exists($this, 'createLdapInterface')) {
+            $this->ldapInterface = $this->createLdapInterface();
+        }
         return $this->ldapInterface;
     }
 }

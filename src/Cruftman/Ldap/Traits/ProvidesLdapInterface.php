@@ -22,28 +22,12 @@ use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Adapter\CompareQueryInterface;
 
 /**
- * @todo Write documentation.
+ * Encapsulates instance of LdapInterface, provides all the LdapInterface
+ * methods.
  */
 trait ProvidesLdapInterface
 {
-    /**
-     * @var LdapInterface
-     */
-    protected $ldapInterface = null;
-
-
-    /**
-     * Return ldap interface.
-     *
-     * @return LdapInterface
-     */
-    public function getLdapInterface() : LdapInterface
-    {
-        if (!isset($this->ldapInterface) && method_exists($this, 'createLdapInterface')) {
-            $this->ldapInterface = $this->createLdapInterface();
-        }
-        return $this->ldapInterface;
-    }
+    use HasLdapInterface;
 
     /**
      * {@inheritdoc}
@@ -51,62 +35,6 @@ trait ProvidesLdapInterface
     public function getAdapter() : AdapterInterface
     {
         return $this->getLdapInterface()->getAdapter();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isBound() : bool
-    {
-        return $this->getLdapInterface()->isBound();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function bind(string $dn = null, string $password = null)
-    {
-        return $this->getLdapInterface()->bind($dn, $password);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function unbind()
-    {
-        $this->getLdapInterface()->unbind();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function add(EntryInterface $entry)
-    {
-        $this->getLdapInterface()->add($entry);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function update(EntryInterface $entry)
-    {
-        $this->getLdapInterface()->update($entry);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rename(EntryInterface $entry, string $newRdn, bool $deleteOldRdn = true)
-    {
-        $this->getLdapInterface()->rename($entry, $newRdn, $deleteOldRdn);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(EntryInterface $entry)
-    {
-        $this->getLdapInterface()->delete($entry);
     }
 
     /**
@@ -123,6 +51,63 @@ trait ProvidesLdapInterface
     public function getEntryManager() : EntryManagerInterface
     {
         return $this->getLdapInterface()->getEntryManager();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isBound() : bool
+    {
+        return $this->getLdapInterface()->isBound();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function bind(string $dn = null, string $password = null)
+    {
+        $args = @func_get_args();
+        return $this->getLdapInterface()->bind(...$args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unbind()
+    {
+        return $this->getLdapInterface()->unbind();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function add(EntryInterface $entry)
+    {
+        return $this->getLdapInterface()->add($entry);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(EntryInterface $entry)
+    {
+        return $this->getLdapInterface()->update($entry);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rename(EntryInterface $entry, string $newRdn, bool $deleteOldRdn = true)
+    {
+        return $this->getLdapInterface()->rename($entry, $newRdn, $deleteOldRdn);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(EntryInterface $entry)
+    {
+        return $this->getLdapInterface()->delete($entry);
     }
 
     /**

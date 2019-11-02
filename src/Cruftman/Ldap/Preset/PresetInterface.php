@@ -15,27 +15,18 @@ namespace Cruftman\Ldap\Preset;
 
 use Cruftman\Support\TemplateOptionsInterface;
 use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Traits\HasLdapService;
 
 /**
- * Abstract base class for presets.
+ * Interface provided by an Ldap Preset.
  */
-class AbstractPreset implements PresetInterface
+interface PresetInterface extends TemplateOptionsInterface
 {
-    use HasTemplateOptions,
-        HasLdapService;
-
     /**
-     * Initializes the Ldap object.
+     * Returns the related LDAP Service object.
      *
-     * @param  Service $ldapService
-     * @param  array $options
+     * @return Service
      */
-    public function __construct(Service $ldapService, array $options)
-    {
-        $this->setLdapService($ldapService);
-        $this->setOptions($options);
-    }
+    public function getLdapService() : Service;
 }
 
 // vim: syntax=php sw=4 ts=4 et:
