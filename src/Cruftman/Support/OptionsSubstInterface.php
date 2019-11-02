@@ -24,7 +24,7 @@ interface OptionsSubstInterface
      * @param  array $dict
      * @return array
      */
-    public function substOptions(array $dict = []):
+    public function substOptions(array $dict = []);
 
     /**
      * Get an option using "dot" notation with all placeholders substituted.

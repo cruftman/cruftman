@@ -18,16 +18,16 @@ use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Parametrized LDAP search query.
- *
- * The actual query is created by providing additional arguments.
+ * @todo Write documentation.
  */
 class AuthRequest extends AbstractPreset
 {
     use ValidatesOptions;
 
     /**
-     * {@inheritdoc}
+     * Configure options resolver to validate and resolve options.
+     *
+     * @param  OptionsResolver $resolver
      */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
@@ -61,12 +61,22 @@ class AuthRequest extends AbstractPreset
         return $this->getLdapService()->getSearchQuery($name);
     }
 
+    /**
+     * Returns the Connection preset used by this object.
+     *
+     * @return Connection
+     */
     public function getConnection() : Connection
     {
         $name = $this->getOptionOrFail('connection');
         return $this->getLdapService()->getConnection($name);
     }
 
+    /**
+     * Returns the Binding preset used by this object.
+     *
+     * @return Binding
+     */
     public function getBinding() : Binding
     {
         $name = $this->getOptionOrFail('bind');
