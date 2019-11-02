@@ -16,9 +16,7 @@ namespace Cruftman\Ldap\Traits;
 use Korowai\Lib\Ldap\LdapInterface;
 
 /**
- * Add a protected attribute named *$ldapInterface* and geLdapInterface()/setLdapInterface() accessors.
- *
- * If
+ * Add a protected attribute named *$ldapInterface* and public accessors.
  */
 trait HasLdapInterface
 {

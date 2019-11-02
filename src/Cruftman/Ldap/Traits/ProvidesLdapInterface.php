@@ -22,8 +22,7 @@ use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Adapter\CompareQueryInterface;
 
 /**
- * Encapsulates instance of LdapInterface, provides all the LdapInterface
- * methods.
+ * Extends the HasLdapInterface trait, adding all the LdapInterface methods.
  */
 trait ProvidesLdapInterface
 {

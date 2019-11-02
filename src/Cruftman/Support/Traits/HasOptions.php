@@ -89,7 +89,7 @@ trait HasOptions
      *
      * @param  string $key
      * @return mixed
-     * @throws \Cruftman\Support\Exceptions\UndefinedOptionException
+     * @throws OptionNotFoundException
      */
     public function getOptionOrFail(string $key)
     {

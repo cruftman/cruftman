@@ -27,8 +27,8 @@ trait HasTemplateOptions
     /**
      * Wraps $options with TemplateArray object.
      *
-     * @param  \Cruftman\Support\TemplateArray $options
-     * @return $this
+     * @param  TemplateArray $options
+     * @return object $this
      */
     protected function wrapOptions(array $options)
     {
@@ -65,7 +65,7 @@ trait HasTemplateOptions
      * @param  string $key
      * @param  array $dict
      * @return mixed
-     * @throws \Cruftman\Support\Exceptions\UndefinedOptionException
+     * @throws OptionNotFoundException
      */
     public function substOptionOrFail(string $key, array $dict = [])
     {

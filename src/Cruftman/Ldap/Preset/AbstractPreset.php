@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Preset;
 
-use Cruftman\Support\TemplateOptionsInterface;
+use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Ldap\Service;
 use Cruftman\Ldap\Traits\HasLdapService;
 

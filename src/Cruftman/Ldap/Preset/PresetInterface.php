@@ -24,9 +24,9 @@ interface PresetInterface extends TemplateOptionsInterface
     /**
      * Returns the related LDAP Service object.
      *
-     * @return Service
+     * @return Service|null
      */
-    public function getLdapService() : Service;
+    public function getLdapService() : ?Service;
 }
 
 // vim: syntax=php sw=4 ts=4 et:

@@ -16,7 +16,7 @@ namespace Cruftman\Ldap\Traits;
 use Cruftman\Ldap\Service;
 
 /**
- * Add a protected attribute named *$ldapService* and getLdapService()/setLdapService() accessors.
+ * Add a protected attribute named *$ldapService* and public accessors.
  */
 trait HasLdapService
 {
