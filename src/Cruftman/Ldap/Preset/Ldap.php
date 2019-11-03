@@ -17,6 +17,7 @@ use Korowai\Lib\Ldap\LdapInterface;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Service;
 use Cruftman\Ldap\Traits\ProvidesLdapInterface;
+use Cruftman\Ldap\Traits\Resiliency;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -25,38 +26,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class Ldap extends AbstractPreset implements LdapInterface
 {
     use ValidatesOptions,
-        ProvidesLdapInterface;
-
-    /**
-     * @var array
-     */
-    protected $arguments = [];
-
-    /**
-     * Initializes the Ldap object.
-     *
-     * @param  Service $ldapService
-     * @param  array $options
-     * @param  array $arguments
-     */
-    public function __construct(Service $ldapService, array $options, array $arguments = [])
-    {
-        parent::__construct($ldapService, $options);
-        $this->arguments = $arguments;
-    }
+        ProvidesLdapInterface,
+        Resiliency;
 
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
         $resolver->setRequired(['connection'])
-                 ->setDefined(['bind', 'fallback'])
+                 ->setDefined(['bind'])
                  ->setAllowedTypes('connection', 'string')
-                 ->setAllowedTypes('bind', 'string')
-                 ->setDefault('fallback', function (OptionsResolver $nested) {
-                     $nested->setRequired('instance')
-                            ->setDefined('errors')
-                            ->setAllowedTypes('instance', 'string')
-                            ->setAllowedTypes('errors', 'array');
-                 });
+                 ->setAllowedTypes('bind', 'string');
+        $this->configureResiliencyOptionsResolver($resolver);
     }
 
     /**
@@ -64,34 +43,21 @@ class Ldap extends AbstractPreset implements LdapInterface
      *
      * @return LdapInterface
      */
-    protected function createLdapInterface() : LdapInterface
+    protected function createLdapInterface(array $arguments = []) : LdapInterface
     {
         $service = $this->getLdapService();
 
         $connectionName = $this->getOptionOrFail('connection');
         $connection = $service->connection($connectionName);
 
-        $ldapInterface = $connection->createLdapInterface($this->arguments);
+        $ldapInterface = $connection->createLdapInterface($arguments);
 
         if (($bindingName = $this->getOption('bind')) !== null)  {
             $binding = $service->binding($bindingName);
-            $binding->bindLdapInterface($ldapInterface, $this->arguments);
+            $binding->bindLdapInterface($ldapInterface, $arguments);
         }
 
         return $ldapInterface;
-    }
-
-    /**
-     * Returns fallback instance or null if there is no fallback.
-     *
-     * @return Ldap|null
-     */
-    public function getFallbackLdap() : ?Ldap
-    {
-        if (($fallbackName = $this->getOption('fallback.instance')) === null) {
-            return null;
-        }
-        return $this->getLdapService()->ldap($fallbackName);
     }
 }
 

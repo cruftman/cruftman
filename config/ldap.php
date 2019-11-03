@@ -7,15 +7,15 @@ return [
     |--------------------------------------------------------------------------
     |
     | Configuration parameters for LDAP connections. Define as many connections
-    | as you need. These named connections may be later referenced from other
-    | parts of this config.
+    | as you need. These named connection presets may be later referenced from
+    | other parts of this config.
     |
     | Detailed documentation of supported connection parameters may be found
     | in the documentation of the korowai framework (see the following link).
     |
     |   https://korowai-framework.readthedocs.io/en/latest/lib/ldap/config.html
     |
-    | In most cases it's enough to just provide the 'uri'.
+    | In most cases it's enough to just provide the 'uri' parameter.
     |
     */
     'connections' => [
@@ -62,8 +62,8 @@ return [
     | Instances
     |--------------------------------------------------------------------------
     |
-    | An array of predefined LDAP instances. Define as many instances as you
-    | need. An LDAP instance is an object that interacts with LDAP server via
+    | An array of predefined LDAP instances (sessios). Define as many instances
+    | as you need. An LDAP instance is an object that interacts with LDAP server via
     | single LDAP connection. The instance is configured with connection
     | settings and binding parameters.
     |
@@ -80,7 +80,7 @@ return [
         'london-user-authenticator@default' => [
             'connection' => 'default',
             'bind' => 'london-user-authenticator',
-            'fallback' => ['instance' => 'london-user-finder@default'],
+            'failover' => 'london-user-finder@default',
         ],
         'manchester-user-authenticator@default' => [
             'connection' => 'default',
