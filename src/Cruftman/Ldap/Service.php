@@ -30,12 +30,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * The main purpose of LDAP Service is to maintain so-called Presets. A Preset
  * is an object which encapsulates certain piece of LDAP config array and
- * provides related service. Presets are registered in LDAP Service and
- * may be retrieved by name. Their names in LDAP Service correspond to keys
- * found in *$options* array provided to Service's ``__construct()``. For
- * example, a configuration item *$options['connections']['foo']* defines a
- * Connection preset named ``'foo'`` in LDAP Service. This Connection preset
- * is then available via ``$service->connection('foo')``.
+ * creates related LDAP service objects. Named presets are registered in LDAP
+ * Service and may be retrieved by name. Their names in LDAP Service correspond
+ * to keys found in *$options* array provided to Service's ``__construct()``.
+ * For example, a configuration item *$options['connections']['foo']* defines a
+ * Connection preset named ``'foo'`` in LDAP Service. This Connection preset is
+ * then available via ``$service->connection('foo')``. An anonymous preset may
+ * also be created by providing configuration options (array) instead of name,
+ * for example ``$service->connection(['uri' => 'ldap://cruftman.local']);``.
  *
  * The basic concept of LDAP Service Presets is illustrated with the following
  * example:
@@ -53,31 +55,53 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *    ...         // An array of Binding presets.
  *    ...         'admin' => ['cn=admin,dc=example,dc=org', 'admin'],
  *    ...     ],
- *    ...     'instances' => [
- *    ...         // An array of Ldap presets.
+ *    ...     'sessions' => [
+ *    ...         // An array of Session presets.
  *    ...         'admin@cruftman' => ['connection' => 'cruftman', 'bind' => 'admin'],
+ *    ...     ],
+ *    ...     'searches' => [
+ *    ...         // An array of Search presets.
+ *    ...         'person-by-uid' => [
+ *    ...           'base' => 'dc=example,dc=org',
+ *    ...           'filter' => 'uid=${username}'
+ *    ...         ]
  *    ...     ]
  *    ... ]);
  *    => Cruftman\Ldap\Service {#3073}
- *    >>> $service->connection('cruftman');
- *    => Cruftman\Ldap\Preset\Connection {#3100}
- *    >>> $service->connection('cruftman')->substOptions();
+ *    >>> $connection = $service->connection('cruftman');
+ *    => Cruftman\Ldap\Preset\Connection {#3110}
+ *    >>> $connection->substOptions();
  *    => [
  *         "uri" => "ldap://cruftman.local",
  *       ]
- *    >>> $service->binding('admin');
- *    => Cruftman\Ldap\Preset\Binding {#3101}
- *    >>> $service->binding('admin')->substOptions();
+ *    >>> $binding = $service->binding('admin');
+ *    => Cruftman\Ldap\Preset\Binding {#3103}
+ *    >>> $binding->substOptions();
  *    => [
  *         "cn=admin,dc=example,dc=org",
  *         "admin",
  *       ]
- *    >>> $service->session('admin@cruftman');
- *    => Cruftman\Ldap\Preset\Session {#3104}
- *    >>> $service->session('admin@cruftman')->substOptions();
+ *    >>> $session = $service->session('admin@cruftman');
+ *    => Cruftman\Ldap\Preset\Session {#3101}
+ *    >>> $session->substOptions();
  *    => [
  *         "connection" => "cruftman",
  *         "bind" => "admin",
+ *       ]
+ *    >>> $search = $service->search('person-by-uid');
+ *    => Cruftman\Ldap\Preset\Search {#3095}
+ *    >>> $search->substOptions(['username' => 'jsmith']);
+ *    => [
+ *         "base" => "dc=example,dc=org",
+ *         "filter" => "uid=jsmith",
+ *       ]
+ *    >>> $ldap = $session->createLdap();
+ *    => Korowai\Lib\Ldap\Ldap {#3120}
+ *    >>> $query = $search->createQuery($ldap, ['username' => 'jsmith']);
+ *    => Korowai\Lib\Ldap\Adapter\ExtLdap\SearchQuery {#3086}
+ *    >>> $query->getResult()->getEntries();
+ *    => [
+ *         "uid=jsmith,ou=people,dc=example,dc=org" => Korowai\Lib\Ldap\Entry {#3096},
  *       ]
  * ```
  *
@@ -104,9 +128,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * - <a href="Preset/Search.html">Search</a>
  *
  *      Encapsulates an array of options necessary to define an LDAP search.
- *      The options include a reference to an Session preset, and all the query
- *      parameters such as base DN, search filter and so on. Also, provides
- *      a method to perform that query.
+ *      The options include base DN, search filter and other search options.
+ *      Also, provides a method to create instances of *SearchQueryInterface*.
  *
  * - <a href="Preset/AuthSource.html">AuthSource</a>
  */
@@ -228,7 +251,7 @@ class Service implements OptionsInterface
      * @param  string|array $options
      * @return Search
      */
-    public function searchQuery($options) : Search
+    public function search($options) : Search
     {
         return $this->getPreset(Search::class, $options);
     }
@@ -236,12 +259,12 @@ class Service implements OptionsInterface
     /**
      * Returns an AuthSource preset.
      *
-     * @param  string+array $options
+     * @param  string|array $options
      * @return AuthSource
      */
     public function authSource($options) : AuthSource
     {
-        return $this->getPreset(AuthSource::class, $name);
+        return $this->getPreset(AuthSource::class, $options);
     }
 }
 

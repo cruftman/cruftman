@@ -49,12 +49,12 @@ return [
         'manchester-user-authenticator' => [env('LDAP_2_BIND_DN'), env('LDAP_2_PASSWORD')],
         'london-user-finder'            => [env('LDAP_3_BIND_DN'), env('LDAP_3_PASSWORD')],
         'manchester-user-finder'        => [env('LDAP_4_BIND_DN'), env('LDAP_4_PASSWORD')],
-
-        // Template bindings
-        'global-person'     => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
-        'london-person'     => ['uid=${username},ou=people,ou=london,dc=example,dc=org', '${password}'],
-        'manchester-person' => ['uid=${username},ou=people,ou=manchester,dc=example,dc=org', '${password}'],
-        'entry'             => ['${dn}', '${password}']
+//
+//        // Template bindings
+//        'global-person'     => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
+//        'london-person'     => ['uid=${username},ou=people,ou=london,dc=example,dc=org', '${password}'],
+//        'manchester-person' => ['uid=${username},ou=people,ou=manchester,dc=example,dc=org', '${password}'],
+//        'entry'             => ['${dn}', '${password}']
     ],
 
     /*
@@ -106,9 +106,6 @@ return [
     |
     | Each search query configuration accepts following parameters:
     |
-    |   - session
-    |       name of LDAP session that should be used to perform query,
-    |       must be one of the keys from 'instances' array,
     |   - base
     |       base DN used as search start point,
     |   - filter
@@ -127,62 +124,37 @@ return [
     | The placeholder will be substituted with corresponding parameter's value.
     */
     'searches' => [
-        // list all users using ldap account for searching
-        'global-users@default' => [
-            'session' => 'london-user-finder@default',
+        // list all users in a particular subtree
+        'global-users' => [
             'base' => 'ou=people,dc=example,dc=org',
             'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        'london-users@default' => [
-            'session' => 'london-user-finder@default',
+        'london-users' => [
             'base' => 'ou=people,ou=london,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        'manchester-users@default' => [
-            'session'  => 'manchester-user-finder@default',
+        'manchester-users' => [
             'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        // locate single user using ldap account for searching
-        'global-user@default' => [
-            'session'  => 'london-user-finder@default',
+        // locate single in a particular subtree
+        'global-user' => [
             'base'      => 'ou=people,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        'london-user@default' => [
-            'session'  => 'london-user-finder@default',
+        'london-user' => [
             'base'      => 'ou=people,ou=london,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        'manchester-user@default' => [
-            'session'  => 'manchester-user-finder@default',
+        'manchester-user' => [
             'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
-        ],
-        // locate single user using ldap account for authentication
-        'global-auth@default' => [
-            'session'  => 'london-user-authenticator@default',
-            'base'      => 'ou=people,dc=example,dc=org',
-            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options'   => ['scope' => 'one', 'attributes' => []],
-        ],
-        'london-auth@default' => [
-            'session'  => 'london-user-authenticator@default',
-            'base'      => 'ou=people,ou=london,dc=example,dc=org',
-            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options'   => ['scope' => 'one', 'attributes' => []],
-        ],
-        'manchester-auth@default' => [
-            'session'  => 'manchester-user-authenticator@default',
-            'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
-            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
-            'options'   => ['scope' => 'one', 'attributes' => []],
         ],
     ],
 
@@ -193,14 +165,27 @@ return [
     |
     */
     'auth_sources' => [
-        'default' => [
-            'requests' => [
-
-                ['connection' => 'default', 'bind' => 'global-person'],
-                /* ['search' => 'global-auth@default', 'connection' => 'default', 'bind' => 'entry'], */
-                ['search' => 'london-auth@default', 'connection' => 'default', 'bind' => 'entry'],
-                ['search' => 'manchester-auth@default', 'connection' => 'default', 'bind' => 'entry']
-            ],
+        'global-users' => [
+            'attempt' => [
+                'connections' => ['default'],
+                'bind' => ['uid=${username},ou=people,dc=example,dc=org', '${password}']
+            ]
+        ],
+        'london-users' => [
+            'sessions' => ['london-user-authenticator@default'],
+            'search' => 'london-users',
+            'attempt' => [
+                'connections' => ['default'],
+                'bind' => ['${dn}', '${password}'],
+            ]
+        ],
+        'manchester-users' => [
+            'sessions' => ['manchester-user-authenticator@default'],
+            'search' => 'manchester-users',
+            'attempt' => [
+                'connections' => ['default'],
+                'bind' => ['${dn}', '${password}'],
+            ]
         ],
     ],
 

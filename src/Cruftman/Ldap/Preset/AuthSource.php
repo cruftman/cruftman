@@ -26,54 +26,19 @@ class AuthSource extends AbstractPreset
     use ValidatesOptions;
 
     /**
-     * @var AuthRequest[]
-     */
-    protected $requests = [];
-
-    /**
-     * Initializes the service object.
-     *
-     * @param Service $ldapService
-     * @param array $options
-     */
-    public function __construct(Service $ldapService, array $options)
-    {
-        parent::__construct($ldapService, $options);
-        $this->initRequests($options['requests']);
-    }
-
-    protected function initRequests($requestsOptions)
-    {
-        $this->requests = $this->createRequests($requestsOptions);
-    }
-
-    protected function createRequests(array $requestsOptions)
-    {
-        $service = $this->getLdapService();
-        $requests = $requestsOptions;
-        array_walk($requests, function (&$request, $key) use ($service) {
-            $request = new AuthRequest($service, $request);
-        });
-        return $requests;
-    }
-
-    /**
-     * Get the array of auth request templates.
-     *
-     * @return array
-     */
-    public function getRequests() : array
-    {
-        return $this->requests;
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
-        $resolver->setRequired(['requests'])
-                 ->setAllowedTypes('requests', 'array[]');
+        $resolver->setRequired(['attempt'])
+                 ->setDefined(['sessions', 'search'])
+                 ->setAllowedTypes('sessions', 'array')
+                 ->setAllowedTypes('search', ['string', 'array'])
+                 ->setDefault('attempt', function (OptionsResolver $nested) {
+                     $nested->setRequired(['connections', 'bind'])
+                            ->setAllowedTypes('connections', 'array')
+                            ->setAllowedTypes('bind', ['string', 'array']);
+                 });
     }
 }
 

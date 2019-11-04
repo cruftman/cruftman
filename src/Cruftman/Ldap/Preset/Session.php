@@ -42,17 +42,16 @@ class Session extends AbstractPreset
     {
         $service = $this->getLdapService();
 
-        $connectionOption = $this->getOptionOrFail('connection');
-        $connection = $service->connection($connectionOption);
+        $connection = $service->connection($this->substOptionOrFail('connection', $arguments));
 
-        $ldapInterface = $connection->createLdapInterface($arguments);
+        $ldap = $connection->createLdap($arguments);
 
         if (($bindOption = $this->substOption('bind', $arguments)) !== null)  {
             $binding = $service->binding($bindOption);
-            $binding->bindLdapInterface($ldapInterface, $arguments);
+            $binding->bindLdapInterface($ldap, $arguments);
         }
 
-        return $ldapInterface;
+        return $ldap;
     }
 }
 

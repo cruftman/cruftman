@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Preset;
 
+use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,9 +27,8 @@ class Search extends AbstractPreset
 
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
-        $resolver->setRequired(['session', 'base', 'filter'])
+        $resolver->setRequired(['base', 'filter'])
                  ->setDefined(['options'])
-                 ->setAllowedTypes('session', ['string', 'array'])
                  ->setAllowedTypes('base', 'string')
                  ->setAllowedTypes('filter', 'string')
                  ->setAllowedTypes('options', 'array');
@@ -37,19 +37,15 @@ class Search extends AbstractPreset
     /**
      * Creates and returns an instance of SearchQueryInterface.
      *
+     * @param  AdapterInterface $ldap
      * @param  array $arguments
      * @return SearchQueryInterface
      */
-    public function createSearchQuery(array $arguments = []) : SearchQueryInterface
+    public function createQuery(AdapterInterface $ldap, array $arguments = []) : SearchQueryInterface
     {
         $base = $this->substOptionOrFail('base', $arguments);
         $filter = $this->substOptionOrFail('filter', $arguments);
         $options = $this->substOption('options', $arguments, []);
-
-        $sessionOption = $this->substOptionOrFail('session', $arguments);
-        $session = $this->getLdapService()->session($sessionOption);
-
-        $ldap = $session->createLdap($arguments);
 
         return $ldap->createSearchQuery($base, $filter, $options);
     }
