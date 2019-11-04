@@ -17,8 +17,8 @@ use Cruftman\Ldap\Preset\AuthRequest;
 use Cruftman\Ldap\Preset\AuthSource;
 use Cruftman\Ldap\Preset\Binding;
 use Cruftman\Ldap\Preset\Connection;
-use Cruftman\Ldap\Preset\Ldap;
-use Cruftman\Ldap\Preset\SearchQuery;
+use Cruftman\Ldap\Preset\Session;
+use Cruftman\Ldap\Preset\Search;
 
 use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
@@ -40,8 +40,8 @@ trait HasPresets
     protected $presetKeyByClass = [
         Connection::class => 'connections',
         Binding::class => 'bindings',
-        Ldap::class => 'instances',
-        SearchQuery::class => 'searches',
+        Session::class => 'sessions',
+        Search::class => 'searches',
         AuthSource::class => 'auth_sources',
     ];
 
@@ -53,8 +53,8 @@ trait HasPresets
     protected $presetsByClass = [
         Connection::class => [],
         Binding::class => [],
-        Ldap::class => [],
-        SearchQuery::class => [],
+        Session::class => [],
+        Search::class => [],
         AuthSource::class => []
     ];
 
@@ -169,6 +169,22 @@ trait HasPresets
     }
 
     /**
+     * Returns a preset of a given type.
+     *
+     * @param  string $class
+     * @param  string|array $options
+     * @return object
+     */
+    public function getPreset(string $class, $options)
+    {
+        if (is_string($options)) {
+            return $this->getPresetByName($class, $options);
+        } else {
+            return $this->createPreset($class, $options);
+        }
+    }
+
+    /**
      * Returns a named preset of a given type.
      *
      * The preset object gets created when it's requested for the first time.
@@ -177,7 +193,7 @@ trait HasPresets
      * @param  string $name
      * @return object
      */
-    public function getPreset(string $class, string $name)
+    protected function getPresetByName(string $class, string $name)
     {
         if (($this->presetsByClass[$class][$name] ?? null) === null) {
             $preset = $this->createPreset($class, $name);
@@ -190,12 +206,14 @@ trait HasPresets
      * Creates a named preset.
      *
      * @param  string $class
-     * @param  string $name
+     * @param  string|array $options
      * @return object
      */
-    protected function createPreset(string $class, string $name)
+    protected function createPreset(string $class, $options)
     {
-        $options = $this->getPresetOptionsOrFail($class, $name);
+        if (is_string($options)) {
+            $options = $this->getPresetOptionsOrFail($class, $options);
+        }
         return new $class($this, $options);
     }
 }

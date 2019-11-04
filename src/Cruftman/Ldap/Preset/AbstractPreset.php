@@ -36,14 +36,6 @@ class AbstractPreset implements PresetInterface
         $this->setLdapService($ldapService);
         $this->setOptions($options);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSiblingPreset(string $name) : ?PresetInterface
-    {
-        return $this->getLdapService()->getPreset(static::class, $name);
-    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

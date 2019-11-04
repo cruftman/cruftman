@@ -59,28 +59,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Instances
+    | Sessions
     |--------------------------------------------------------------------------
     |
-    | An array of predefined LDAP instances (sessios). Define as many instances
-    | as you need. An LDAP instance is an object that interacts with LDAP server via
-    | single LDAP connection. The instance is configured with connection
+    | An array of predefined LDAP sessios. Define as many sessions as you need.
+    | An LDAP session is an object that allows interacting with LDAP server via
+    | single LDAP connection. The session is configured with connection
     | settings and binding parameters.
     |
-    | Configuration options for a single instance:
+    | Configuration options for a single session:
     |
     |   - connection
-    |       name of a connection used by the instance, must be one of the keys form
+    |       name of a connection used by the session, must be one of the keys form
     |       'connections' array (above),
     |   - bind
-    |       name of LDAP account binding used by the instance, must be one of
+    |       name of LDAP account binding used by the session, must be one of
     |       the keys from 'bindings' array (above),
     */
-    'instances' => [
+    'sessions' => [
         'london-user-authenticator@default' => [
             'connection' => 'default',
             'bind' => 'london-user-authenticator',
-            'failover' => 'london-user-finder@default',
         ],
         'manchester-user-authenticator@default' => [
             'connection' => 'default',
@@ -107,8 +106,8 @@ return [
     |
     | Each search query configuration accepts following parameters:
     |
-    |   - instance
-    |       name of LDAP instance that should be used to perform query,
+    |   - session
+    |       name of LDAP session that should be used to perform query,
     |       must be one of the keys from 'instances' array,
     |   - base
     |       base DN used as search start point,
@@ -130,57 +129,57 @@ return [
     'searches' => [
         // list all users using ldap account for searching
         'global-users@default' => [
-            'instance' => 'london-user-finder@default',
+            'session' => 'london-user-finder@default',
             'base' => 'ou=people,dc=example,dc=org',
             'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'london-users@default' => [
-            'instance' => 'london-user-finder@default',
+            'session' => 'london-user-finder@default',
             'base' => 'ou=people,ou=london,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'manchester-users@default' => [
-            'instance'  => 'manchester-user-finder@default',
+            'session'  => 'manchester-user-finder@default',
             'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         // locate single user using ldap account for searching
         'global-user@default' => [
-            'instance'  => 'london-user-finder@default',
+            'session'  => 'london-user-finder@default',
             'base'      => 'ou=people,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'london-user@default' => [
-            'instance'  => 'london-user-finder@default',
+            'session'  => 'london-user-finder@default',
             'base'      => 'ou=people,ou=london,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'manchester-user@default' => [
-            'instance'  => 'manchester-user-finder@default',
+            'session'  => 'manchester-user-finder@default',
             'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         // locate single user using ldap account for authentication
         'global-auth@default' => [
-            'instance'  => 'london-user-authenticator@default',
+            'session'  => 'london-user-authenticator@default',
             'base'      => 'ou=people,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => []],
         ],
         'london-auth@default' => [
-            'instance'  => 'london-user-authenticator@default',
+            'session'  => 'london-user-authenticator@default',
             'base'      => 'ou=people,ou=london,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => []],
         ],
         'manchester-auth@default' => [
-            'instance'  => 'manchester-user-authenticator@default',
+            'session'  => 'manchester-user-authenticator@default',
             'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => []],

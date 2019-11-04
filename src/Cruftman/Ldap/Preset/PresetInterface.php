@@ -27,13 +27,6 @@ interface PresetInterface extends TemplateOptionsInterface
      * @return Service|null
      */
     public function getLdapService() : ?Service;
-
-    /**
-     * Returns other preset of same type.
-     *
-     * @return PresetInterface|null
-     */
-    public function getSiblingPreset(string $name) : ?PresetInterface;
 }
 
 // vim: syntax=php sw=4 ts=4 et:

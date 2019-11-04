@@ -21,8 +21,8 @@ use Cruftman\Ldap\Preset\AuthRequest;
 use Cruftman\Ldap\Preset\AuthSource;
 use Cruftman\Ldap\Preset\Binding;
 use Cruftman\Ldap\Preset\Connection;
-use Cruftman\Ldap\Preset\Ldap;
-use Cruftman\Ldap\Preset\SearchQuery;
+use Cruftman\Ldap\Preset\Session;
+use Cruftman\Ldap\Preset\Search;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -72,9 +72,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *         "cn=admin,dc=example,dc=org",
  *         "admin",
  *       ]
- *    >>> $service->ldap('admin@cruftman');
- *    => Cruftman\Ldap\Preset\Ldap {#3104}
- *    >>> $service->ldap('admin@cruftman')->substOptions();
+ *    >>> $service->session('admin@cruftman');
+ *    => Cruftman\Ldap\Preset\Session {#3104}
+ *    >>> $service->session('admin@cruftman')->substOptions();
  *    => [
  *         "connection" => "cruftman",
  *         "bind" => "admin",
@@ -95,16 +95,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *      used to perform LDAP bind on existing instances of *LdapInterface*.
  *      Also, provides a method to perform these binds.
  *
- * - <a href="Preset/Ldap.html">Ldap</a>
+ * - <a href="Preset/Session.html">Session</a>
  *
  *      Encapsulates references to one connection and one binding preset. Also,
  *      provides a method to create instances of *LdapInterface* that are already
  *      bound using the binding preset.
  *
- * - <a href="Preset/SearchQuery.html">SearchQuery</a>
+ * - <a href="Preset/Search.html">Search</a>
  *
  *      Encapsulates an array of options necessary to define an LDAP search.
- *      The options include a reference to an Ldap preset, and all the query
+ *      The options include a reference to an Session preset, and all the query
  *      parameters such as base DN, search filter and so on. Also, provides
  *      a method to perform that query.
  *
@@ -119,7 +119,7 @@ class Service implements OptionsInterface
     /**
      * Initializes the service object.
      *
-     * @param array $confi$valueg
+     * @param array $options
      */
     public function __construct(array $options = [])
     {
@@ -139,7 +139,7 @@ class Service implements OptionsInterface
     /**
      * Returns a list of available connection presets.
      *
-     * @return array
+     * @return string[]
      */
     public function connections() : array
     {
@@ -149,7 +149,7 @@ class Service implements OptionsInterface
     /**
      * Returns a list of available binding presets.
      *
-     * @return array
+     * @return string[]
      */
     public function bindings() : array
     {
@@ -157,32 +157,32 @@ class Service implements OptionsInterface
     }
 
     /**
-     * Returns a list of available ldap presets.
+     * Returns a list of available session presets.
      *
-     * The returned array includes names of already created Ldap instances as
+     * The returned array includes names of already created Session instances as
      * well as those defined in config but not yet created.
      *
-     * @return array
+     * @return string[]
      */
-    public function ldaps() : array
+    public function sessions() : array
     {
-        return $this->getPresets(Ldap::class);
+        return $this->getPresets(Session::class);
     }
 
     /**
      * Returns a list of available search query presets.
      *
-     * @return array
+     * @return string[]
      */
-    public function searchQueries() : array
+    public function searches() : array
     {
-        return $this->getPresets(SearchQuery::class);
+        return $this->getPresets(Search::class);
     }
 
     /**
      * Returns a list of available authentication source presets.
      *
-     * @return array
+     * @return string[]
      */
     public function authSources() : array
     {
@@ -192,58 +192,54 @@ class Service implements OptionsInterface
     /**
      * Returns a Connection preset.
      *
-     * @param string $name
-     *
+     * @param string|array $options
      * @return Connection
      */
-    public function connection(string $name) : Connection
+    public function connection($options) : Connection
     {
-        return $this->getPreset(Connection::class, $name);
+        return $this->getPreset(Connection::class, $options);
     }
 
     /**
      * Returns a Binding preset.
      *
-     * @param string $name
-     *
+     * @param string|array $options
      * @return Binding
      */
-    public function binding(string $name) : Binding
+    public function binding($options) : Binding
     {
-        return $this->getPreset(Binding::class, $name);
+        return $this->getPreset(Binding::class, $options);
     }
 
     /**
-     * Returns an Ldap preset.
+     * Returns an Session preset.
      *
-     * @param  string $name
-     * @param  array $arguments
-     *
-     * @return Ldap
+     * @param  string|array $options
+     * @return Session
      */
-    public function ldap(string $name) : Ldap
+    public function session($options) : Session
     {
-        return $this->getPreset(Ldap::class, $name);
+        return $this->getPreset(Session::class, $options);
     }
 
     /**
-     * Returns a SearchQuery preset.
+     * Returns a Search preset.
      *
-     * @param  string $name
-     * @return SearchQuery
+     * @param  string|array $options
+     * @return Search
      */
-    public function searchQuery(string $name) : SearchQuery
+    public function searchQuery($options) : Search
     {
-        return $this->getPreset(SearchQuery::class, $name);
+        return $this->getPreset(Search::class, $options);
     }
 
     /**
      * Returns an AuthSource preset.
      *
-     * @param  string $name
+     * @param  string+array $options
      * @return AuthSource
      */
-    public function authSource(string $name) : AuthSource
+    public function authSource($options) : AuthSource
     {
         return $this->getPreset(AuthSource::class, $name);
     }
