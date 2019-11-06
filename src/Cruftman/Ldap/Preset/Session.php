@@ -33,6 +33,16 @@ class Session extends AbstractPreset
     }
 
     /**
+     * @todo Write documentation
+     * @return Connection
+     */
+    public function getConnection() : Connection
+    {
+        $service = $this->getLdapService();
+        return $service->getConnection($this->getOptionOrFail('connection'));
+    }
+
+    /**
      * Create new instance of LdapInterface.
      *
      * @param  array $arguments
@@ -42,12 +52,13 @@ class Session extends AbstractPreset
     {
         $service = $this->getLdapService();
 
-        $connection = $service->connection($this->substOptionOrFail('connection', $arguments));
+        $connectionOptions = $this->getOptionOrFail('connection');
+        $connection = $service->getConnection($connectionOptions);
 
         $ldap = $connection->createLdap($arguments);
 
-        if (($bindOption = $this->substOption('bind', $arguments)) !== null)  {
-            $binding = $service->binding($bindOption);
+        if (($bindOptions = $this->getOption('bind')) !== null)  {
+            $binding = $service->getBinding($bindOptions);
             $binding->bindLdapInterface($ldap, $arguments);
         }
 

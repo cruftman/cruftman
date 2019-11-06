@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Traits;
 
-use Cruftman\Ldap\Preset\AuthRequest;
+use Cruftman\Ldap\Preset\Auth;
 use Cruftman\Ldap\Preset\AuthSource;
 use Cruftman\Ldap\Preset\Binding;
 use Cruftman\Ldap\Preset\Connection;
@@ -43,6 +43,7 @@ trait HasPresets
         Session::class => 'sessions',
         Search::class => 'searches',
         AuthSource::class => 'auth_sources',
+        Auth::class => 'auth',
     ];
 
     /**
@@ -55,7 +56,8 @@ trait HasPresets
         Binding::class => [],
         Session::class => [],
         Search::class => [],
-        AuthSource::class => []
+        AuthSource::class => [],
+        Auth::class => [],
     ];
 
     /**
@@ -203,7 +205,7 @@ trait HasPresets
     }
 
     /**
-     * Creates a named preset.
+     * Creates a preset object.
      *
      * @param  string $class
      * @param  string|array $options

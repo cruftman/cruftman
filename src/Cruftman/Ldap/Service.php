@@ -17,7 +17,7 @@ use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Traits\HasPresets;
-use Cruftman\Ldap\Preset\AuthRequest;
+use Cruftman\Ldap\Preset\Auth;
 use Cruftman\Ldap\Preset\AuthSource;
 use Cruftman\Ldap\Preset\Binding;
 use Cruftman\Ldap\Preset\Connection;
@@ -164,7 +164,7 @@ class Service implements OptionsInterface
      *
      * @return string[]
      */
-    public function connections() : array
+    public function getConnections() : array
     {
         return $this->getPresets(Connection::class);
     }
@@ -174,7 +174,7 @@ class Service implements OptionsInterface
      *
      * @return string[]
      */
-    public function bindings() : array
+    public function getBindings() : array
     {
         return $this->getPresets(Binding::class);
     }
@@ -187,7 +187,7 @@ class Service implements OptionsInterface
      *
      * @return string[]
      */
-    public function sessions() : array
+    public function getSessions() : array
     {
         return $this->getPresets(Session::class);
     }
@@ -197,7 +197,7 @@ class Service implements OptionsInterface
      *
      * @return string[]
      */
-    public function searches() : array
+    public function getSearches() : array
     {
         return $this->getPresets(Search::class);
     }
@@ -207,9 +207,19 @@ class Service implements OptionsInterface
      *
      * @return string[]
      */
-    public function authSources() : array
+    public function getAuthSources() : array
     {
         return $this->getPresets(AuthSource::class);
+    }
+
+    /**
+     * Returns a list of available authentication presets.
+     *
+     * @return string[]
+     */
+    public function getAuths() : array
+    {
+        return $this->getPresets(Auth::class);
     }
 
     /**
@@ -218,7 +228,7 @@ class Service implements OptionsInterface
      * @param string|array $options
      * @return Connection
      */
-    public function connection($options) : Connection
+    public function getConnection($options) : Connection
     {
         return $this->getPreset(Connection::class, $options);
     }
@@ -229,7 +239,7 @@ class Service implements OptionsInterface
      * @param string|array $options
      * @return Binding
      */
-    public function binding($options) : Binding
+    public function getBinding($options) : Binding
     {
         return $this->getPreset(Binding::class, $options);
     }
@@ -240,7 +250,7 @@ class Service implements OptionsInterface
      * @param  string|array $options
      * @return Session
      */
-    public function session($options) : Session
+    public function getSession($options) : Session
     {
         return $this->getPreset(Session::class, $options);
     }
@@ -251,7 +261,7 @@ class Service implements OptionsInterface
      * @param  string|array $options
      * @return Search
      */
-    public function search($options) : Search
+    public function getSearch($options) : Search
     {
         return $this->getPreset(Search::class, $options);
     }
@@ -262,9 +272,19 @@ class Service implements OptionsInterface
      * @param  string|array $options
      * @return AuthSource
      */
-    public function authSource($options) : AuthSource
+    public function getAuthSource($options) : AuthSource
     {
         return $this->getPreset(AuthSource::class, $options);
+    }
+
+    /**
+     * Returns an Auth preset.
+     *
+     * @param string|array $options
+     */
+    public function getAuth($options) : Auth
+    {
+        return $this->getPreset(Auth::class, $options);
     }
 }
 

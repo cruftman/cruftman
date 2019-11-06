@@ -37,7 +37,8 @@ class AuthSource extends AbstractPreset
                  ->setAllowedTypes('sessions', 'array')
                  ->setAllowedTypes('search', ['string', 'array'])
                  ->setDefault('attempt', function (OptionsResolver $nested) {
-                     $nested->setRequired(['connections', 'bind'])
+                     $nested->setRequired(['bind'])
+                            ->setDefined(['connections'])
                             ->setAllowedTypes('connections', 'array')
                             ->setAllowedTypes('bind', ['string', 'array']);
                  });
@@ -45,66 +46,49 @@ class AuthSource extends AbstractPreset
 
     /**
      * @todo Write documentation.
-     * @param  array $arguments
      * @return Session[]
      */
-    public function sessions(array $arguments = []) : array
+    public function getSessions() : array
     {
         $service = $this->getLdapService();
         return array_map(function ($sessionOptions) use ($service) {
-            return $service->session($sessionOptions);
-        }, $this->substOption('sessions', $arguments, []));
+            return $service->getSession($sessionOptions);
+        }, $this->getOption('sessions', []));
     }
 
     /**
      * @todo Write documentation
-     * @param  AdapterInterface $ldap
-     * @param  array $arguments
-     * @return SearchQueryInterface|null
+     * @return Search|null
      */
-    public function createSearchQuery(AdapterInterface $ldap, array $arguments = []) : ?SearchQueryInterface
-    {
-        if (($searchOptions = $this->substOption('search', $arguments)) === null) {
-            return null;
-        }
-        return $this->getLdapService()->search($searchOptions)->createQuery($ldap, $arguments);
-    }
-
-    /**
-     * @todo Write documentation
-     * @param  BindingInterface $ldap
-     * @param  array $arguments
-     */
-    public function attempt(array $arguments = [])
+    public function getSearch() : ?Search
     {
         $service = $this->getLdapService();
-        $bindingOptions = $this->getOption('attempt.bind');
-        $binding = $service->binding($bindingOptions);
-
-        $connectionsOptions = $this->getOption('attempt.connections');
-        foreach ($connectionsOptions as $connectionOptions) {
-            $connection = $service->connection($connectionOptions);
-            $ldap = $connection->createLdap($arguments);
-            try {
-                if ($binding->bindLdapInterface($ldap, $arguments) === true) {
-                    // FIXME: this is ugly...
-                    return [
-                        'session' => $service->session(['connection' => $connection, 'binding' => $binding])
-                        'ldap' => $ldap,
-                        'bound' => true
-                    ];
-                }
-            } catch (LdapException $exception) {
-                switch($exception->getCode()) {
-                    case 0x31:  // Invalid credentials
-                    case -1:    // Connection error or such
-                        break;
-                    default:
-                        throw $exception;
-                }
-            }
+        if (($searchOptions = $this->getOption('search')) === null) {
+            return null;
         }
-        return null;
+        return $service->getSearch($searchOptions);
+    }
+
+    /**
+     * @todo Write documentation
+     * @return Connection[]
+     */
+    public function getAttemptConnections() : array
+    {
+        $service = $this->getLdapService();
+        return array_map(function ($connectionOptions) use ($service) {
+            return $service->getConnection($connectionOptions);
+        }, $this->getOption('attempt.connections', []));
+    }
+
+    /**
+     * @todo Write documentation
+     * @return Binding
+     */
+    public function getAttemptBinding() : Binding
+    {
+        $service = $this->getLdapService();
+        return $service->getBinding($this->getOptionOrFail('attempt.bind'));
     }
 }
 

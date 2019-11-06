@@ -173,21 +173,26 @@ return [
         ],
         'london-users' => [
             'sessions' => ['london-user-authenticator@default'],
-            'search' => 'london-users',
+            'search' => 'london-user',
             'attempt' => [
-                'connections' => ['default'],
                 'bind' => ['${dn}', '${password}'],
             ]
         ],
         'manchester-users' => [
             'sessions' => ['manchester-user-authenticator@default'],
-            'search' => 'manchester-users',
+            'search' => 'manchester-user',
             'attempt' => [
-                'connections' => ['default'],
                 'bind' => ['${dn}', '${password}'],
             ]
         ],
     ],
+
+    'auth' => [
+        'default' => [
+            'sources' => [ 'global-users', 'london-users', 'manchester-users' ],
+            'ambiguous' => 'first',
+        ]
+    ]
 
 
 //    /*
