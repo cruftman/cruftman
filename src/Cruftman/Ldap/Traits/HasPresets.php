@@ -13,13 +13,6 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Traits;
 
-use Cruftman\Ldap\Preset\Auth;
-use Cruftman\Ldap\Preset\AuthSource;
-use Cruftman\Ldap\Preset\Binding;
-use Cruftman\Ldap\Preset\Connection;
-use Cruftman\Ldap\Preset\Session;
-use Cruftman\Ldap\Preset\Search;
-
 use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -29,36 +22,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 trait HasPresets
 {
-    abstract public function getOption(string $name);
-    abstract public function getOptionOrFail(string $name);
-
-    /**
-     * Maps presets' class names onto keys in *$options*.
-     *
-     * @var array
-     */
-    protected $presetKeyByClass = [
-        Connection::class => 'connections',
-        Binding::class => 'bindings',
-        Session::class => 'sessions',
-        Search::class => 'searches',
-        AuthSource::class => 'auth_sources',
-        Auth::class => 'auth',
-    ];
+    abstract function getOption(string $name);
+    abstract function getOptionOrFail(string $name);
+    abstract function getPresetKeysByClasses() : array;
 
     /**
      * An array of instantiated preset objects by type.
      *
      * @var array
      */
-    protected $presetsByClass = [
-        Connection::class => [],
-        Binding::class => [],
-        Session::class => [],
-        Search::class => [],
-        AuthSource::class => [],
-        Auth::class => [],
-    ];
+    protected $presetsByClasses = [];
 
     /**
      * Check if ``$arg`` may be safely used as array key in a laravel
@@ -97,7 +70,7 @@ trait HasPresets
      */
     protected function configurePresetOptionsResolver(OptionsResolver $resolver)
     {
-        $options = array_unique(array_values($this->presetKeyByClass));
+        $options = array_unique(array_values($this->getPresetKeysByClasses()));
         $resolver->setDefined($options);
         foreach ($options as $option) {
             $resolver->setAllowedTypes($option, 'array[]');
@@ -115,7 +88,7 @@ trait HasPresets
      */
     public function getPresetOptionsKey(string $class) : ?string
     {
-        return $this->presetKeyByClass[$class] ?? null;
+        return ($this->getPresetKeysByClasses())[$class] ?? null;
     }
 
     /**
@@ -165,7 +138,7 @@ trait HasPresets
     {
         $key = $this->getPresetOptionsKeyOrFail($class);
         $optionKeys = array_keys($this->getOption($key, []));
-        $presetKeys = array_keys($this->presetsByClass[$class] ?? []);
+        $presetKeys = array_keys($this->pPresetsByClasses[$class] ?? []);
 
         return array_unique(array_merge($optionKeys, $presetKeys));
     }
@@ -197,11 +170,11 @@ trait HasPresets
      */
     protected function getPresetByName(string $class, string $name)
     {
-        if (($this->presetsByClass[$class][$name] ?? null) === null) {
+        if (($this->presetsByClasses[$class][$name] ?? null) === null) {
             $preset = $this->createPreset($class, $name);
-            $this->presetsByClass[$class][$name] = $preset;
+            $this->presetsByClasses[$class][$name] = $preset;
         }
-        return $this->presetsByClass[$class][$name];
+        return $this->presetsByClasses[$class][$name];
     }
 
     /**

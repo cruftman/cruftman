@@ -17,7 +17,7 @@ use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Traits\HasPresets;
-use Cruftman\Ldap\Preset\Auth;
+use Cruftman\Ldap\Preset\AuthSchema;
 use Cruftman\Ldap\Preset\AuthSource;
 use Cruftman\Ldap\Preset\Binding;
 use Cruftman\Ldap\Preset\Connection;
@@ -140,6 +140,19 @@ class Service implements OptionsInterface
         ValidatesOptions;
 
     /**
+     * Maps presets' class names onto keys in *$options*.
+     *
+     * @var array
+     */
+    protected $presetKeysByClasses = [
+        Connection::class => 'connections',
+        Binding::class => 'bindings',
+        Session::class => 'sessions',
+        Search::class => 'searches',
+        AuthSource::class => 'auth_sources'
+    ];
+
+    /**
      * Initializes the service object.
      *
      * @param array $options
@@ -157,6 +170,31 @@ class Service implements OptionsInterface
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
         $this->configurePresetOptionsResolver($resolver);
+        $resolver->setRequired(['auth_schema'])
+                 ->setAllowedTypes('auth_schema', 'array');
+    }
+
+    /**
+     * @todo Write documentation
+     * @return array
+     */
+    public function getPresetKeysByClasses() : array
+    {
+        return $this->presetKeysByClasses;
+    }
+
+    /**
+     * @todo Write documentation
+     * @return array
+     */
+    public function getPresetsByClasses() : array
+    {
+        return $this->presetsByClasses;
+    }
+
+    public function setPresetByName(string $class, string $name, PresetInterface $preset)
+    {
+        $this->presetsByClasses[$class][$name] = $preset;
     }
 
     /**
@@ -212,15 +250,15 @@ class Service implements OptionsInterface
         return $this->getPresets(AuthSource::class);
     }
 
-    /**
-     * Returns a list of available authentication presets.
-     *
-     * @return string[]
-     */
-    public function getAuths() : array
-    {
-        return $this->getPresets(Auth::class);
-    }
+//    /**
+//     * Returns a list of available authentication presets.
+//     *
+//     * @return string[]
+//     */
+//    public function getAuthSchemas() : array
+//    {
+//        return $this->getPresets(AuthSchema::class);
+//    }
 
     /**
      * Returns a Connection preset.
@@ -281,10 +319,12 @@ class Service implements OptionsInterface
      * Returns an Auth preset.
      *
      * @param string|array $options
+     * @return AuthSchema
      */
-    public function getAuth($options) : Auth
+    public function getAuthSchema() : AuthSchema
     {
-        return $this->getPreset(Auth::class, $options);
+        $options = $this->getOption('auth_schema');
+        return $this->getPreset(AuthSchema::class, $options);
     }
 }
 

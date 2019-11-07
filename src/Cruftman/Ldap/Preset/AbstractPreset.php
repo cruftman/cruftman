@@ -36,6 +36,51 @@ class AbstractPreset implements PresetInterface
         $this->setLdapService($ldapService);
         $this->setOptions($options);
     }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function getRelatedPreset(string $class, string $key, $default = null)
+    {
+        if (($options = $this->getOption($key)) === null) {
+            return $default;
+        }
+        return $this->getLdapService()->getPreset($class, $options);
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function getRelatedPresetOrFail(string $class, string $key)
+    {
+        return $this->getLdapService()->getPreset($class, $this->getOptionOrFail($key));
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function getRelatedPresetArray(string $class, string $key, $default = [])
+    {
+        if (($optionsArray = $this->getOption($key)) === null) {
+            return $default;
+        }
+        $service = $this->getLdapService();
+        return array_map(function ($options) use ($class, $service) {
+            return $service->getPreset($class, $options);
+        }, $optionsArray);
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function getRelatedPresetArrayOrFail(string $class, string $key)
+    {
+        $optionsArray = $this->getOptionOrFail($key);
+        $service = $this->getLdapService();
+        return array_map(function ($options) use ($class, $service) {
+            return $service->getPreset($class, $options);
+        }, $optionsArray);
+    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

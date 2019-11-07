@@ -50,10 +50,7 @@ class AuthSource extends AbstractPreset
      */
     public function getSessions() : array
     {
-        $service = $this->getLdapService();
-        return array_map(function ($sessionOptions) use ($service) {
-            return $service->getSession($sessionOptions);
-        }, $this->getOption('sessions', []));
+        return $this->getRelatedPresetArray(Session::class, 'sessions');
     }
 
     /**
@@ -62,11 +59,7 @@ class AuthSource extends AbstractPreset
      */
     public function getSearch() : ?Search
     {
-        $service = $this->getLdapService();
-        if (($searchOptions = $this->getOption('search')) === null) {
-            return null;
-        }
-        return $service->getSearch($searchOptions);
+        return $this->getRelatedPreset(Search::class, 'search');
     }
 
     /**
@@ -75,10 +68,7 @@ class AuthSource extends AbstractPreset
      */
     public function getAttemptConnections() : array
     {
-        $service = $this->getLdapService();
-        return array_map(function ($connectionOptions) use ($service) {
-            return $service->getConnection($connectionOptions);
-        }, $this->getOption('attempt.connections', []));
+        return $this->getRelatedPresetArray(Connection::class, 'attempt.connections');
     }
 
     /**
@@ -87,8 +77,7 @@ class AuthSource extends AbstractPreset
      */
     public function getAttemptBinding() : Binding
     {
-        $service = $this->getLdapService();
-        return $service->getBinding($this->getOptionOrFail('attempt.bind'));
+        return $this->getRelatedPresetOrFail(Binding::class, 'attempt.bind');
     }
 }
 
