@@ -14,9 +14,13 @@ declare(strict_types=1);
 namespace Cruftman\Ldap;
 
 use Cruftman\Ldap\Traits\HasLdapService;
+use Cruftman\Ldap\Preset\AuthSchema;
 use Cruftman\Ldap\Preset\AuthSource;
+use Cruftman\Ldap\Preset\Binding;
+use Cruftman\Ldap\Preset\Connection;
 use Cruftman\Ldap\Preset\Search;
 use Cruftman\Ldap\Preset\Session;
+use Cruftman\Ldap\Auth\SearchEntry;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 /**
@@ -25,11 +29,6 @@ use Korowai\Lib\Ldap\Exception\LdapException;
 class Auth
 {
     use HasLdapService;
-
-    /**
-     * @var Service
-     */
-    protected $service;
 
     /**
      * Initializes the Auth object.
@@ -43,12 +42,95 @@ class Auth
 
     /**
      * @todo Write documentation.
+     * @return AuthSchema
+     */
+    public function getAuthSchema()
+    {
+        return $this->getLdapService()->getAuthSchema();
+    }
+
+    /**
+     * @todo Write documentation.
+     * @return AuthSources[]
+     */
+    public function getAuthSources() : array
+    {
+        return $this->getAuthSchema()->getSources();
+    }
+
+    /**
+     * @todo Write documentation.
+     * @return string
+     */
+    public function getAmbiguous() : string
+    {
+        return $this->getAuthSchema()->getAmbiguous();
+    }
+
+    /**
+     * @todo Write documentation.
      *
      * @param  array $credentials
      */
     public function attempt(array $credentials = [])
     {
-        $searchResults = $this->search($credentials);
+        return $this->attemptDirectBind($credentials);
+    }
+
+    /**
+     * @todo Write documentation.
+     */
+    public function attemptDirectBind(array $arguments = [])
+    {
+        return $this->attemptDirectBindInSources($this->getAuthSources(), $arguments);
+    }
+
+    /**
+     * @todo Write documentation.
+     */
+    protected function attemptDirectBindInSources(array $authSources, array $arguments = [])
+    {
+        foreach ($authSources as $source) {
+            if ($source->getSearch() === null) {
+                $result = $this->attemptDirectBindInSource($source, $arguments);
+                if ($result !== null) {
+                    return $result;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @todo Write documentation.
+     */
+    protected function attemptDirectBindInSource(AuthSource $source, array $arguments = [])
+    {
+        $binding = $source->getAttemptBinding();
+        foreach ($source->getAttemptConnections() as $connection) {
+            try {
+                $ldap = $connection->createLdap($arguments);
+                if ($binding->bindLdapInterface($ldap, $arguments)) {
+                    return [
+                        'ldap' => $ldap,
+                        'dn' => $binding->substOption('0', $arguments),
+                        'source' => $source,
+                        //'binding' => $binding,
+                        //'arguments' => $arguments
+                    ];
+                }
+            } catch (LdapException $exception) {
+                switch ($exception->getCode()) {
+                    case -1:            // Connection problems etc. (try next connection)
+                        break;
+                    case 0x31:          // Invalid credentials
+                        return null;
+                    default:
+                        throw $exception;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -59,11 +141,22 @@ class Auth
      */
     public function search(array $arguments = [])
     {
-        $authSchema = $this->getLdapService()->getAuthSchema();
-        $authSources = $authSchema->getSources();
+        return $this->searchInSources($this->getAuthSources(), $arguments);
+    }
+
+    /**
+     * @todo Write documentation.
+     *
+     * @param  AuthSource[] $authSources
+     * @param  array $arguments
+     * @return array
+     */
+    protected function searchInSources(array $authSources, array $arguments = [])
+    {
         $results = [];
         foreach ($authSources as $source) {
-            $results = array_merge($results, $this->searchSource($source, $arguments));
+            $result = $this->searchInSource($source, $arguments);
+            $results = array_merge($results, $result);
         }
         return $results;
     }
@@ -74,53 +167,73 @@ class Auth
      * @param  AuthSource $source
      * @param  array $arguments
      */
-    protected function searchSource(AuthSource $source, array $arguments = [])
+    protected function searchInSource(AuthSource $source, array $arguments = []) : array
     {
         $results = [];
         if (($search = $source->getSearch()) !== null) {
             foreach ($source->getSessions() as $session) {
-                $result = $this->searchWithSession($search, $session, $arguments);
-                if ($result !== null) {
+                if (($result = $this->searchWithSession($search, $session, $arguments)) !== null) {
                     $results = array_merge($results, $result);
-                    break;
+                    break; // no need to try remaining sessions
                 }
             }
         }
-        return $results;
+        return array_map(function ($result) use ($source) {
+            return $result->setAuthSource($source);
+        }, $results);
     }
 
     /**
      * @todo Write documentation.
      *
-     * @param  AuthSource $source
+     * @param  Search $search
      * @param  Session $session
      * @param  array $arguments
+     * @return array|null
      */
-    protected function searchWithSession(Search $search, Session $session, array $arguments = [])
+    protected function searchWithSession(Search $search, Session $session, array $arguments = []) : ?array
     {
         try {
-            $ldap = $session->createLdap($arguments);
-            $query = $search->createQuery($ldap, $arguments);
-            $result = $query->getResult();
-            $entries = $result->getEntries(false);
+            $entries = $this->doSearch($search, $session, $arguments);
         } catch (LdapException $exception) {
-            switch ($exception->getCode()) {
-                case -1:
-                    return null;
-                default:
-                    throw $exception;
-            }
+            return $this->handleSearchException($exceptin);
         }
 
-        return array_map(function ($entry) use ($session) {
-            // FIXME: this is ugly...
-            return [
-                'dn' => $entry->getDn(),
-                'attributes' => $entry->getAttributes(),
-                'connection' => $session->getConnection(),
-            ];
+        $connection = $session->getConnection();
+        return array_map(function ($entry) use ($connection) {
+            return new SearchEntry($entry, $connection);
         }, $entries);
+    }
 
+    /**
+     * @todo Write documentation.
+     *
+     * @param  Search $search
+     * @param  Session $session
+     * @param  array $arguments
+     * @return array
+     */
+    protected function doSearch(Search $search, Session $session, array $arguments = []) : array
+    {
+        $ldap = $session->createLdap($arguments);
+        $query = $search->createQuery($ldap, $arguments);
+        $result = $query->getResult();
+        return $result->getEntries(false);
+    }
+
+    /**
+     * @todo Write documentation.
+     *
+     * @param  LdapException $exception
+     */
+    protected function handleSearchException(LdapException $exception)
+    {
+        switch ($exception->getCode()) {
+            case -1:
+                return null;
+            default:
+                throw $exception;
+        }
     }
 }
 
