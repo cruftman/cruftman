@@ -88,11 +88,11 @@ class Auth
     /**
      * @todo Write documentation.
      */
-    protected function attemptDirectBindInSources(array $authSources, array $arguments = [])
+    protected function attemptBindInSources(array $authSources, array $arguments = [])
     {
         foreach ($authSources as $source) {
             if ($source->getSearch() === null) {
-                $result = $this->attemptDirectBindInSource($source, $arguments);
+                $result = $this->attemptBindInSource($source, $arguments);
                 if ($result !== null) {
                     return $result;
                 }
@@ -104,7 +104,7 @@ class Auth
     /**
      * @todo Write documentation.
      */
-    protected function attemptDirectBindInSource(AuthSource $source, array $arguments = [])
+    protected function attemptBindInSource(AuthSource $source, array $arguments = [])
     {
         $binding = $source->getAttemptBinding();
         foreach ($source->getAttemptConnections() as $connection) {
