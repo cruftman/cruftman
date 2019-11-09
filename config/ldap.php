@@ -168,7 +168,8 @@ return [
         'global-users' => [
             'attempt' => [
                 'connections' => ['default'],
-                'bind' => ['uid=${username},ou=people,dc=example,dc=org', '${password}']
+                'bind' => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
+                //'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             ]
         ],
         'london-users' => [

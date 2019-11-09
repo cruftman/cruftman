@@ -20,7 +20,7 @@ use Cruftman\Ldap\Preset\Binding;
 use Cruftman\Ldap\Preset\Connection;
 use Cruftman\Ldap\Preset\Search;
 use Cruftman\Ldap\Preset\Session;
-use Cruftman\Ldap\Auth\SearchEntry;
+use Cruftman\Ldap\Auth\Entry;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 /**
@@ -82,7 +82,7 @@ class Auth
      */
     public function attemptDirectBind(array $arguments = [])
     {
-        return $this->attemptDirectBindInSources($this->getAuthSources(), $arguments);
+        return $this->attemptBindInSources($this->getAuthSources(), $arguments);
     }
 
     /**
@@ -107,30 +107,74 @@ class Auth
     protected function attemptBindInSource(AuthSource $source, array $arguments = [])
     {
         $binding = $source->getAttemptBinding();
-        foreach ($source->getAttemptConnections() as $connection) {
+ //       $filter = $source->substOption('attempt.filter', $arguments, '(objectclass=*)');
+        $connections = $source->getAttemptConnections();
+        if (($ldap = $this->attemptBindWithConnections($binding, $connections, $arguments)) === null) {
+            return null;
+        }
+    }
+
+    /**
+     * @todo Write documentation.
+     * @param  Binding $binding
+     * @param  Connection[] $connections
+     * @param  array $arguments
+     *
+     * @return LdapInterface|null
+     */
+    protected function attemptBindWithConnections(Binding $binding, array $connections, array $arguments = [])
+    {
+        foreach ($connections as $connection) {
             try {
-                $ldap = $connection->createLdap($arguments);
-                if ($binding->bindLdapInterface($ldap, $arguments)) {
-                    return [
-                        'ldap' => $ldap,
-                        'dn' => $binding->substOption('0', $arguments),
-                        'source' => $source,
-                        //'binding' => $binding,
-                        //'arguments' => $arguments
-                    ];
-                }
+                return $this->bindWithConnection($binding, $connection, $arguments);
+                //return $this->retrieveBindingEntry($ldap, $binding, $arguments);
             } catch (LdapException $exception) {
-                switch ($exception->getCode()) {
-                    case -1:            // Connection problems etc. (try next connection)
-                        break;
-                    case 0x31:          // Invalid credentials
-                        return null;
-                    default:
-                        throw $exception;
-                }
+                $this->handleLdapException($exception);
             }
         }
         return null;
+    }
+
+    /**
+     * @todo Write documentattion.
+     * @param  Binding $binding
+     * @param  Connection $connection
+     * @param  array $arguments
+     */
+    protected function bindWithConnection(Binding $binding, Connection $connection, array $arguments = []) : ?LdapInterface
+    {
+        $ldap = $connection->createLdap($arguments);
+        try {
+            if ($binding->bindLdapInterface($ldap, $arguments)) {
+                return $ldap;
+            }
+        } catch (LdapException $exception) {
+            if ($exception->getCode() !== 0x31) {
+                // code !== Invalid Credentials
+                throw $exception;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @todo Write documentation.
+     * @param  Binding $binding
+     * @param  array $arguments
+     */
+    protected function retrieveBindingEntry(Binding $binding, array $argument = []) : ?Entry
+    {
+        $dn = $binding->substOption('0', $arguments);
+        $filter = $source->substOption('attempt.filter', $arguments, '(objectclass=*)');
+        $entries = $ldap->search($dn, $filter, ['scope' => 'base'])->getEntries(false);
+        if (count($entries) === 0) {
+            return null;
+        } elseif (count($entries) === 1) {
+            return (new Entry(reset($entries)))->setAuthSource($source)->setConnection($connection);
+        } else {
+            // FIXME: more precise exception...
+            throw new \RuntimeException("internal error");
+        }
     }
 
     /**
@@ -196,12 +240,12 @@ class Auth
         try {
             $entries = $this->doSearch($search, $session, $arguments);
         } catch (LdapException $exception) {
-            return $this->handleSearchException($exceptin);
+            return $this->handleLdapException($exceptin);
         }
 
         $connection = $session->getConnection();
         return array_map(function ($entry) use ($connection) {
-            return new SearchEntry($entry, $connection);
+            return (new Entry($entry))->setConnection($connection);
         }, $entries);
     }
 
@@ -225,8 +269,9 @@ class Auth
      * @todo Write documentation.
      *
      * @param  LdapException $exception
+     * @throws LdapException
      */
-    protected function handleSearchException(LdapException $exception)
+    protected function handleLdapException(LdapException $exception)
     {
         switch ($exception->getCode()) {
             case -1:

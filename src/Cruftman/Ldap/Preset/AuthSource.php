@@ -38,9 +38,10 @@ class AuthSource extends AbstractPreset
                  ->setAllowedTypes('search', ['string', 'array'])
                  ->setDefault('attempt', function (OptionsResolver $nested) {
                      $nested->setRequired(['bind'])
-                            ->setDefined(['connections'])
+                            ->setDefined(['connections', 'filter'])
                             ->setAllowedTypes('connections', 'array')
-                            ->setAllowedTypes('bind', ['string', 'array']);
+                            ->setAllowedTypes('bind', ['string', 'array'])
+                            ->setAllowedTypes('filter', 'string');
                  });
     }
 
