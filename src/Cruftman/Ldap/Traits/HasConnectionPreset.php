@@ -16,35 +16,35 @@ namespace Cruftman\Ldap\Traits;
 use Cruftman\Ldap\Preset\Connection;
 
 /**
- * Add a protected attribute named *$connection* and public accessors.
+ * Add a protected attribute named *$connectionPreset* and public accessors.
  */
 trait HasConnectionPreset
 {
     /**
      * @var \Cruftman\Ldap\Preset\Connection
      */
-    protected $connection;
+    protected $connectionPreset;
 
     /**
-     * Sets $connection to the object.
+     * Sets Connection preset to the object.
      *
-     * @param  Connection $connection
+     * @param  Connection $preset
      * @return object $this
      */
-    public function setConnection(Connection $connection)
+    public function setConnectionPreset(Connection $preset)
     {
-        $this->connection = $connection;
+        $this->connectionPreset = $preset;
         return $this;
     }
 
     /**
-     * Returns the $connection.
+     * Returns the Connection preset.
      *
      * @return Connection|null
      */
-    public function getConnection() : ?Connection
+    public function getConnectionPreset() : ?Connection
     {
-        return $this->connection;
+        return $this->connectionPreset;
     }
 }
 

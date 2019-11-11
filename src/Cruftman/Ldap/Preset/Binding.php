@@ -30,9 +30,29 @@ class Binding extends AbstractPreset
      */
     public function bindLdapInterface(BindingInterface $ldap, array $arguments = [])
     {
-        $dn = $this->substOptionOrFail('0', $arguments);
-        $pw = $this->substOptionOrFail('1', $arguments);
-        return $ldap->bind($dn, $pw);
+        return $ldap->bind($this->getBindDn($arguments), $this->getBindPassword($arguments));
+    }
+
+    /**
+     * Returns the DN option.
+     *
+     * @param  array $arguments
+     * @return string
+     */
+    public function getBindDn(array $arguments = []) : string
+    {
+        return $this->substOptionOrFail('0', $arguments);
+    }
+
+    /**
+     * Returns the password option.
+     *
+     * @param  array $arguments
+     * @return string
+     */
+    public function getBindPassword(array $arguments = []) : string
+    {
+        return $this->substOptionOrFail('1', $arguments);
     }
 }
 

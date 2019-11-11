@@ -166,17 +166,17 @@ return [
         //
         'global-user-by-uuid' => [
             'base'      => 'ou=people,dc=example,dc=org',
-            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${entryuuid}))',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${useruuid}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'london-user-by-uuid' => [
             'base'      => 'ou=people,ou=london,dc=example,dc=org',
-            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${entryuuid}))',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${useruuid}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
         'manchester-user-by-uuid' => [
             'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
-            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${entryuuid}))',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${useruuid}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
     ],

@@ -16,35 +16,35 @@ namespace Cruftman\Ldap\Traits;
 use Cruftman\Ldap\Preset\AuthAttempt;
 
 /**
- * Add a protected attribute named *$authAttempt* and public accessors.
+ * Add a protected attribute named *$authAttemptPreset* and public accessors.
  */
 trait HasAuthAttemptPreset
 {
     /**
-     * @var \Cruftman\Ldap\Preset\AuthAttempt
+     * @var AuthAttempt
      */
-    protected $authAttempt;
+    protected $authAttemptPreset;
 
     /**
-     * Sets $authAttempt to the object.
+     * Sets AuthAttempt preset to the object.
      *
-     * @param  AuthAttempt $authAttempt
+     * @param  AuthAttempt $preset
      * @return object $this
      */
-    public function setAuthAttempt(AuthAttempt $authAttempt)
+    public function setAuthAttemptPreset(AuthAttempt $preset)
     {
-        $this->authAttempt = $authAttempt;
+        $this->authAttemptPreset = $preset;
         return $this;
     }
 
     /**
-     * Returns the $authAttempt.
+     * Returns the AuthAttempt preset.
      *
      * @return AuthAttempt|null
      */
-    public function getAuthAttempt() : ?AuthAttempt
+    public function getAuthAttemptPreset() : ?AuthAttempt
     {
-        return $this->authAttempt;
+        return $this->authAttemptPreset;
     }
 }
 

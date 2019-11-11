@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Auth;
 
 use Korowai\Lib\Ldap\EntryInterface;
-use Korowai\Lib\Ldap\LdapInterface;
 use Cruftman\Ldap\Traits\HasConnectionPreset;
-use Cruftman\Ldap\Traits\HasAuthSourcePreset;
 use Cruftman\Ldap\Traits\DecoratesEntryInterface;
 
 /**
@@ -25,18 +23,12 @@ use Cruftman\Ldap\Traits\DecoratesEntryInterface;
 class Entry implements EntryInterface
 {
     use HasConnectionPreset,
-        HasAuthSourcePreset,
         DecoratesEntryInterface;
 
     /**
-     * @var LdapInterface
+     * @var Source
      */
-    protected $userLdap;
-
-    /**
-     * @var bool
-     */
-    protected $authResult = false;
+    protected $source = null;
 
     /**
      * Initializes the object.
@@ -49,44 +41,23 @@ class Entry implements EntryInterface
     }
 
     /**
-     * @todo Write documentation.
-     * @param  LdapInterface|null $ldap
+     * Return the Source object used to find the entry.
+     * @return Source|null
+     */
+    public function getSource() : ?Source
+    {
+        return $this->source;
+    }
+
+    /**
+     * Set the Source object.
+     *
      * @return Entry $this
      */
-    public function setUserLdap(?LdapInterface $ldap)
+    public function setSource(?Source $source) : Entry
     {
-        $this->userLdap = $ldap;
+        $this->source = $source;
         return $this;
-    }
-
-    /**
-     * @todo Write documentation.
-     * @return LdapInterface|null
-     */
-    public function getUserLdap() : ?LdapInterface
-    {
-        return $this->userLdap;
-    }
-
-
-    /**
-     * @todo Write documentation.
-     * @param  bool $authResult
-     * @return Entry $this
-     */
-    public function setAuthResult(bool $authResult)
-    {
-        $this->authResult = $authResult;
-        return $this;
-    }
-
-    /**
-     * @todo Write documentation.
-     * @return bool
-     */
-    public function getAuthResult() : bool
-    {
-        return $this->authResult;
     }
 }
 

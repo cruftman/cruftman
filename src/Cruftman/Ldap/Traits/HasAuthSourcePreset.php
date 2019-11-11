@@ -16,35 +16,35 @@ namespace Cruftman\Ldap\Traits;
 use Cruftman\Ldap\Preset\AuthSource;
 
 /**
- * Add a protected attribute named *$authSource* and public accessors.
+ * Add a protected attribute named *$authSourcePreset* and public accessors.
  */
 trait HasAuthSourcePreset
 {
     /**
-     * @var \Cruftman\Ldap\Preset\AuthSource
+     * @var AuthSource
      */
-    protected $authSource;
+    protected $authSourcePreset;
 
     /**
-     * Sets $authSource to the object.
+     * Sets AuthSource preset to the object.
      *
-     * @param  AuthSource $authSource
+     * @param  AuthSource $preset
      * @return object $this
      */
-    public function setAuthSource(AuthSource $authSource)
+    public function setAuthSourcePreset(AuthSource $preset)
     {
-        $this->authSource = $authSource;
+        $this->authSourcePreset = $preset;
         return $this;
     }
 
     /**
-     * Returns the $authSource.
+     * Returns the AuthSource preset.
      *
      * @return AuthSource|null
      */
-    public function getAuthSource() : ?AuthSource
+    public function getAuthSourcePreset() : ?AuthSource
     {
-        return $this->authSource;
+        return $this->authSourcePreset;
     }
 }
 
