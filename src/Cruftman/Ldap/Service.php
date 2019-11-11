@@ -17,6 +17,7 @@ use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Traits\HasPresets;
+use Cruftman\Ldap\Preset\AuthAttempt;
 use Cruftman\Ldap\Preset\AuthSchema;
 use Cruftman\Ldap\Preset\AuthSource;
 use Cruftman\Ldap\Preset\Binding;
@@ -149,6 +150,7 @@ class Service implements OptionsInterface
         Binding::class => 'bindings',
         Session::class => 'sessions',
         Search::class => 'searches',
+        AuthAttempt::class => 'auth_attempts',
         AuthSource::class => 'auth_sources'
     ];
 
@@ -241,6 +243,16 @@ class Service implements OptionsInterface
     }
 
     /**
+     * Returns a list of available authentication attempt presets.
+     *
+     * @return string[]
+     */
+    public function getAuthAttempts() : array
+    {
+        return $this->getPresets(AuthAttempt::class);
+    }
+
+    /**
      * Returns a list of available authentication source presets.
      *
      * @return string[]
@@ -302,6 +314,17 @@ class Service implements OptionsInterface
     public function getSearch($options) : Search
     {
         return $this->getPreset(Search::class, $options);
+    }
+
+    /**
+     * Returns an AuthAttempt preset.
+     *
+     * @param  string|array $options
+     * @return AuthAttempt
+     */
+    public function getAuthAttempt($options) : AuthAttempt
+    {
+        return $this->getPreset(AuthAttempt::class, $options);
     }
 
     /**

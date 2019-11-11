@@ -3,12 +3,12 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Connections
+    | Connections (Connection presets)
     |--------------------------------------------------------------------------
     |
     | Configuration parameters for LDAP connections. Define as many connections
     | as you need. These named connection presets may be later referenced from
-    | other parts of this config.
+    | within other parts of this configuration.
     |
     | Detailed documentation of supported connection parameters may be found
     | in the documentation of the korowai framework (see the following link).
@@ -26,12 +26,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Bindings
+    | Bindings (Binding presets)
     |--------------------------------------------------------------------------
     |
     | Bind parameters for predefined LDAP accounts. Define as many bindings as
     | you need. These named presets may be later referenced from other parts of
-    | this config. Template bindings with ${placeholders} are supported as well.
+    | this configuration. Template bindings with ${placeholders} are supported
+    | as well.
     |
     | Each binding is a two-element array, with bind DN at offset 0 and
     | password at offset 1.
@@ -59,7 +60,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sessions
+    | Sessions (Session presets)
     |--------------------------------------------------------------------------
     |
     | An array of predefined LDAP sessios. Define as many sessions as you need.
@@ -97,7 +98,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Searches
+    | Searches (Search presets)
     |--------------------------------------------------------------------------
     |
     | An array of predefined LDAP search queries. Define as may searches as you
@@ -124,7 +125,9 @@ return [
     | The placeholder will be substituted with corresponding parameter's value.
     */
     'searches' => [
-        // list all users in a particular subtree
+        //
+        // List all users.
+        //
         'global-users' => [
             'base' => 'ou=people,dc=example,dc=org',
             'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
@@ -140,28 +143,90 @@ return [
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        // locate single in a particular subtree
-        'global-user' => [
+        //
+        // Search user by username.
+        //
+        'global-user-by-name' => [
             'base'      => 'ou=people,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        'london-user' => [
+        'london-user-by-name' => [
             'base'      => 'ou=people,ou=london,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
-        'manchester-user' => [
+        'manchester-user-by-name' => [
             'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
             'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(uid=${username}))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+        ],
+        //
+        // Locate user by unique identifier (like an uuid).
+        //
+        'global-user-by-uuid' => [
+            'base'      => 'ou=people,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${entryuuid}))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+        ],
+        'london-user-by-uuid' => [
+            'base'      => 'ou=people,ou=london,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${entryuuid}))',
+            'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+        ],
+        'manchester-user-by-uuid' => [
+            'base'      => 'ou=people,ou=manchester,dc=example,dc=org',
+            'filter'    => '(&(accountstatus=enabled)(enabledservice=cruftman)(entryuuid=${entryuuid}))',
             'options'   => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
         ],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Authentication sources
+    | Authentication sources (AuthSource presets)
     |--------------------------------------------------------------------------
+    |
+    | An array of predefined authentication sources. Define as many sources as
+    | you need for your authentication schema. An authentication source provides
+    | a way to search for a user using its username, to locate user using some
+    | sort of unique identifier like OpenLDAP entryUUID, and to authenticate user
+    | against LDAP once it is uniquely determined. The configuration of a single
+    | authentication source consists of several pieces:
+    |
+    |   - sessions
+    |       an array of Session presets used for searching; this option becomes
+    |       required when 'search' or 'locate' options are present,
+    |   - search
+    |       a Search preset used to search for a user in LDAP when its unique
+    |       identifier (like entryUUID) is NOT known to application,
+    |   - locate
+    |       a Search preset used to search for a user in LDAP when its unique
+    |       identifier (like entryUUID) is known to application,
+    |   - attempt
+    |       settings used to authenticate user, this is an array with the
+    |       following nested options
+    |
+    |       - bind
+    |           a Binding preset providing bind DN and password for the
+    |           bind method,
+    |       - connections
+    |           an array of Connection presets to use for binding,
+    |       - filter
+    |           an LDAP search filter to re-check user's entry after it's
+    |           successfully authenticated; the filter provides a way to
+    |           filter-out disabled accounts when using "direct bind"
+    |           authentication method (i.e. authenticating without prior
+    |           search).
+    |
+    | The 'sessions' and 'attempt.connections' arrays are used to setup a
+    | failover strategy. The consecutive Session/Connection presets from these
+    | arrays are tried in sequence in case of connection errors.
+    |
+    | The 'sessions' array is used when searching for a user prior to
+    | attempting its authentication (we call this as an "indirect bind"). If none
+    | of 'search' nor 'locate' is present, then it's assumed that a "direct bind"
+    | authentication is requested, in which case the application invokes bind
+    | function on an already known DN, without searching for user's entry.
     |
     */
     'auth_sources' => [
@@ -169,19 +234,22 @@ return [
             'attempt' => [
                 'connections' => ['default'],
                 'bind' => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
-                //'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
+                'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
+                'attributes' => ['*', 'entryuuid'],
             ]
         ],
         'london-users' => [
             'sessions' => ['london-user-authenticator@default'],
-            'search' => 'london-user',
+            'search' => 'london-user-by-name',
+            'locate' => 'london-user-by-uuid',
             'attempt' => [
                 'bind' => ['${dn}', '${password}'],
             ]
         ],
         'manchester-users' => [
             'sessions' => ['manchester-user-authenticator@default'],
-            'search' => 'manchester-user',
+            'search' => 'manchester-user-by-name',
+            'locate' => 'manchester-user-by-uuid',
             'attempt' => [
                 'bind' => ['${dn}', '${password}'],
             ]

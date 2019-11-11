@@ -14,13 +14,17 @@ declare(strict_types=1);
 namespace Cruftman\Ldap;
 
 use Cruftman\Ldap\Traits\HasLdapService;
+use Cruftman\Ldap\Preset\AuthAttempt;
 use Cruftman\Ldap\Preset\AuthSchema;
 use Cruftman\Ldap\Preset\AuthSource;
 use Cruftman\Ldap\Preset\Binding;
 use Cruftman\Ldap\Preset\Connection;
 use Cruftman\Ldap\Preset\Search;
 use Cruftman\Ldap\Preset\Session;
+
 use Cruftman\Ldap\Auth\Entry;
+use Cruftman\Ldap\Auth\Attempt;
+
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 /**
@@ -106,12 +110,12 @@ class Auth
      */
     protected function attemptBindInSource(AuthSource $source, array $arguments = [])
     {
-        $binding = $source->getAttemptBinding();
- //       $filter = $source->substOption('attempt.filter', $arguments, '(objectclass=*)');
-        $connections = $source->getAttemptConnections();
-        if (($ldap = $this->attemptBindWithConnections($binding, $connections, $arguments)) === null) {
-            return null;
+        $attempt = new Attempt($source->getAuthAttempt());
+        $result = $attempt->bindDirect($entry, $arguments);
+        if ($result) {
+            $entry->setAuthSource($source);
         }
+        return $entry;
     }
 
     /**

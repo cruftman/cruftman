@@ -19,6 +19,8 @@ use Korowai\Lib\Ldap\Exception\LdapException;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Ldap\Service;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
 /**
  * @todo Write documentation
@@ -33,16 +35,40 @@ class AuthSource extends AbstractPreset
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
         $resolver->setRequired(['attempt'])
-                 ->setDefined(['sessions', 'search'])
+                 ->setDefined(['sessions', 'search', 'locate'])
+                 ->setAllowedTypes('attempt', ['string', 'array'])
                  ->setAllowedTypes('sessions', 'array')
                  ->setAllowedTypes('search', ['string', 'array'])
-                 ->setDefault('attempt', function (OptionsResolver $nested) {
-                     $nested->setRequired(['bind'])
-                            ->setDefined(['connections', 'filter'])
-                            ->setAllowedTypes('connections', 'array')
-                            ->setAllowedTypes('bind', ['string', 'array'])
-                            ->setAllowedTypes('filter', 'string');
-                 });
+                 ->setAllowedTypes('locate', ['string', 'array']);
+
+        $this->setOptionsNormalizers($resolver);
+    }
+
+    /**
+     * @todo Write documentation.
+     * @param  OptionsResolver $resolver
+     */
+    protected function setOptionsNormalizers(OptionsResolver $resolver)
+    {
+        foreach (['search', 'locate'] as $key) {
+            $this->setSearchOptionNormalizer($resolver, $key);
+        }
+    }
+
+    /**
+     * @todo Write documentation.
+     * @param  OptionsResolver $resolver
+     * @param  string $key
+     */
+    protected function setSearchOptionNormalizer(OptionsResolver $resolver, string $key)
+    {
+        $resolver->setNormalizer($key, function (Options $options, $value) use ($key) {
+            if (($options['sessions'] ?? null) === null) {
+                $message = 'The required option "sessions" is missing (required by "'.$key.'" option)';
+                throw new MissingOptionsException($message);
+            }
+            return $value;
+        });
     }
 
     /**
@@ -65,20 +91,20 @@ class AuthSource extends AbstractPreset
 
     /**
      * @todo Write documentation
-     * @return Connection[]
+     * @return Search|null
      */
-    public function getAttemptConnections() : array
+    public function getLocate() : ?Search
     {
-        return $this->getRelatedPresetArray(Connection::class, 'attempt.connections');
+        return $this->getRelatedPreset(Search::class, 'locate');
     }
 
     /**
      * @todo Write documentation
-     * @return Binding
+     * @return AuthAttempt
      */
-    public function getAttemptBinding() : Binding
+    public function getAuthAttempt() : AuthAttempt
     {
-        return $this->getRelatedPresetOrFail(Binding::class, 'attempt.bind');
+        return $this->getRelatedPreset(AuthAttempt::class, 'attempt');
     }
 }
 
