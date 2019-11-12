@@ -33,9 +33,15 @@ class AuthSchema extends AbstractPreset
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
         $resolver->setRequired(['sources'])
-                 ->setDefined(['ambiguous'])
+                 ->setDefined(['ambiguous', 'arguments'])
                  ->setAllowedTypes('sources', 'array')
                  ->setAllowedTypes('ambiguous', 'string')
+                 ->setDefault('arguments', function (OptionsResolver $nested) {
+                     $nested->setDefined(['useruuid', 'username', 'password'])
+                            ->setAllowedTypes('useruuid', 'string')
+                            ->setAllowedTypes('username', 'string')
+                            ->setAllowedTypes('password', 'string');
+                 })
                  ->setAllowedValues('ambiguous', ['first', 'each', 'fail']);
     }
 

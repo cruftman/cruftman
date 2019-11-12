@@ -261,10 +261,52 @@ return [
     | Authentication schema
     |--------------------------------------------------------------------------
     |
+    |
+    |   - sources
+    |       an array of authentication sources to be used,  see auth_sources
+    |       above,
+    |
+    |   - ambiguous
+    |       defines a behavior applied when multiple user entries are found by
+    |       LDAP search when locating user entry to be authenticated, possible
+    |       values are:
+    |
+    |       - first
+    |           try to authenticate first of the multiple entries found, 
+    |       - each
+    |           try to authenticate each of the multiple entries found, until
+    |           success,
+    |       - fail
+    |           do not authenticate and return as if the authentication failed.
+    |
+    |   - arguments
+    |       maps canonical names of arguments onto actual named used by
+    |       application and in this configuration (as placeholders); for
+    |       example
+    |
+    |           'arguments' => [ 'username' => 'email' ],
+    |
+    |       means that the argument used to search user by its username will be
+    |       called will be 'email'; allowed canonical argument names are
+    |
+    |       - useruuid
+    |           a value used to uniquely determine user's entry across
+    |           authentication sources, usually an universally unique
+    |           identifier such as entryUUID (OpenLDAP) or objectGUID (AD),
+    |       - username
+    |           a value used to find user's entry across authentication sources
+    |           when useruuid is not applicable,
+    |       - password
+    |           a value used as password when attempting user authentication.
     */
     'auth_schema' => [
         'sources' => [ 'global-users', 'london-users', 'manchester-users' ],
         'ambiguous' => 'first',
+        'arguments' => [
+            // 'useruuid' => 'useruuid',
+            // 'username' => 'username',
+            // 'password' => 'password'
+        ]
     ]
 
 
