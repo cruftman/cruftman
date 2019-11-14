@@ -140,6 +140,7 @@ class Source
                 $this->rethrowIfUnrecoverable($exception);
             }
         }
+        // FIXME: notify that the whole failover algorithm failed.
         return [];
     }
 
@@ -162,7 +163,7 @@ class Source
     }
 
     /**
-     * Perform an actual search query.
+     * Perform search query.
      *
      * @param  Search $search
      * @param  Session $session

@@ -195,7 +195,8 @@ return [
     |
     |   - sessions
     |       an array of Session presets used for searching; this option becomes
-    |       required when 'search' or 'locate' options are present,
+    |       required when 'search' or 'locate' options are present; providing
+    |       more than one Session presets enables failover algorithm,
     |   - search
     |       a Search preset used to search for a user in LDAP when its unique
     |       identifier (like entryUUID) is NOT known to application,
@@ -272,7 +273,7 @@ return [
     |       values are:
     |
     |       - first
-    |           try to authenticate first of the multiple entries found, 
+    |           try to authenticate first of the multiple entries found,
     |       - each
     |           try to authenticate each of the multiple entries found, until
     |           success,
@@ -280,14 +281,14 @@ return [
     |           do not authenticate and return as if the authentication failed.
     |
     |   - arguments
-    |       maps canonical names of arguments onto actual named used by
+    |       maps canonical names of arguments onto actual names used by
     |       application and in this configuration (as placeholders); for
-    |       example
+    |       example:
     |
     |           'arguments' => [ 'username' => 'email' ],
     |
     |       means that the argument used to search user by its username will be
-    |       called will be 'email'; allowed canonical argument names are
+    |       called will be 'email'; supported canonical argument names are
     |
     |       - useruuid
     |           a value used to uniquely determine user's entry across

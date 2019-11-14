@@ -203,8 +203,8 @@ class Schema
      */
     protected function attemptIndirectBind(array $arguments = []) : bool
     {
-        // FIXME: make the 'useruuid' key configurable.
-        if (($arguments['useruuid'] ?? null) !== null) {
+        $uuidkey = $this->getAuthSchema()->substOption('arguments.useruuid', $arguments, 'useruuid');
+        if (($arguments[$uuidkey] ?? null) !== null) {
             $entries = $this->locate($arguments);
         } else {
             $entries = $this->search($arguments);
