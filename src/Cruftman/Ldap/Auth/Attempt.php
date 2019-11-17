@@ -15,23 +15,17 @@ namespace Cruftman\Ldap\Auth;
 
 use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
-use Korowai\Lib\Ldap\Entry as LdapEntry;
 
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 use Cruftman\Ldap\Preset\AuthAttempt;
 use Cruftman\Ldap\Preset\Connection;
 
 /**
- * @todo Write documentation.
+ * Attempts to bind user using one or more connections (failover).
  */
 class Attempt
 {
     use HasAuthAttemptPreset;
-
-    /**
-     * @var AttemptState
-     */
-    protected $state;
 
     /**
      * Initializes the object.
@@ -41,65 +35,62 @@ class Attempt
     public function __construct(AuthAttempt $preset)
     {
         $this->setAuthAttemptPreset($preset);
-        $this->state = null;
     }
 
     /**
-     * Returns the AttemptState object.
+     * Attempt to authenticate using LDAP bind method.
      *
-     * @return AttemptState|null
-     */
-    public function getState() : ?AttemptState
-    {
-        return $this->state;
-    }
-
-    /**
-     * Attempt to authenticate with the bind method.
-     *
+     * @param  Status $status
      * @param  array $arguments
      * @param  Connection|null $connection
-     * @return bool
-     */
-    public function bind(array $arguments = [], ?Connection $connection = null) : bool
-    {
-        $this->state = null;
-        if ($connection === null) {
-            $connections = $this->getAuthAttemptPreset()->getConnections();
-            return $this->tryConnections($connections, $arguments);
-        } else {
-            return $this->tryConnection($connection, $arguments);
-        }
-    }
-
-    /**
-     * @todo Write documentation.
-     * @param  Connection[] $connections
-     * @param  array $arguments
+     *
      * @return bool
      * @throws LdapException
      */
-    protected function tryConnections(array $connections, array $arguments = []) : bool
+    public function bind(Status $status, array $arguments, ?Connection $connection = null) : bool
     {
-        $binding = $this->getAuthAttemptPreset()->getBinding();
+        if ($connection !== null) {
+            $connections = [$connection];
+        } else {
+            $connections = $this->getAuthAttemptPreset()->getConnections();
+        }
+        return $this->tryConnections($status, $connections, $arguments);
+    }
+
+    /**
+     * Tries to bind using Connection presets specified in $connections.
+     *
+     * @param  Status $status
+     * @param  Connection[] $connections
+     * @param  array $arguments
+     *
+     * @return bool
+     * @throws LdapException
+     */
+    protected function tryConnections(Status $status, array $connections, array $arguments) : bool
+    {
         foreach ($connections as $connection) {
             try {
-                return $this->tryConnection($connection, $arguments);
+                return $this->tryConnection($status, $connection, $arguments);
             } catch (LdapException $exception) {
                 $this->rethrowIfUnrecoverable($exception);
             }
         }
+        $status->resetBindStatus();
         return false;
     }
 
     /**
-     * Tries to bind using the Binding preset and the Connection preset specified.
+     * Tries to bind using the Connection preset specified in $connection.
      *
+     * @param  Status $status
      * @param  Connection $connection
      * @param  array $arguments
+     *
      * @return bool
+     * @throws LdapException
      */
-    protected function tryConnection(Connection $connection, array $arguments = []) : bool
+    protected function tryConnection(Status $status, Connection $connection, array $arguments) : bool
     {
         $binding = $this->getAuthAttemptPreset()->getBinding();
 
@@ -114,13 +105,11 @@ class Attempt
             $result = false;
         }
 
-        if ($result) {
-            $this->state = new AttemptState([
-                'bindDn' => $binding->getBindDn($arguments),
-                'bindLdap' => $ldap,
-                'bindConnection' => $connection,
-            ]);
-        }
+        $status->setBindResult($result)
+               ->setBindDn($binding->getBindDn($arguments))
+               ->setBindLdap($ldap)
+               ->setBindConnection($connection);
+
         return $result;
     }
 

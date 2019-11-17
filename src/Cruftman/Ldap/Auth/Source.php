@@ -114,7 +114,7 @@ class Source
      * @param  array $arguments
      * @return array
      */
-    protected function searchWithPreset(?Search $search, array $arguments = []) : array
+    protected function searchWithPreset(?Search $search, array $arguments) : array
     {
         if ($search === null) {
             return [];
@@ -131,7 +131,7 @@ class Source
      * @param  array $arguments
      * @return Entry[]
      */
-    protected function searchWithSessions(Search $search, array $sessions, array $arguments = []) : array
+    protected function searchWithSessions(Search $search, array $sessions, array $arguments) : array
     {
         foreach ($sessions as $session) {
             try {
@@ -152,7 +152,7 @@ class Source
      * @param  array $arguments
      * @return Entry[]
      */
-    protected function searchWithSession(Search $search, Session $session, array $arguments = []) : array
+    protected function searchWithSession(Search $search, Session $session, array $arguments) : array
     {
         $entries = $this->doSearchWithSession($search, $session, $arguments);
         $connection = $session->getConnection();
@@ -170,7 +170,7 @@ class Source
      * @param  array $arguments
      * @return Korowai\Lib\Ldap\Entry[]
      */
-    protected function doSearchWithSession(Search $search, Session $session, array $arguments = []) : array
+    protected function doSearchWithSession(Search $search, Session $session, array $arguments) : array
     {
         $ldap = $session->createLdap($arguments);
         $query = $search->createQuery($ldap, $arguments);
