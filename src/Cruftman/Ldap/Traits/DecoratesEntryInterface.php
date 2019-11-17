@@ -21,31 +21,11 @@ use Korowai\Lib\Ldap\EntryInterface;
 trait DecoratesEntryInterface
 {
     /**
-     * @var EntryInterface
-     */
-    protected $entry;
-
-    /**
-     * Sets $entry to the object.
-     *
-     * @param  EntryInterface $entry
-     * @return object $this
-     */
-    public function setEntry(EntryInterface $entry)
-    {
-        $this->entry = $entry;
-        return $this;
-    }
-
-    /**
      * Returns the $entry.
      *
      * @return EntryInterface|null
      */
-    public function getEntry() : ?EntryInterface
-    {
-        return $this->entry;
-    }
+    abstract public function getEntry() : ?EntryInterface;
 
     /**
      * {@inheritdoc}

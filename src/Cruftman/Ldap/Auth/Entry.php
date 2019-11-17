@@ -15,6 +15,7 @@ namespace Cruftman\Ldap\Auth;
 
 use Korowai\Lib\Ldap\EntryInterface;
 use Cruftman\Ldap\Traits\HasConnectionPreset;
+use Cruftman\Ldap\Traits\HasEntry;
 use Cruftman\Ldap\Traits\DecoratesEntryInterface;
 
 /**
@@ -23,6 +24,7 @@ use Cruftman\Ldap\Traits\DecoratesEntryInterface;
 class Entry implements EntryInterface
 {
     use HasConnectionPreset,
+        HasEntry,
         DecoratesEntryInterface;
 
     /**
