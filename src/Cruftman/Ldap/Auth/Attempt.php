@@ -62,7 +62,7 @@ class Attempt
      * Tries to bind using Connection presets specified in $connections.
      *
      * @param  Status $status
-     * @param  Connection[] $connections
+     * @param  array $connections
      * @param  array $arguments
      *
      * @return bool
@@ -82,7 +82,7 @@ class Attempt
     }
 
     /**
-     * Tries to bind using the Connection preset specified in $connection.
+     * Tries to bind using a Connection preset.
      *
      * @param  Status $status
      * @param  Connection $connection

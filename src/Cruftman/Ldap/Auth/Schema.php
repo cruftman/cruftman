@@ -25,16 +25,6 @@ class Schema
     use HasAuthSchemaPreset;
 
     /**
-     * @var AttemptState
-     */
-    protected $attemptState = null;
-
-    /**
-     * @var Entry
-     */
-    protected $attemptEntry = null;
-
-    /**
      * @var Source[]
      */
     protected $sources = null;
@@ -86,47 +76,17 @@ class Schema
 
     /**
      * @todo Write documentation.
-     * @return string
-     */
-    public function getAmbiguousOption() : string
-    {
-        return $this->getAuthSchemaPreset()->getAmbiguous();
-    }
-
-    /**
-     * Returns the AttemptState object.
      *
-     * @return AttemptState|null
-     */
-    public function getAttemptState() : ?AttemptState
-    {
-        return $this->attemptState;
-    }
-
-    /**
-     * Returns the Entry used by attempt().
-     *
-     * @return Entry|null
-     */
-    public function getAttemptEntry() : ?Entry
-    {
-        return $this->attemptEntry;
-    }
-
-    /**
-     * @todo Write documentation.
-     *
+     * @param  Status $status
      * @param  array $credentials
      * @return bool
      */
-    public function attempt(array $credentials = []) : bool
+    public function attempt(Status $status, array $credentials) : bool
     {
-        $this->attemptState = null;
-        $this->attemptEntry = null;
-        if ($this->attemptDirectBind($credentials)) {
+        if ($this->attemptDirectBind($status, $credentials)) {
             return true;
         }
-        return $this->attemptIndirectBind($credentials);
+        return $this->attemptIndirectBind($status, $credentials);
     }
 
     /**
@@ -154,24 +114,27 @@ class Schema
     /**
      * @todo Write documentation.
      */
-    protected function attemptDirectBind(array $arguments = [])
+    protected function attemptDirectBind(Status $status, array $arguments)
     {
         $sources = array_filter($this->getSources(), function ($source) {
             return (($source->getSearchPreset() === null) && ($source->getLocatePreset() === null));
         });
-        return $this->attemptDirectBindWithSources($sources, $arguments);
+        return $this->attemptDirectBindWithSources($status, $sources, $arguments);
     }
 
     /**
      * @todo Write documentation.
+     *
+     * @param  Status $status
      * @param  Source[] $sources
      * @param  array $arguments
+     *
      * @return bool
      */
-    protected function attemptDirectBindWithSources(array $sources, array $arguments = []) : bool
+    protected function attemptDirectBindWithSources(Status $status, array $sources, array $arguments) : bool
     {
         foreach ($sources as $source) {
-            if ($this->attemptDirectBindWithSource($source, $arguments)) {
+            if ($this->attemptDirectBindWithSource($status, $source, $arguments)) {
                 return true;
             }
         }
@@ -180,17 +143,19 @@ class Schema
 
     /**
      * @todo Write documentation.
+     *
+     * @param  Status $status
      * @param  Source $source
      * @param  array $arguments
+     *
      * @return bool
      */
-    protected function attemptDirectBindWithSource(Source $source, array $arguments = []) : bool
+    protected function attemptDirectBindWithSource(Status $status, Source $source, array $arguments) : bool
     {
         $attempt = $source->getAttempt();
-        if (!$attempt->bind($arguments)) {
+        if (!$attempt->bind($status, $arguments)) {
             return false;
         }
-        $this->attemptState = $attempt->getState()->setSource($source);
         return true;
     }
 
@@ -198,38 +163,42 @@ class Schema
      * Make an indirect bind attempt by first searching for bind DN and then
      * trying to bind.
      *
+     * @param  Status $status
      * @param  array $arguments
      * @return bool
      */
-    protected function attemptIndirectBind(array $arguments = []) : bool
+    protected function attemptIndirectBind(Status $status, array $arguments) : bool
     {
-        $uuidkey = $this->getAuthSchema()->substOption('arguments.useruuid', $arguments, 'useruuid');
+        $uuidkey = $this->getAuthSchemaPreset()->substOption('arguments.useruuid', $arguments, 'useruuid');
         if (($arguments[$uuidkey] ?? null) !== null) {
             $entries = $this->locate($arguments);
         } else {
             $entries = $this->search($arguments);
         }
 
-        return $this->attemptIndirectBindEntries($entries, $arguments);
+        return $this->attemptIndirectBindEntries($status, $entries, $arguments);
     }
 
     /**
      * @todo Write documentation.
-     * @param  Entry[] $entries
+     *
+     * @param  Status $status
+     * @param  array $entries
      * @param  array $arguments
+     *
      * @return bool
      */
-    protected function attemptIndirectBindEntries(array $entries, array $arguments = []) : bool
+    protected function attemptIndirectBindEntries(Status $status, array $entries, array $arguments) : bool
     {
-        $ambiguous = $this->getAmbiguousOption();
+        $ambiguous = $this->getAuthSchemaPreset()->getAmbiguous();
         $count = count($entries);
 
         if ($count === 0) {
             return false;
         } elseif ($count === 1 || $ambiguous === 'first') {
-            return $this->attemptBindEntry($entries[0], $arguments);
+            return $this->attemptBindEntry($status, $entries[0], $arguments);
         } elseif ($ambiguous === 'each') {
-            return $this->attemptBindEntries($entries, $arguments);
+            return $this->attemptBindEntries($status, $entries, $arguments);
         } else {
             return false;
         }
@@ -239,14 +208,16 @@ class Schema
      * Attempt to bind using DNs and connections of the $entries (previously
      * found within our sources).
      *
-     * @param  Entry[] $entries
+     * @param  Status $status
+     * @param  array $entries
      * @param  array $arguments
+     *
      * @return bool
      */
-    protected function attemptBindEntries(array $entries, array $arguments = []) : bool
+    protected function attemptBindEntries(Status $status, array $entries, array $arguments = []) : bool
     {
         foreach ($entries as $entry) {
-            if ($this->attemptBindEntry($entry, $arguments)) {
+            if ($this->attemptBindEntry($status, $entry, $arguments)) {
                 return true;
             }
         }
@@ -256,11 +227,13 @@ class Schema
     /**
      * Attempt to bind using $entry's DN and connection preset.
      *
+     * @param  Status $status
      * @param  Entry $entry
      * @param  array $arguments
+     *
      * @return bool
      */
-    protected function attemptBindEntry(Entry $entry, array $arguments = [])
+    protected function attemptBindEntry(Status $status, Entry $entry, array $arguments)
     {
         $connection = $entry->getConnectionPreset();
         $source = $entry->getSource();
@@ -269,21 +242,20 @@ class Schema
         }
         $attempt = $source->getAttempt();
         $arguments = array_merge(['dn' => $entry->getDn()], $arguments);
-        if (!$attempt->bind($arguments, $connection)) {
+        if (!$attempt->bind($status, $arguments, $connection)) {
             return false;
         }
-        $this->attemptState = $attempt->getState()->setSource($source);
-        $this->attemptEntry = $entry;
         return true;
     }
 
     /**
-     * @todo Write documentation.
+     * Find user in authentication sources.
      *
-     * @param  Source[] $sources
+     * @param  array $sources
      * @param  string $method
      * @param  array $arguments
-     * @return array
+     *
+     * @return Entry[]
      */
     protected function findWithSources(array $sources, string $method, array $arguments = [])
     {
