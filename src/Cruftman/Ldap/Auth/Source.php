@@ -127,7 +127,7 @@ class Source
      * Search using multiple Session presets (failover).
      *
      * @param  Search $search
-     * @param  Session[] $session
+     * @param  Session[] $sessions
      * @param  array $arguments
      * @return Entry[]
      */

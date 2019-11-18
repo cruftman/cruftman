@@ -59,7 +59,7 @@ class AbstractPreset implements PresetInterface
     /**
      * @todo Write documentation
      */
-    protected function getRelatedPresetArray(string $class, string $key, $default = [])
+    protected function getRelatedPresetsArray(string $class, string $key, $default = [])
     {
         if (($optionsArray = $this->getOption($key)) === null) {
             return $default;
@@ -73,7 +73,7 @@ class AbstractPreset implements PresetInterface
     /**
      * @todo Write documentation
      */
-    protected function getRelatedPresetArrayOrFail(string $class, string $key)
+    protected function getRelatedPresetsArrayOrFail(string $class, string $key)
     {
         $optionsArray = $this->getOptionOrFail($key);
         $service = $this->getLdapService();

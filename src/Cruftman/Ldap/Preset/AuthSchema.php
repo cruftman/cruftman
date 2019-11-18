@@ -51,7 +51,7 @@ class AuthSchema extends AbstractPreset
      */
     public function getSources() : array
     {
-        return $this->getRelatedPresetArrayOrFail(AuthSource::class, 'sources');
+        return $this->getRelatedPresetsArrayOrFail(AuthSource::class, 'sources');
     }
 
     /**

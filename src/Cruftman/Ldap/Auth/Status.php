@@ -79,7 +79,7 @@ class Status
     /**
      * Set the bind result.
      *
-     * @param  bool|null $dn
+     * @param  bool|null $result
      * @return Status $this
      */
     public function setBindResult(?bool $result) : Status
@@ -167,7 +167,7 @@ class Status
     /**
      * Sets the Source object used for authentication.
      *
-     * @param  Source|null $authSource
+     * @param  Source|null $source
      * @return Status $this
      */
     public function setSource(?Source $source) : Status

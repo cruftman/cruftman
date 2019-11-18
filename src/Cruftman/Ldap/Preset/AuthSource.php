@@ -77,7 +77,7 @@ class AuthSource extends AbstractPreset
      */
     public function getSessions() : array
     {
-        return $this->getRelatedPresetArray(Session::class, 'sessions');
+        return $this->getRelatedPresetsArray(Session::class, 'sessions');
     }
 
     /**

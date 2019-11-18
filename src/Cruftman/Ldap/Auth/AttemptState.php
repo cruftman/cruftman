@@ -132,7 +132,7 @@ class AttemptState
     /**
      * Sets the Source object used for authentication.
      *
-     * @param  Source|null $authSource
+     * @param  Source|null $source
      * @return AttemptState $this
      */
     public function setSource(?Source $source) : AttemptState

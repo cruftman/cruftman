@@ -53,6 +53,7 @@ class Attempt
             $connections = [$connection];
         } else {
             $connections = $this->getAuthAttemptPreset()->getConnections();
+            // FIXME: connections can be null here, we should check and throw!
         }
         return $this->tryConnections($status, $connections, $arguments);
     }

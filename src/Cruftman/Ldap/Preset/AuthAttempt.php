@@ -24,6 +24,11 @@ class AuthAttempt extends AbstractPreset
 {
     use ValidatesOptions;
 
+    /**
+     * Configures OptionsResolver for the AuthAttempt Preset.
+     *
+     * @param  OptionsResolver $resolver
+     */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
          $resolver->setRequired(['bind'])
@@ -35,21 +40,16 @@ class AuthAttempt extends AbstractPreset
     }
 
     /**
-     * @todo Write documentation
+     * Returns array of Connection presets as listed in ``'connections'`` option.
      * @return Connection[]|null
      */
     public function getConnections() : ?array
     {
-        if (($connectionsOptions = $this->getOption('connections')) === null) {
-            return null;
-        }
-        return array_map(function ($options) {
-            return $this->getLdapService()->getConnection($options);
-        }, $connectionsOptions);
+        return $this->getRelatedPresetsArray(Connection::class, 'connections', null);
     }
 
     /**
-     * @todo Write documentation
+     * Returns the Binding Preset as declared in ``'bind'`` option.
      * @return Binding|null
      */
     public function getBinding() : Binding

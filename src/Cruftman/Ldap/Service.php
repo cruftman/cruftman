@@ -341,7 +341,6 @@ class Service implements OptionsInterface
     /**
      * Returns an Auth preset.
      *
-     * @param string|array $options
      * @return AuthSchema
      */
     public function getAuthSchema() : AuthSchema
