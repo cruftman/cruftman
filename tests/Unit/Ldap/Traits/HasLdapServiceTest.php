@@ -17,9 +17,9 @@ class HasLdapServiceTest extends TestCase
 
         $this->assertNull($object->getLdapService());
 
-        $service = $this->createStub(Service::class);
-        $this->assertSame($object, $object->setLdapService($service));
+        $stub = $this->createStub(Service::class);
+        $this->assertSame($object, $object->setLdapService($stub));
 
-        $this->assertSame($service, $object->getLdapService());
+        $this->assertSame($stub, $object->getLdapService());
     }
 }

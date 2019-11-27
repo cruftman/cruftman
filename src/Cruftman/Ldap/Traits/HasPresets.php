@@ -115,7 +115,7 @@ trait HasPresets
     public function getPresetOptions(string $class, string $name) : ?array
     {
         $key = $this->getPresetOptionsKey($class);
-        return $key === null ? null : $this->getOptions($key.'.'.$name);
+        return $key === null ? null : $this->getOption($key.'.'.$name);
     }
 
     /**
@@ -138,7 +138,7 @@ trait HasPresets
     {
         $key = $this->getPresetOptionsKeyOrFail($class);
         $optionKeys = array_keys($this->getOption($key, []));
-        $presetKeys = array_keys($this->pPresetsByClasses[$class] ?? []);
+        $presetKeys = array_keys($this->presetsByClasses[$class] ?? []);
 
         return array_unique(array_merge($optionKeys, $presetKeys));
     }
