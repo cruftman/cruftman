@@ -16,7 +16,7 @@ namespace Cruftman\Ldap;
 use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
-use Cruftman\Support\Traits\HasPresets;
+use Cruftman\Support\Traits\AggregatesPresets;
 use Cruftman\Support\Preset\PresetInterface;
 use Cruftman\Support\Preset\AggregateInterface as PresetsAggregateInterface;
 use Cruftman\Ldap\Preset\AuthAttempt;
@@ -138,7 +138,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class Service implements OptionsInterface, PresetsAggregateInterface
 {
-    use HasPresets,
+    use AggregatesPresets,
         HasOptions,
         ValidatesOptions;
 

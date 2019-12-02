@@ -4,7 +4,7 @@ namespace Tests\Unit\Support\Traits;
 
 use PHPUnit\Framework\TestCase;
 
-use Cruftman\Support\Traits\HasPresets;
+use Cruftman\Support\Traits\AggregatesPresets;
 use Cruftman\Support\Preset\PresetInterface;
 use Cruftman\Support\Exceptions\PresetException;
 use Cruftman\Support\Exceptions\OptionNotFoundException;
@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
-class HasPresetsTest extends TestCase
+class AggregatesPresetsTest extends TestCase
 {
     protected function allTraitMethods() : array
     {
@@ -53,7 +53,7 @@ class HasPresetsTest extends TestCase
     protected function createTestObject(?array $options = null)
     {
         return new class ($options) {
-            use HasPresets;
+            use AggregatesPresets;
             public function __construct(?array $options = null) {
                 $this->options = $options;
             }
@@ -244,7 +244,7 @@ class HasPresetsTest extends TestCase
             'getNamedPresetByName',
             'createNamedPreset'
         ];
-        $object = $this->getMockBuilder(HasPresets::class)
+        $object = $this->getMockBuilder(AggregatesPresets::class)
                        ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 
@@ -277,7 +277,7 @@ class HasPresetsTest extends TestCase
             'getNamedPreset',
             'createNamedPreset'
         ];
-        $object = $this->getMockBuilder(HasPresets::class)
+        $object = $this->getMockBuilder(AggregatesPresets::class)
                        ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 
@@ -304,7 +304,7 @@ class HasPresetsTest extends TestCase
             'getSingletonPreset',
             'createSingletonPreset'
         ];
-        $object = $this->getMockBuilder(HasPresets::class)
+        $object = $this->getMockBuilder(AggregatesPresets::class)
                        ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 
@@ -337,7 +337,7 @@ class HasPresetsTest extends TestCase
             'getSingletonPreset',
             'createSingletonPreset'
         ];
-        $object = $this->getMockBuilder(HasPresets::class)
+        $object = $this->getMockBuilder(AggregatesPresets::class)
                        ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 

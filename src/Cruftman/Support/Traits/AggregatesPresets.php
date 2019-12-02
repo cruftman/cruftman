@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Support/Traits/HasPresets.php
+ * @file src/Cruftman/Support/Traits/AggregatesPresets.php
  *
  * This file is part of the Cruftman package
  *
@@ -23,7 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Presets aggregate implementation.
  */
-trait HasPresets
+trait AggregatesPresets
 {
     abstract function getOption(string $name);
     abstract function getOptionOrFail(string $name);
