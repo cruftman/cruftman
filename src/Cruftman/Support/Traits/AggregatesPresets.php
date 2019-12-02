@@ -15,7 +15,7 @@ namespace Cruftman\Support\Traits;
 
 use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
-use Cruftman\Support\Preset\PresetInterface;
+use Cruftman\Support\PresetInterface;
 use Cruftman\Support\Exceptions\PresetException;
 use Cruftman\Support\Exceptions\OptionNotFoundException;
 use Symfony\Component\OptionsResolver\OptionsResolver;

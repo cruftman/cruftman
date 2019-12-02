@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Support/Preset/AbstractPreset.php
+ * @file src/Cruftman/Support/AbstractPreset.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Support\Preset;
+namespace Cruftman\Support;
 
 use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\HasPresetsAggregate;
@@ -27,10 +27,10 @@ class AbstractPreset implements PresetInterface
     /**
      * Initializes the object.
      *
-     * @param  AggregateInterface $presetsAggregate
+     * @param  PresetsAggregateInterface $presetsAggregate
      * @param  array $options
      */
-    public function __construct(AggregateInterface $presetsAggregate, array $options)
+    public function __construct(PresetsAggregateInterface $presetsAggregate, array $options)
     {
         $this->setPresetsAggregate($presetsAggregate);
         $this->setOptions($options);

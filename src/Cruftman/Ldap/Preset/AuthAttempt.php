@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\LdapInterface;
-use Cruftman\Support\Preset\AbstractPreset;
+use Cruftman\Support\AbstractPreset;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 

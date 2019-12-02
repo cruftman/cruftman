@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Support/Preset/PresetInterface.php
+ * @file src/Cruftman/Support/PresetInterface.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Support\Preset;
+namespace Cruftman\Support;
 
 use Cruftman\Support\TemplateOptionsInterface;
 
@@ -21,7 +21,7 @@ use Cruftman\Support\TemplateOptionsInterface;
  * A **preset** object represents a part of larger configuration array. Multiple
  * fragments of a single configuration array are represented by multiple
  * **preset** objects maintained by a single
- * <a href="AggregateInterface.html">preset aggregate</a>.
+ * <a href="PresetsAggregateInterface.html">preset aggregate</a>.
  * In addition to *options* encapsulated in **preset**, the object also
  * provides a reference to its **aggregate**.
  */
@@ -30,9 +30,9 @@ interface PresetInterface extends TemplateOptionsInterface
     /**
      * Returns the aggregate containing this presset.
      *
-     * @return AggregateInterface|null
+     * @return PresetsAggregateInterface|null
      */
-    public function getPresetsAggregate() : ?AggregateInterface;
+    public function getPresetsAggregate() : ?PresetsAggregateInterface;
 }
 
 // vim: syntax=php sw=4 ts=4 et:

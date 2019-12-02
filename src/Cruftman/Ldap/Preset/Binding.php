@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\Adapter\BindingInterface;
-use Cruftman\Support\Preset\AbstractPreset;
+use Cruftman\Support\AbstractPreset;
 
 /**
  * Binding Preset.

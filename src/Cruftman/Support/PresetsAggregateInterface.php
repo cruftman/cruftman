@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Support/Preset/AggregateInterface.php
+ * @file src/Cruftman/Support/PresetsAggregateInterface.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Support\Preset;
+namespace Cruftman\Support;
 
 /**
  * Interface for **presets aggregate** objects.
@@ -85,7 +85,7 @@ namespace Cruftman\Support\Preset;
  * named ``ldap1`` and the other named ``ldap2``. They may be used as follows
  *
  * ```
- *  // $presets is an instance of AggregateInterface
+ *  // $presets is an instance of PresetsAggregateInterface
  *
  *  $ldap1 = $presets->getNamedPreset(Connection::class, "ldap1");
  *  assert($ldap1->getOptions() === ['url' => 'ldaps://ldap1.example.com']);
@@ -149,7 +149,7 @@ namespace Cruftman\Support\Preset;
  * ``getPresetOptionsKey()`` method:
  *
  * ```
- *  // let $presets be our an instance of AggregateInterface
+ *  // let $presets be our an instance of PresetsAggregateInterface
  *
  *  //  Connection
  *  assert($presets->getPresetOptionsKey(Connection::class) === 'connections');
@@ -163,7 +163,7 @@ namespace Cruftman\Support\Preset;
  *  assert($presets->getPresetOptionsKey(AuthSchema::class) === 'auth_sources');
  * ```
  */
-interface AggregateInterface
+interface PresetsAggregateInterface
 {
     /**
      * @todo Write documentation

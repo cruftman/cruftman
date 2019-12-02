@@ -5,7 +5,7 @@ namespace Tests\Unit\Support\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Support\Traits\HasPresetsAggregate;
-use Cruftman\Support\Preset\AggregateInterface;
+use Cruftman\Support\PresetsAggregateInterface;
 
 class HasPresetsAggregateTest extends TestCase
 {
@@ -17,7 +17,7 @@ class HasPresetsAggregateTest extends TestCase
 
         $this->assertNull($object->getPresetsAggregate());
 
-        $stub = $this->createStub(AggregateInterface::class);
+        $stub = $this->createStub(PresetsAggregateInterface::class);
         $this->assertSame($object, $object->setPresetsAggregate($stub));
 
         $this->assertSame($stub, $object->getPresetsAggregate());

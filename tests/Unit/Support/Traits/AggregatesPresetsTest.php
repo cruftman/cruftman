@@ -5,7 +5,7 @@ namespace Tests\Unit\Support\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Support\Traits\AggregatesPresets;
-use Cruftman\Support\Preset\PresetInterface;
+use Cruftman\Support\PresetInterface;
 use Cruftman\Support\Exceptions\PresetException;
 use Cruftman\Support\Exceptions\OptionNotFoundException;
 use Illuminate\Support\Arr;

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Support\Traits;
 
-use Cruftman\Support\Preset\AggregateInterface;
+use Cruftman\Support\PresetsAggregateInterface;
 
 /**
  * Add a protected attribute named *$presetsAggregate* and public accessors.
@@ -21,17 +21,17 @@ use Cruftman\Support\Preset\AggregateInterface;
 trait HasPresetsAggregate
 {
     /**
-     * @var \Cruftman\Support\AggregateInterface
+     * @var \Cruftman\Support\PresetsAggregateInterface
      */
     protected $presetsAggregate;
 
     /**
      * Sets $presetsAggregate to the object.
      *
-     * @param  AggregateInterface $presetsAggregate
+     * @param  PresetsAggregateInterface $presetsAggregate
      * @return object $this
      */
-    public function setPresetsAggregate(AggregateInterface $presetsAggregate)
+    public function setPresetsAggregate(PresetsAggregateInterface $presetsAggregate)
     {
         $this->presetsAggregate = $presetsAggregate;
         return $this;
@@ -40,9 +40,9 @@ trait HasPresetsAggregate
     /**
      * Returns the $presetsAggregate.
      *
-     * @return AggregateInterface|null
+     * @return PresetsAggregateInterface|null
      */
-    public function getPresetsAggregate() : ?AggregateInterface
+    public function getPresetsAggregate() : ?PresetsAggregateInterface
     {
         return $this->presetsAggregate;
     }
