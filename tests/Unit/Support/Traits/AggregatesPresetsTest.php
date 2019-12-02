@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
 class AggregatesPresetsTest extends TestCase
 {
-    protected function allTraitMethods() : array
+    protected function allMethods() : array
     {
         return [
             'isValidOptionKey',
@@ -35,9 +35,9 @@ class AggregatesPresetsTest extends TestCase
         ];
     }
 
-    protected function allTraitMethodsExcept(array $except) : array
+    protected function allMethodsExcept(array $except) : array
     {
-        return array_filter($this->allTraitMethods(), function ($m) use ($except) {
+        return array_filter($this->allMethods(), function ($m) use ($except) {
             return !in_array($m, $except);
         });
     }
@@ -45,7 +45,7 @@ class AggregatesPresetsTest extends TestCase
     protected function preventCallingTraitMethdosExcept($mock, array $except)
     {
         // expect no methods other than these two
-        foreach($this->allTraitMethodsExcept($except) as $method) {
+        foreach($this->allMethodsExcept($except) as $method) {
             $mock->expects($this->never())->method($method);
         }
     }
@@ -245,7 +245,7 @@ class AggregatesPresetsTest extends TestCase
             'createNamedPreset'
         ];
         $object = $this->getMockBuilder(AggregatesPresets::class)
-                       ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
+                       ->setMethods($this->allMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 
         // expect no methods other than these two
@@ -278,7 +278,7 @@ class AggregatesPresetsTest extends TestCase
             'createNamedPreset'
         ];
         $object = $this->getMockBuilder(AggregatesPresets::class)
-                       ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
+                       ->setMethods($this->allMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 
         // expect no methods other than these two
@@ -305,7 +305,7 @@ class AggregatesPresetsTest extends TestCase
             'createSingletonPreset'
         ];
         $object = $this->getMockBuilder(AggregatesPresets::class)
-                       ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
+                       ->setMethods($this->allMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 
         // expect no methods other than these two
@@ -338,7 +338,7 @@ class AggregatesPresetsTest extends TestCase
             'createSingletonPreset'
         ];
         $object = $this->getMockBuilder(AggregatesPresets::class)
-                       ->setMethods($this->allTraitMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
+                       ->setMethods($this->allMethodsExcept($unsetMethods)) // setMethodsExcept() didn't work ...
                        ->getMockForTrait();
 
         // expect no methods other than these two
