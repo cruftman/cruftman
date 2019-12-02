@@ -15,16 +15,19 @@ namespace Cruftman\Ldap\Traits;
 
 use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
+use Cruftman\Ldap\Exceptions\PresetException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @todo Write documentation
+ * Ldap presets aggregate.
  */
 trait HasPresets
 {
     abstract function getOption(string $name);
     abstract function getOptionOrFail(string $name);
     abstract function getPresetKeysByClasses() : array;
+    abstract function isSingletonPreset(string $class) : ?bool;
+    abstract function createPresetWithOptions(string $class, array $options) : PresetInterface;
 
     /**
      * An array of instantiated preset objects by type.
@@ -97,13 +100,12 @@ trait HasPresets
      *
      * @param  string $class
      * @return string
-     * @throws \Exception
+     * @throws PresetException
      */
     public function getPresetOptionsKeyOrFail(string $class) : string
     {
         if (($key = $this->getPresetOptionsKey($class)) === null) {
-            // FIXME: specialized exception
-            throw new \Exception('unsupported Preset class "'.$class.'"');
+            throw new PresetException('"'.$class.'" is not a supported ldap preset class');
         }
         return $key;
     }
@@ -112,8 +114,11 @@ trait HasPresets
      * @todo Write documentation
      * @return array|null
      */
-    public function getPresetOptions(string $class, string $name) : ?array
+    public function getNamedPresetOptions(string $class, string $name) : ?array
     {
+        if ($this->isSingletonPreset($class)) {
+            return null;
+        }
         $key = $this->getPresetOptionsKey($class);
         return $key === null ? null : $this->getOption($key.'.'.$name);
     }
@@ -122,10 +127,39 @@ trait HasPresets
      * @todo Write documentation
      * @return array
      */
-    public function getPresetOptionsOrFail(string $class, string $name) : array
+    public function getNamedPresetOptionsOrFail(string $class, string $name) : array
     {
+        if ($this->isSingletonPreset($class)) {
+            throw new PresetException('"'.$class.'" is a singleton ldap preset');
+        }
         $key = $this->getPresetOptionsKeyOrFail($class);
         return $this->getOptionOrFail($key.'.'.$name);
+    }
+
+    /**
+     * @todo Write documentation
+     * @return array|null
+     */
+    public function getSingletonPresetOptions(string $class) : ?array
+    {
+        if ($this->isSingletonPreset($class) === false) {
+            return null;
+        }
+        $key = $this->getPresetOptionsKey($class);
+        return $key === null ? null : $this->getOption($key);
+    }
+
+    /**
+     * @todo Write documentation
+     * @return array
+     */
+    public function getSingletonPresetOptionsOrFail(string $class) : array
+    {
+        if ($this->isSingletonPreset($class) === false) {
+            throw new PresetException('"'.$class.'" is not a singleton ldap preset');
+        }
+        $key = $this->getPresetOptionsKeyOrFail($class);
+        return $this->getOptionOrFail($key);
     }
 
     /**
@@ -134,7 +168,7 @@ trait HasPresets
      * @param  string $class
      * @return string[]
      */
-    public function getPresets(string $class) : array
+    public function getNamedPresetsNames(string $class) : array
     {
         $key = $this->getPresetOptionsKeyOrFail($class);
         $optionKeys = array_keys($this->getOption($key, []));
@@ -144,18 +178,18 @@ trait HasPresets
     }
 
     /**
-     * Returns a preset of a given type.
+     * Returns a named preset of a given type.
      *
      * @param  string $class
      * @param  string|array $options
      * @return object
      */
-    public function getPreset(string $class, $options)
+    public function getNamedPreset(string $class, $options)
     {
         if (is_string($options)) {
-            return $this->getPresetByName($class, $options);
+            return $this->getNamedPresetByName($class, $options);
         } else {
-            return $this->createPreset($class, $options);
+            return $this->createNamedPreset($class, $options);
         }
     }
 
@@ -168,28 +202,63 @@ trait HasPresets
      * @param  string $name
      * @return object
      */
-    protected function getPresetByName(string $class, string $name)
+    protected function getNamedPresetByName(string $class, string $name)
     {
         if (($this->presetsByClasses[$class][$name] ?? null) === null) {
-            $preset = $this->createPreset($class, $name);
+            $preset = $this->createNamedPreset($class, $name);
             $this->presetsByClasses[$class][$name] = $preset;
         }
         return $this->presetsByClasses[$class][$name];
     }
 
     /**
-     * Creates a preset object.
+     * Creates a named preset object.
      *
      * @param  string $class
      * @param  string|array $options
      * @return object
      */
-    protected function createPreset(string $class, $options)
+    protected function createNamedPreset(string $class, $options)
     {
         if (is_string($options)) {
-            $options = $this->getPresetOptionsOrFail($class, $options);
+            $options = $this->getNamedPresetOptionsOrFail($class, $options);
         }
-        return new $class($this, $options);
+        return $this->createPresetWithOptions($class, $options);
+    }
+
+    /**
+     * Returns a singleton preset of a given type.
+     *
+     * @param  string $class
+     * @param  array|null $options
+     * @return object
+     */
+    public function getSingletonPreset(string $class, ?array $options = null)
+    {
+        if (is_null($options)) {
+            if (($this->presetsByClasses[$class] ?? null) === null) {
+                $preset = $this->createSingletonPreset($class, $options);
+                $this->presetsByClasses[$class] = $preset;
+            }
+            return $this->presetsByClasses[$class];
+        } else {
+            return $this->createSingletonPreset($class, $options);
+        }
+    }
+
+    /**
+     * Creates a singleton preset object.
+     *
+     * @param  string $class
+     * @param  string|array $options
+     * @return object
+     */
+    protected function createSingletonPreset(string $class, ?array $options = null)
+    {
+        if (is_null($options)) {
+            $options = $this->getSingletonPresetOptionsOrFail($class);
+        }
+        return $this->createPresetWithOptions($class, $options);
     }
 }
 

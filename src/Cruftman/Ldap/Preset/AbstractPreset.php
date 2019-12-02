@@ -45,7 +45,7 @@ class AbstractPreset implements PresetInterface
         if (($options = $this->getOption($key)) === null) {
             return $default;
         }
-        return $this->getLdapService()->getPreset($class, $options);
+        return $this->getLdapService()->getNamedPreset($class, $options);
     }
 
     /**
@@ -53,7 +53,7 @@ class AbstractPreset implements PresetInterface
      */
     protected function getRelatedPresetOrFail(string $class, string $key)
     {
-        return $this->getLdapService()->getPreset($class, $this->getOptionOrFail($key));
+        return $this->getLdapService()->getNamedPreset($class, $this->getOptionOrFail($key));
     }
 
     /**
@@ -66,7 +66,7 @@ class AbstractPreset implements PresetInterface
         }
         $service = $this->getLdapService();
         return array_map(function ($options) use ($class, $service) {
-            return $service->getPreset($class, $options);
+            return $service->getNamedPreset($class, $options);
         }, $optionsArray);
     }
 
@@ -78,7 +78,7 @@ class AbstractPreset implements PresetInterface
         $optionsArray = $this->getOptionOrFail($key);
         $service = $this->getLdapService();
         return array_map(function ($options) use ($class, $service) {
-            return $service->getPreset($class, $options);
+            return $service->getNamedPreset($class, $options);
         }, $optionsArray);
     }
 }
