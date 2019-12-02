@@ -192,7 +192,7 @@ class Service implements OptionsInterface, PresetsAggregateInterface
      * @todo Write documentation
      * @return bool
      */
-    protected function isSingletonPreset(string $class) : ?bool
+    public function isSingletonPreset(string $class) : ?bool
     {
         return array_key_exists($class, $this->getPresetKeysByClasses()) ? ($class === AuthSchema::class) : null;
     }

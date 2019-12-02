@@ -89,6 +89,15 @@ trait AggregatesPresets
     }
 
     /**
+     * @todo Write documentation
+     * @return array
+     */
+    public function getPresetClasses() : array
+    {
+        return array_keys($this->getPresetKeysByClasses());
+    }
+
+    /**
      * Get a root key to options array for given preset class.
      *
      * @param  string $class

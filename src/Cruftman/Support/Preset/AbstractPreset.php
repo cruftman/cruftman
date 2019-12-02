@@ -17,7 +17,7 @@ use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\HasPresetsAggregate;
 
 /**
- * Abstract base class for presets.
+ * Abstract base class for <a href="PresetInterface.html">presets</a>.
  */
 class AbstractPreset implements PresetInterface
 {
@@ -39,7 +39,7 @@ class AbstractPreset implements PresetInterface
     /**
      * @todo Write documentation
      */
-    protected function getRelatedPreset(string $class, string $key, $default = null)
+    protected function getRelatedPreset(string $class, string $key, $default = null) : ?PresetInterface
     {
         if (($options = $this->getOption($key)) === null) {
             return $default;
@@ -50,7 +50,7 @@ class AbstractPreset implements PresetInterface
     /**
      * @todo Write documentation
      */
-    protected function getRelatedPresetOrFail(string $class, string $key)
+    protected function getRelatedPresetOrFail(string $class, string $key) : PresetInterface
     {
         return $this->getPresetsAggregate()->getNamedPreset($class, $this->getOptionOrFail($key));
     }
@@ -58,7 +58,7 @@ class AbstractPreset implements PresetInterface
     /**
      * @todo Write documentation
      */
-    protected function getRelatedPresetsArray(string $class, string $key, $default = [])
+    protected function getRelatedPresetsArray(string $class, string $key, array $default = []) : array
     {
         if (($optionsArray = $this->getOption($key)) === null) {
             return $default;
@@ -72,7 +72,7 @@ class AbstractPreset implements PresetInterface
     /**
      * @todo Write documentation
      */
-    protected function getRelatedPresetsArrayOrFail(string $class, string $key)
+    protected function getRelatedPresetsArrayOrFail(string $class, string $key) : array
     {
         $optionsArray = $this->getOptionOrFail($key);
         $service = $this->getPresetsAggregate();

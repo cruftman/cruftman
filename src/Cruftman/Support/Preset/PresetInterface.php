@@ -16,7 +16,14 @@ namespace Cruftman\Support\Preset;
 use Cruftman\Support\TemplateOptionsInterface;
 
 /**
- * Interface provided by a Preset.
+ * Interface for **preset** objects.
+ *
+ * A **preset** object represents a part of larger configuration array. Multiple
+ * fragments of a single configuration array are represented by multiple
+ * **preset** objects maintained by a single
+ * <a href="AggregateInterface.html">preset aggregate</a>.
+ * In addition to *options* encapsulated in **preset**, the object also
+ * provides a reference to its **aggregate**.
  */
 interface PresetInterface extends TemplateOptionsInterface
 {

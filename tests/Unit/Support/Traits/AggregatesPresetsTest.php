@@ -20,6 +20,7 @@ class AggregatesPresetsTest extends TestCase
             'isValidOptionKey',
             'allKeysAreValidOptionKeys',
             'configurePresetOptionsResolver',
+            'getPresetClasses',
             'getPresetOptionsKey',
             'getPresetOptionsKeyOrFail',
             'getNamedPresetOptions',
@@ -135,6 +136,12 @@ class AggregatesPresetsTest extends TestCase
         $this->expectException(InvalidOptionsException::class);
         $this->expectExceptionMessage('option "foos" with value array');
         $this->assertSame($options, $resolver->resolve($options));
+    }
+
+    public function test__getPresetClasses()
+    {
+        $object = $this->createTestObject();
+        $this->assertSame(['Class\\Foo', 'Class\\Bar', 'Class\Geez'], $object->getPresetClasses());
     }
 
     public function test__getPresetOptionsKey()
