@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Preset/PresetInterface.php
+ * @file src/Cruftman/Support/Preset/PresetInterface.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,22 +11,21 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Preset;
+namespace Cruftman\Support\Preset;
 
 use Cruftman\Support\TemplateOptionsInterface;
-use Cruftman\Ldap\Service;
 
 /**
- * Interface provided by an Ldap Preset.
+ * Interface provided by a Preset.
  */
 interface PresetInterface extends TemplateOptionsInterface
 {
     /**
-     * Returns the related LDAP Service object.
+     * Returns the aggregate containing this presset.
      *
-     * @return Service|null
+     * @return AggregateInterface|null
      */
-    public function getLdapService() : ?Service;
+    public function getPresetsAggregate() : ?AggregateInterface;
 }
 
 // vim: syntax=php sw=4 ts=4 et:

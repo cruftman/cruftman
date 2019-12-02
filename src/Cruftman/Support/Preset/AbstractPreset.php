@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Preset/AbstractPreset.php
+ * @file src/Cruftman/Support/Preset/AbstractPreset.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,11 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Preset;
+namespace Cruftman\Support\Preset;
 
 use Cruftman\Support\Traits\HasTemplateOptions;
-use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Traits\HasLdapService;
+use Cruftman\Support\Traits\HasPresetsAggregate;
 
 /**
  * Abstract base class for presets.
@@ -23,17 +22,17 @@ use Cruftman\Ldap\Traits\HasLdapService;
 class AbstractPreset implements PresetInterface
 {
     use HasTemplateOptions,
-        HasLdapService;
+        HasPresetsAggregate;
 
     /**
-     * Initializes the Ldap object.
+     * Initializes the object.
      *
-     * @param  Service $ldapService
+     * @param  AggregateInterface $presetsAggregate
      * @param  array $options
      */
-    public function __construct(Service $ldapService, array $options)
+    public function __construct(AggregateInterface $presetsAggregate, array $options)
     {
-        $this->setLdapService($ldapService);
+        $this->setPresetsAggregate($presetsAggregate);
         $this->setOptions($options);
     }
 
@@ -45,7 +44,7 @@ class AbstractPreset implements PresetInterface
         if (($options = $this->getOption($key)) === null) {
             return $default;
         }
-        return $this->getLdapService()->getNamedPreset($class, $options);
+        return $this->getPresetsAggregate()->getNamedPreset($class, $options);
     }
 
     /**
@@ -53,7 +52,7 @@ class AbstractPreset implements PresetInterface
      */
     protected function getRelatedPresetOrFail(string $class, string $key)
     {
-        return $this->getLdapService()->getNamedPreset($class, $this->getOptionOrFail($key));
+        return $this->getPresetsAggregate()->getNamedPreset($class, $this->getOptionOrFail($key));
     }
 
     /**
@@ -64,7 +63,7 @@ class AbstractPreset implements PresetInterface
         if (($optionsArray = $this->getOption($key)) === null) {
             return $default;
         }
-        $service = $this->getLdapService();
+        $service = $this->getPresetsAggregate();
         return array_map(function ($options) use ($class, $service) {
             return $service->getNamedPreset($class, $options);
         }, $optionsArray);
@@ -76,7 +75,7 @@ class AbstractPreset implements PresetInterface
     protected function getRelatedPresetsArrayOrFail(string $class, string $key)
     {
         $optionsArray = $this->getOptionOrFail($key);
-        $service = $this->getLdapService();
+        $service = $this->getPresetsAggregate();
         return array_map(function ($options) use ($class, $service) {
             return $service->getNamedPreset($class, $options);
         }, $optionsArray);

@@ -16,6 +16,7 @@ namespace Cruftman\Ldap\Preset;
 //use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 //use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
+use Cruftman\Support\Preset\AbstractPreset;
 use Cruftman\Support\Traits\ValidatesOptions;
 //use Cruftman\Ldap\Service;
 use Symfony\Component\OptionsResolver\OptionsResolver;

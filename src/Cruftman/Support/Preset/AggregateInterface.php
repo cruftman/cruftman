@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Exceptions/PresetException.php
+ * @file src/Cruftman/Support/Preset/AggregateInterface.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,9 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Exceptions;
+namespace Cruftman\Support\Preset;
 
-class PresetException extends \Exception
+/**
+ * Interface provided by an object aggregating multiple presets.
+ */
+interface AggregateInterface
 {
 }
 

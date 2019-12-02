@@ -15,6 +15,7 @@ namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
+use Cruftman\Support\Preset\AbstractPreset;
 
 /**
  * Parametrized LDAP connection.

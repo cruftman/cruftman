@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Traits/HasPresets.php
+ * @file src/Cruftman/Support/Traits/HasPresets.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,15 +11,17 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Traits;
+namespace Cruftman\Support\Traits;
 
 use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
-use Cruftman\Ldap\Exceptions\PresetException;
+use Cruftman\Support\Preset\PresetInterface;
+use Cruftman\Support\Exceptions\PresetException;
+use Cruftman\Support\Exceptions\OptionNotFoundException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Ldap presets aggregate.
+ * Presets aggregate implementation.
  */
 trait HasPresets
 {
@@ -43,7 +45,7 @@ trait HasPresets
      * @param  mixed $arg
      * @return bool
      */
-    protected function isValidOptionKey($arg)
+    protected function isValidOptionKey($arg) : bool
     {
         return is_int($arg) || (is_string($arg) && strpos($arg, '.') === false);
     }
@@ -55,7 +57,7 @@ trait HasPresets
      * @param  array $array
      * @return bool
      */
-    protected function allKeysAreValidOptionKeys(array $array)
+    protected function allKeysAreValidOptionKeys(array $array) : bool
     {
         foreach ($array as $key => $value) {
             if (!$this->isValidOptionKey($key)) {
@@ -71,13 +73,16 @@ trait HasPresets
      *
      * @param  OptionsResolver $resolver
      */
-    protected function configurePresetOptionsResolver(OptionsResolver $resolver)
+    public function configurePresetOptionsResolver(OptionsResolver $resolver)
     {
-        $options = array_unique(array_values($this->getPresetKeysByClasses()));
+        $keysByClasses = $this->getPresetKeysByClasses();
+        $options = array_unique(array_values($keysByClasses));
         $resolver->setDefined($options);
-        foreach ($options as $option) {
-            $resolver->setAllowedTypes($option, 'array[]');
-            $resolver->setAllowedValues($option, function ($array) {
+        foreach ($keysByClasses as $class => $key) {
+            if ($this->isSingletonPreset($class) === false) {
+                $resolver->setAllowedTypes($key, 'array[]');
+            }
+            $resolver->setAllowedValues($key, function ($array) {
                 return $this->allKeysAreValidOptionKeys($array);
             });
         }
@@ -126,6 +131,8 @@ trait HasPresets
     /**
      * @todo Write documentation
      * @return array
+     * @throws PresetException when *$class* is a singleton preset
+     * @throws OptionNotFoundException when there is no configuration option of given *$name*
      */
     public function getNamedPresetOptionsOrFail(string $class, string $name) : array
     {
@@ -184,7 +191,7 @@ trait HasPresets
      * @param  string|array $options
      * @return object
      */
-    public function getNamedPreset(string $class, $options)
+    public function getNamedPreset(string $class, $options) : ?PresetInterface
     {
         if (is_string($options)) {
             return $this->getNamedPresetByName($class, $options);
@@ -202,7 +209,7 @@ trait HasPresets
      * @param  string $name
      * @return object
      */
-    protected function getNamedPresetByName(string $class, string $name)
+    protected function getNamedPresetByName(string $class, string $name) : ?PresetInterface
     {
         if (($this->presetsByClasses[$class][$name] ?? null) === null) {
             $preset = $this->createNamedPreset($class, $name);
@@ -218,7 +225,7 @@ trait HasPresets
      * @param  string|array $options
      * @return object
      */
-    protected function createNamedPreset(string $class, $options)
+    protected function createNamedPreset(string $class, $options) : ?PresetInterface
     {
         if (is_string($options)) {
             $options = $this->getNamedPresetOptionsOrFail($class, $options);
@@ -233,7 +240,7 @@ trait HasPresets
      * @param  array|null $options
      * @return object
      */
-    public function getSingletonPreset(string $class, ?array $options = null)
+    public function getSingletonPreset(string $class, ?array $options = null) : ?PresetInterface
     {
         if (is_null($options)) {
             if (($this->presetsByClasses[$class] ?? null) === null) {
@@ -253,7 +260,7 @@ trait HasPresets
      * @param  string|array $options
      * @return object
      */
-    protected function createSingletonPreset(string $class, ?array $options = null)
+    protected function createSingletonPreset(string $class, ?array $options = null) : ?PresetInterface
     {
         if (is_null($options)) {
             $options = $this->getSingletonPresetOptionsOrFail($class);

@@ -16,8 +16,9 @@ namespace Cruftman\Ldap;
 use Cruftman\Support\OptionsInterface;
 use Cruftman\Support\Traits\HasOptions;
 use Cruftman\Support\Traits\ValidatesOptions;
-use Cruftman\Ldap\Traits\HasPresets;
-use Cruftman\Ldap\Preset\PresetInterface;
+use Cruftman\Support\Traits\HasPresets;
+use Cruftman\Support\Preset\PresetInterface;
+use Cruftman\Support\Preset\AggregateInterface as PresetsAggregateInterface;
 use Cruftman\Ldap\Preset\AuthAttempt;
 use Cruftman\Ldap\Preset\AuthSchema;
 use Cruftman\Ldap\Preset\AuthSource;
@@ -135,7 +136,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * - <a href="Preset/AuthSource.html">AuthSource</a>
  */
-class Service implements OptionsInterface
+class Service implements OptionsInterface, PresetsAggregateInterface
 {
     use HasPresets,
         HasOptions,
