@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Support/AbstractPreset.php
+ * @file src/Cruftman/Support/PresetAbstract.php
  *
  * This file is part of the Cruftman package
  *
@@ -19,7 +19,7 @@ use Cruftman\Support\Traits\HasPresetsAggregate;
 /**
  * Abstract base class for <a href="PresetInterface.html">presets</a>.
  */
-class AbstractPreset implements PresetInterface
+class PresetAbstract implements PresetInterface
 {
     use HasTemplateOptions,
         HasPresetsAggregate;

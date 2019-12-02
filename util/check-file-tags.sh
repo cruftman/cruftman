@@ -9,6 +9,9 @@ err=0;
 pushd $top > /dev/null
 
 while read f; do
+    if [ ! -f "$f" ]; then
+      continue;
+    fi
     e=`echo " * @file $f"`;
     l=`head -10 "$f" | awk '/^ \* @file / {print $0}'`;
     if [ ! -z "$l" ] && [ "$e" != "$l" ] ; then
@@ -20,6 +23,9 @@ while read f; do
 done <<<$( find app/ src/ -type f -name '*.php' )
 
 while read f; do
+    if [ ! -f "$f" ]; then
+      continue;
+    fi
     e=`echo  " * @file $f"`
     e=`echo "$e" | sed -e 's#^ \* @file \.\?packages/[^/]\+/# * @file #'`;
     l=`head -10 "$f" | awk '/^ \* @file / {print $0}'`;

@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Service.php
+ * @file src/Cruftman/Ldap/Auth/Schema.php
  *
  * This file is part of the Cruftman package
  *

@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\LdapInterface;
-use Cruftman\Support\AbstractPreset;
+use Cruftman\Support\PresetAbstract;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * AuthAttempt preset.
  */
-class AuthAttempt extends AbstractPreset
+class AuthAttempt extends PresetAbstract
 {
     use ValidatesOptions;
 

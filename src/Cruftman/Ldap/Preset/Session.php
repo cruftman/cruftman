@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\LdapInterface;
-use Cruftman\Support\AbstractPreset;
+use Cruftman\Support\PresetAbstract;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Session preset.
  */
-class Session extends AbstractPreset
+class Session extends PresetAbstract
 {
     use ValidatesOptions;
 
