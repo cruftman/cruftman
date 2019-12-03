@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Support/PresetAbstract.php
+ * @file src/Cruftman/Support/Preset.php
  *
  * This file is part of the Cruftman package
  *
@@ -15,11 +15,13 @@ namespace Cruftman\Support;
 
 use Cruftman\Support\Traits\HasTemplateOptions;
 use Cruftman\Support\Traits\HasPresetsAggregate;
+use Cruftman\Support\Exceptions\PresetException;
+use Cruftman\Support\Exceptions\OptionNotFoundException;
 
 /**
- * Abstract base class for <a href="PresetInterface.html">presets</a>.
+ * Base class for <a href="PresetInterface.html">presets</a>.
  */
-class PresetAbstract implements PresetInterface
+class Preset implements PresetInterface
 {
     use HasTemplateOptions,
         HasPresetsAggregate;
@@ -37,7 +39,11 @@ class PresetAbstract implements PresetInterface
     }
 
     /**
-     * @todo Write documentation
+     * Returns a **preset** that is pointed to by this preset's configuration option.
+     *
+     * @param string $class type of the target preset,
+     * @param string $key name of option that holds the name of the target preset.
+     * @return PresetInterface|null
      */
     protected function getRelatedPreset(string $class, string $key, $default = null) : ?PresetInterface
     {
@@ -48,7 +54,13 @@ class PresetAbstract implements PresetInterface
     }
 
     /**
-     * @todo Write documentation
+     * Returns a **preset** that is pointed to by this preset's configuration option.
+     *
+     * @param string $class type of the target preset,
+     * @param string $key name of option that holds the name of the target preset.
+     * @return PresetInterface
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     protected function getRelatedPresetOrFail(string $class, string $key) : PresetInterface
     {
@@ -56,7 +68,11 @@ class PresetAbstract implements PresetInterface
     }
 
     /**
-     * @todo Write documentation
+     * Returns an array of **presets** whose names are stored in this preset's configuration option.
+     *
+     * @param string $class type of the target presets,
+     * @param string $key name of option that holds the array of names of the target presets.
+     * @return PresetInterface|null
      */
     protected function getRelatedPresetsArray(string $class, string $key, array $default = []) : array
     {
@@ -70,7 +86,13 @@ class PresetAbstract implements PresetInterface
     }
 
     /**
-     * @todo Write documentation
+     * Returns an array of **presets** whose names are stored in this preset's configuration option.
+     *
+     * @param string $class type of the target presets,
+     * @param string $key name of option that holds the array of names of the target presets.
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     protected function getRelatedPresetsArrayOrFail(string $class, string $key) : array
     {

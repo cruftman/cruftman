@@ -16,17 +16,19 @@ namespace Cruftman\Ldap\Preset;
 //use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 //use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
-use Cruftman\Support\PresetAbstract;
+use Cruftman\Support\Preset;
 use Cruftman\Support\Traits\ValidatesOptions;
+use Cruftman\Support\Traits\RelatedPresetsArray;
 //use Cruftman\Ldap\Service;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @todo Write documentation
  */
-class AuthSchema extends PresetAbstract
+class AuthSchema extends Preset
 {
-    use ValidatesOptions;
+    use ValidatesOptions,
+        RelatedPresetsArray;
 
     /**
      * {@inheritdoc}

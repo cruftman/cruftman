@@ -16,8 +16,10 @@ namespace Cruftman\Ldap\Preset;
 use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
-use Cruftman\Support\PresetAbstract;
+use Cruftman\Support\Preset;
 use Cruftman\Support\Traits\ValidatesOptions;
+use Cruftman\Support\Traits\RelatedPreset;
+use Cruftman\Support\Traits\RelatedPresetsArray;
 use Cruftman\Ldap\Service;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\Options;
@@ -26,9 +28,11 @@ use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 /**
  * @todo Write documentation
  */
-class AuthSource extends PresetAbstract
+class AuthSource extends Preset
 {
-    use ValidatesOptions;
+    use ValidatesOptions,
+        RelatedPreset,
+        RelatedPresetsArray;
 
     /**
      * {@inheritdoc}

@@ -15,14 +15,14 @@ namespace Cruftman\Ldap\Preset;
 
 use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
-use Cruftman\Support\PresetAbstract;
+use Cruftman\Support\Preset;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Search preset.
  */
-class Search extends PresetAbstract
+class Search extends Preset
 {
     use ValidatesOptions;
 

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Cruftman\Support;
 
+use Cruftman\Support\Exceptions\OptionNotFoundException;
+
 /**
  * @todo Write documentation.
  */
@@ -43,7 +45,7 @@ interface OptionsSubstInterface
      * @param  string $key
      * @param  array $dict
      * @return mixed
-     * @throws \Cruftman\Support\Exceptions\UndefinedOptionException
+     * @throws OptionNotFoundException
      */
     public function substOptionOrFail(string $key, array $dict = []);
 }

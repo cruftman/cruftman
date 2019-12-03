@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Cruftman\Support;
 
+use Cruftman\Support\Exceptions\OptionNotFoundException;
+
 /**
  * Provides access to options array encapsulated by object.
  */
@@ -48,7 +50,7 @@ interface OptionsInterface
      *
      * @param  string $key
      * @return mixed
-     * @throws \Cruftman\Support\Exceptions\UndefinedOptionException
+     * @throws OptionNotFoundException
      */
     public function getOptionOrFail(string $key);
 }

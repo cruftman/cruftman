@@ -159,7 +159,7 @@ class AggregatesPresetsTest extends TestCase
         $this->assertSame('bars', $object->getPresetOptionsKeyOrFail('Class\\Bar'));
 
         $this->expectException(PresetException::class);
-        $this->expectExceptionMessage('"Fake\\Geez" is not a supported ldap preset class');
+        $this->expectExceptionMessage('"Fake\\Geez" is not a supported preset class');
         $object->getPresetOptionsKeyOrFail('Fake\\Geez');
     }
 
@@ -190,7 +190,7 @@ class AggregatesPresetsTest extends TestCase
         $object = $this->createTestObject(['foos' => ['foo1' => ['FOO1']], 'bars' => ['bar1' => ['BAR1']]]);
 
         $this->expectException(PresetException::class);
-        $this->expectExceptionMessage('"Class\\Geez" is a singleton ldap preset');
+        $this->expectExceptionMessage('"Class\\Geez" is a singleton preset');
         $object->getNamedPresetOptionsOrFail('Class\\Geez', 'geez1');
     }
 
@@ -199,7 +199,7 @@ class AggregatesPresetsTest extends TestCase
         $object = $this->createTestObject(['foos' => ['foo1' => ['FOO1']], 'bars' => ['bar1' => ['BAR1']]]);
 
         $this->expectException(PresetException::class);
-        $this->expectExceptionMessage('"Fake\\Geez" is not a supported ldap preset class');
+        $this->expectExceptionMessage('"Fake\\Geez" is not a supported preset class');
         $object->getNamedPresetOptionsOrFail('Fake\\Geez', 'geez2');
     }
 
@@ -218,7 +218,7 @@ class AggregatesPresetsTest extends TestCase
         $this->assertSame(['GEEZ'], $object->getSingletonPresetOptionsOrFail('Class\\Geez'));
 
         $this->expectException(PresetException::class);
-        $this->expectExceptionMessage('"Fake\\Geez" is not a supported ldap preset class');
+        $this->expectExceptionMessage('"Fake\\Geez" is not a supported preset class');
         $object->getSingletonPresetOptionsOrFail('Fake\\Geez');
     }
 
@@ -227,7 +227,7 @@ class AggregatesPresetsTest extends TestCase
         $object = $this->createTestObject(['foos' => ['foo1' => ['FOO1']], 'geez' => ['GEEZ']]);
 
         $this->expectException(PresetException::class);
-        $this->expectExceptionMessage('"Class\\Foo" is not a singleton ldap preset');
+        $this->expectExceptionMessage('"Class\\Foo" is not a singleton preset');
         $object->getSingletonPresetOptionsOrFail('Class\\Foo');
     }
 
@@ -240,7 +240,7 @@ class AggregatesPresetsTest extends TestCase
         $this->assertSame(['bar1'], $object->getNamedPresetsNames('Class\\Bar'));
 
         $this->expectException(PresetException::class);
-        $this->expectExceptionMessage('"Fake\\Geez" is not a supported ldap preset class');
+        $this->expectExceptionMessage('"Fake\\Geez" is not a supported preset class');
         $object->getNamedPresetsNames('Fake\\Geez');
     }
 

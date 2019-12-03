@@ -21,14 +21,60 @@ use Cruftman\Support\Exceptions\OptionNotFoundException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Presets aggregate implementation.
+ * Implements most of **presets aggregate** methods.
+ *
+ * The receiving class must define all the abstract methods:
+ *
+ *  - ``getOption()``, ``getOptionOrFail()``,
+ *  - ``getPresetKeysByClasses()``,
+ *  - ``isSingletonPreset()``,
+ *  - ``createPresetWithOptions()``.
+ *
  */
 trait AggregatesPresets
 {
+    /**
+     * Returns an option's value from configuration array used to setup this aggregate.
+     *
+     * @param string $name option name
+     * @return mixed
+     */
     abstract function getOption(string $name);
+
+    /**
+     * Returns an option's value from configuration array used to setup this aggregate.
+     *
+     * @param string $name option name
+     * @throws OptionNotFoundException should be thrown when requested a nonexistent option.
+     */
     abstract function getOptionOrFail(string $name);
+
+    /**
+     * Returns an array that maps preset classes into their keys in the configuration array.
+     *
+     * This defines correspondence between classes and sections of configuration array.
+     *
+     * @return array
+     */
     abstract function getPresetKeysByClasses() : array;
+
+    /**
+     * Tells whether the *$class* is a singleton preset.
+     *
+     * @param string $class
+     * @return bool|null ``true`` if *$class* is a singleton **preset** class,
+     *                   ``false`` if *$class* is a non-singleton **preset** class,
+     *                   and ``null`` if *$class* is not a **preset** class supported
+     *                   by this **preset aggregate**.
+     */
     abstract function isSingletonPreset(string $class) : ?bool;
+
+    /**
+     * Given an array of preset *$options* creates an instance of **preset** *$class*.
+     *
+     * @param string $class
+     * @return PresetInterface
+     */
     abstract function createPresetWithOptions(string $class, array $options) : PresetInterface;
 
     /**
@@ -89,7 +135,8 @@ trait AggregatesPresets
     }
 
     /**
-     * @todo Write documentation
+     * Returns an array of *preset* class names supported by this aggregate.
+     *
      * @return array
      */
     public function getPresetClasses() : array
@@ -119,13 +166,16 @@ trait AggregatesPresets
     public function getPresetOptionsKeyOrFail(string $class) : string
     {
         if (($key = $this->getPresetOptionsKey($class)) === null) {
-            throw new PresetException('"'.$class.'" is not a supported ldap preset class');
+            throw new PresetException('"'.$class.'" is not a supported preset class');
         }
         return $key;
     }
 
     /**
-     * @todo Write documentation
+     * Returns options encapsulated by a preset (named).
+     *
+     * @param string $class preset class
+     * @param string $name preset name
      * @return array|null
      */
     public function getNamedPresetOptions(string $class, string $name) : ?array
@@ -138,22 +188,27 @@ trait AggregatesPresets
     }
 
     /**
-     * @todo Write documentation
+     * Returns options encapsulated by a preset (named).
+     *
+     * @param string $class preset class
+     * @param string $name preset name
      * @return array
-     * @throws PresetException when *$class* is a singleton preset
-     * @throws OptionNotFoundException when there is no configuration option of given *$name*
+     * @throws PresetException when *$class* is a singleton preset or is not supported by this aggregate
+     * @throws OptionNotFoundException when there is no configuration option for the requested preset
      */
     public function getNamedPresetOptionsOrFail(string $class, string $name) : array
     {
         if ($this->isSingletonPreset($class)) {
-            throw new PresetException('"'.$class.'" is a singleton ldap preset');
+            throw new PresetException('"'.$class.'" is a singleton preset');
         }
         $key = $this->getPresetOptionsKeyOrFail($class);
         return $this->getOptionOrFail($key.'.'.$name);
     }
 
     /**
-     * @todo Write documentation
+     * Returns options encapsulated by a preset (singleton).
+     *
+     * @param string $class preset class
      * @return array|null
      */
     public function getSingletonPresetOptions(string $class) : ?array
@@ -166,13 +221,17 @@ trait AggregatesPresets
     }
 
     /**
-     * @todo Write documentation
+     * Returns options encapsulated by a preset (singleton).
+     *
+     * @param string $class preset class
      * @return array
+     * @throws PresetException when *$class* is a non-singleton preset or is not supported by this aggregate
+     * @throws OptionNotFoundException when there is no configuration option for the requested preset
      */
     public function getSingletonPresetOptionsOrFail(string $class) : array
     {
         if ($this->isSingletonPreset($class) === false) {
-            throw new PresetException('"'.$class.'" is not a singleton ldap preset');
+            throw new PresetException('"'.$class.'" is not a singleton preset');
         }
         $key = $this->getPresetOptionsKeyOrFail($class);
         return $this->getOptionOrFail($key);
@@ -182,7 +241,7 @@ trait AggregatesPresets
      * Generates an array of presets' names for a given preset type.
      *
      * @param  string $class
-     * @return string[]
+     * @return array
      */
     public function getNamedPresetsNames(string $class) : array
     {
@@ -198,7 +257,9 @@ trait AggregatesPresets
      *
      * @param  string $class
      * @param  string|array $options
-     * @return object
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     public function getNamedPreset(string $class, $options) : ?PresetInterface
     {
@@ -216,7 +277,9 @@ trait AggregatesPresets
      *
      * @param  string $class
      * @param  string $name
-     * @return object
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     protected function getNamedPresetByName(string $class, string $name) : ?PresetInterface
     {
@@ -232,7 +295,9 @@ trait AggregatesPresets
      *
      * @param  string $class
      * @param  string|array $options
-     * @return object
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     protected function createNamedPreset(string $class, $options) : ?PresetInterface
     {
@@ -247,7 +312,9 @@ trait AggregatesPresets
      *
      * @param  string $class
      * @param  array|null $options
-     * @return object
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     public function getSingletonPreset(string $class, ?array $options = null) : ?PresetInterface
     {
@@ -267,7 +334,9 @@ trait AggregatesPresets
      *
      * @param  string $class
      * @param  string|array $options
-     * @return object
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     protected function createSingletonPreset(string $class, ?array $options = null) : ?PresetInterface
     {
