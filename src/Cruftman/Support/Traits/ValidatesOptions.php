@@ -64,7 +64,7 @@ trait ValidatesOptions
      *
      * @param  OptionsResolver $resolver
      */
-    abstract protected function configureOptionsResolver(OptionsResolver $resolver);
+    abstract function configureOptionsResolver(OptionsResolver $resolver);
 
     /**
      * Validates and resolves options using the options resolver

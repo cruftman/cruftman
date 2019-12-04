@@ -166,57 +166,54 @@ namespace Cruftman\Support;
 interface PresetsAggregateInterface
 {
     /**
-     * @todo Write documentation
+     * Returns an array of *preset* class names supported by this aggregate.
+     *
+     * @return array
      */
     public function getPresetClasses() : array;
 
     /**
-     * @todo Write documentation
+     * Tells whether the *$class* is a singleton preset type.
+     *
+     * @param string $class
+     * @return bool|null ``true`` if *$class* is a singleton **preset** class,
+     *                   ``false`` if *$class* is a non-singleton **preset** class,
+     *                   and ``null`` if *$class* is not a **preset** class supported
+     *                   by this **preset aggregate**.
      */
     public function isSingletonPreset(string $class) : ?bool;
 
     /**
-     * @todo Write documentation
-     */
-    public function getPresetOptionsKey(string $class) : ?string;
-
-    /**
-     * @todo Write documentation
-     */
-    public function getPresetOptionsKeyOrFail(string $class) : string;
-
-    /**
-     * @todo Write documentation
-     */
-    public function getNamedPresetOptions(string $class, string $name) : ?array;
-
-    /**
-     * @todo Write documentation
-     */
-    public function getNamedPresetOptionsOrFail(string $class, string $name) : array;
-
-    /**
-     * @todo Write documentation
-     */
-    public function getSingletonPresetOptions(string $class) : ?array;
-
-    /**
-     * @todo Write documentation
-     */
-    public function getSingletonPresetOptionsOrFail(string $class) : array;
-
-    /**
-     * @todo Write documentation
+     * Returns an array of available presets' names of *$class* type.
+     *
+     * @param  string $class
+     * @return array
      */
     public function getNamedPresetsNames(string $class) : array;
 
     /**
-     * @todo Write documentation
+     * Returns a named preset of a given type.
+     *
+     * If *$options* is a string, it's assumed to be a preset name. Otherwise,
+     * *$options* are assumed to be an array which provides preset's options
+     * used to configure the preset being returned.
+     *
+     * @param  string $class
+     * @param  string|array $options
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     public function getNamedPreset(string $class, $options) : ?PresetInterface;
 
     /**
-     * @todo Write documentation
+     * Returns a singleton preset of a given type.
+     *
+     * @param  string $class
+     * @param  array|null $options
+     * @return PresetInterface|null
+     * @throws PresetException
+     * @throws OptionNotFoundException
      */
     public function getSingletonPreset(string $class, ?array $options = null) : ?PresetInterface;
 }
