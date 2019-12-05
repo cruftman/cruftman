@@ -5,7 +5,7 @@ namespace Tests\Unit\Ldap\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Traits\HasConnectionPreset;
-use Cruftman\Ldap\Preset\Connection as ConnectionPreset;
+use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 
 class HasConnectionPresetTest extends TestCase
 {

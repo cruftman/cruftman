@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Cruftman\Ldap\Auth\Status;
 use Cruftman\Ldap\Auth\Source;
 use Korowai\Lib\Ldap\LdapInterface;
-use Cruftman\Ldap\Preset\Connection;
+use Cruftman\Ldap\Presets\Connection;
 
 class StatusTest extends TestCase
 {

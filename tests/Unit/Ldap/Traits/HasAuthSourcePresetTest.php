@@ -5,7 +5,7 @@ namespace Tests\Unit\Ldap\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Traits\HasAuthSourcePreset;
-use Cruftman\Ldap\Preset\AuthSource as AuthSourcePreset;
+use Cruftman\Ldap\Presets\AuthSource as AuthSourcePreset;
 
 class HasAuthSourcePresetTest extends TestCase
 {

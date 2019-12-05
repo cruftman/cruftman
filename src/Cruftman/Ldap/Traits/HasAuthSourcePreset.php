@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Traits;
 
-use Cruftman\Ldap\Preset\AuthSource;
+use Cruftman\Ldap\Presets\AuthSource;
 
 /**
  * Add a protected attribute named *$authSourcePreset* and public accessors.

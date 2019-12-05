@@ -5,7 +5,7 @@ namespace Tests\Unit\Ldap\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Traits\HasAuthSchemaPreset;
-use Cruftman\Ldap\Preset\AuthSchema as AuthSchemaPreset;
+use Cruftman\Ldap\Presets\AuthSchema as AuthSchemaPreset;
 
 class HasAuthSchemaPresetTest extends TestCase
 {

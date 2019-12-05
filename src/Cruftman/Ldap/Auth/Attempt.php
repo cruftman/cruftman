@@ -17,8 +17,8 @@ use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
-use Cruftman\Ldap\Preset\AuthAttempt;
-use Cruftman\Ldap\Preset\Connection;
+use Cruftman\Ldap\Presets\AuthAttempt;
+use Cruftman\Ldap\Presets\Connection;
 
 /**
  * Attempts to bind user using one or more connections (failover).

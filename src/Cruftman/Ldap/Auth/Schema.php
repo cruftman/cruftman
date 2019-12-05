@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Auth;
 
 use Cruftman\Ldap\Traits\HasAuthSchemaPreset;
-use Cruftman\Ldap\Preset\AuthSchema;
-use Cruftman\Ldap\Preset\AuthSource;
+use Cruftman\Ldap\Presets\AuthSchema;
+use Cruftman\Ldap\Presets\AuthSource;
 
 /**
  * @todo Write documentation

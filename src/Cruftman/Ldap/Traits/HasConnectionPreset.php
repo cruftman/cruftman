@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Traits;
 
-use Cruftman\Ldap\Preset\Connection;
+use Cruftman\Ldap\Presets\Connection;
 
 /**
  * Add a protected attribute named *$connectionPreset* and public accessors.
@@ -21,7 +21,7 @@ use Cruftman\Ldap\Preset\Connection;
 trait HasConnectionPreset
 {
     /**
-     * @var \Cruftman\Ldap\Preset\Connection
+     * @var \Cruftman\Ldap\Presets\Connection
      */
     protected $connectionPreset;
 

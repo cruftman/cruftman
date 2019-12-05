@@ -7,14 +7,14 @@ use PHPUnit\Framework\TestCase;
 use Cruftman\Ldap\Auth\Attempt;
 use Cruftman\Ldap\Auth\Status;
 use Cruftman\Ldap\Service;
-use Cruftman\Ldap\Preset\AuthAttempt as AuthAttemptPreset;
-use Cruftman\Ldap\Preset\Binding as BindingPreset;
+use Cruftman\Ldap\Presets\AuthAttempt as AuthAttemptPreset;
+use Cruftman\Ldap\Presets\Binding as BindingPreset;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 
 //use Cruftman\Ldap\Auth\Source;
 use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
-use Cruftman\Ldap\Preset\Connection as ConnectionPreset;
+use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 
 class AttemptTest extends TestCase
 {

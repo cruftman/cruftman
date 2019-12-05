@@ -19,13 +19,13 @@ use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Support\Traits\AggregatesPresets;
 use Cruftman\Support\PresetInterface;
 use Cruftman\Support\PresetsAggregateInterface as PresetsAggregateInterface;
-use Cruftman\Ldap\Preset\AuthAttempt;
-use Cruftman\Ldap\Preset\AuthSchema;
-use Cruftman\Ldap\Preset\AuthSource;
-use Cruftman\Ldap\Preset\Binding;
-use Cruftman\Ldap\Preset\Connection;
-use Cruftman\Ldap\Preset\Session;
-use Cruftman\Ldap\Preset\Search;
+use Cruftman\Ldap\Presets\AuthAttempt;
+use Cruftman\Ldap\Presets\AuthSchema;
+use Cruftman\Ldap\Presets\AuthSource;
+use Cruftman\Ldap\Presets\Binding;
+use Cruftman\Ldap\Presets\Connection;
+use Cruftman\Ldap\Presets\Session;
+use Cruftman\Ldap\Presets\Search;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -72,27 +72,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *    ... ]);
  *    => Cruftman\Ldap\Service {#3073}
  *    >>> $connection = $service->connection('cruftman');
- *    => Cruftman\Ldap\Preset\Connection {#3110}
+ *    => Cruftman\Ldap\Presets\Connection {#3110}
  *    >>> $connection->substOptions();
  *    => [
  *         "uri" => "ldap://cruftman.local",
  *       ]
  *    >>> $binding = $service->binding('admin');
- *    => Cruftman\Ldap\Preset\Binding {#3103}
+ *    => Cruftman\Ldap\Presets\Binding {#3103}
  *    >>> $binding->substOptions();
  *    => [
  *         "cn=admin,dc=example,dc=org",
  *         "admin",
  *       ]
  *    >>> $session = $service->session('admin@cruftman');
- *    => Cruftman\Ldap\Preset\Session {#3101}
+ *    => Cruftman\Ldap\Presets\Session {#3101}
  *    >>> $session->substOptions();
  *    => [
  *         "connection" => "cruftman",
  *         "bind" => "admin",
  *       ]
  *    >>> $search = $service->search('person-by-uid');
- *    => Cruftman\Ldap\Preset\Search {#3095}
+ *    => Cruftman\Ldap\Presets\Search {#3095}
  *    >>> $search->substOptions(['username' => 'jsmith']);
  *    => [
  *         "base" => "dc=example,dc=org",

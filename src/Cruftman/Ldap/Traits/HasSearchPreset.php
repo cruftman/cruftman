@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Traits;
 
-use Cruftman\Ldap\Preset\Search;
+use Cruftman\Ldap\Presets\Search;
 
 /**
  * Add a protected attribute named *$searchPreset* and public accessors.

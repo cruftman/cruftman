@@ -5,7 +5,7 @@ namespace Tests\Unit\Ldap\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
-use Cruftman\Ldap\Preset\AuthAttempt as AuthAttemptPreset;
+use Cruftman\Ldap\Presets\AuthAttempt as AuthAttemptPreset;
 
 class HasAuthAttemptPresetTest extends TestCase
 {

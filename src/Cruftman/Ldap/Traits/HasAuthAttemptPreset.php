@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Traits;
 
-use Cruftman\Ldap\Preset\AuthAttempt;
+use Cruftman\Ldap\Presets\AuthAttempt;
 
 /**
  * Add a protected attribute named *$authAttemptPreset* and public accessors.

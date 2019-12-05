@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Auth;
 
 use Korowai\Lib\Ldap\LdapInterface;
-use Cruftman\Ldap\Preset\Connection;
+use Cruftman\Ldap\Presets\Connection;
 
 /**
  * Authentication status.

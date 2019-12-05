@@ -17,9 +17,9 @@ use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthSourcePreset;
 
-use Cruftman\Ldap\Preset\AuthSource;
-use Cruftman\Ldap\Preset\Search;
-use Cruftman\Ldap\Preset\Session;
+use Cruftman\Ldap\Presets\AuthSource;
+use Cruftman\Ldap\Presets\Search;
+use Cruftman\Ldap\Presets\Session;
 
 /**
  * Authentication source.

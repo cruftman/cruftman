@@ -5,7 +5,7 @@ namespace Tests\Unit\Ldap\Traits;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Traits\HasSearchPreset;
-use Cruftman\Ldap\Preset\Search as SearchPreset;
+use Cruftman\Ldap\Presets\Search as SearchPreset;
 
 class HasSearchPresetTest extends TestCase
 {
