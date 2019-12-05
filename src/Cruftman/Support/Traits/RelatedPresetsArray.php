@@ -52,11 +52,11 @@ trait RelatedPresetsArray
      * Returns an array of **presets** whose names are stored in this preset's configuration option.
      *
      * @param string $class type of the target presets,
-     * @param string $key name of option that holds the array of names of the target presets.
+     * @param string $key name of option (of this preset) that holds the array of names of the target presets.
      * @return array
      * @throws PresetException
      */
-    protected function getRelatedPresetsArray(string $class, string $key, array $default = []) : array
+    protected function getRelatedPresetsArray(string $class, string $key, ?array $default = null) : ?array
     {
         if (($optionsArray = $this->getOption($key)) === null) {
             return $default;
@@ -71,7 +71,7 @@ trait RelatedPresetsArray
      * Returns an array of **presets** whose names are stored in this preset's configuration option.
      *
      * @param string $class type of the target presets,
-     * @param string $key name of option that holds the array of names of the target presets.
+     * @param string $key name of option (of this preset) that holds the array of names of the target presets.
      * @return array
      * @throws PresetException
      * @throws OptionNotFoundException

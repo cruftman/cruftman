@@ -8,6 +8,7 @@ use Cruftman\Support\Traits\RelatedPreset;
 use Cruftman\Support\Preset;
 use Cruftman\Support\PresetInterface;
 use Cruftman\Support\PresetsAggregateInterface;
+use Cruftman\Support\Exceptions\OptionNotFoundException;
 
 class RelatedPresetTest extends TestCase
 {
@@ -17,10 +18,7 @@ class RelatedPresetTest extends TestCase
                           ->getMock();
 
         $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
-            use RelatedPreset;
-            public function tGetRelatedPreset(string $class, string $key, ...$args) {
-                return $this->getRelatedPreset($class, $key, ...$args);
-            }
+            use RelatedPreset { getRelatedPreset as public; }
         };
 
         $other = $this->createStub(PresetInterface::class);
@@ -31,11 +29,11 @@ class RelatedPresetTest extends TestCase
                   ->withConsecutive(['Foo', 'foo1'], ['Foo', 'foo1'], ['Bar', 'bar1'])
                   ->will($this->onConsecutiveCalls($other, $other, null));
 
-        $this->assertSame($other, $preset->tGetRelatedPreset('Foo', 'foo')); // ok
-        $this->assertSame($other, $preset->tGetRelatedPreset('Foo', 'foo', $default)); // ok
-        $this->assertNull($preset->tGetRelatedPreset('Bar', 'bar'));         // bar1 not in array of Bar presets
-        $this->assertNull($preset->tGetRelatedPreset('Geez', 'geez'));       // geez option is not defined
-        $this->assertSame($default, $preset->tGetRelatedPreset('Geez','geez', $default)); // default value
+        $this->assertSame($other, $preset->getRelatedPreset('Foo', 'foo')); // ok
+        $this->assertSame($other, $preset->getRelatedPreset('Foo', 'foo', $default)); // ok
+        $this->assertNull($preset->getRelatedPreset('Bar', 'bar'));         // bar1 not in array of Bar presets
+        $this->assertNull($preset->getRelatedPreset('Geez', 'geez'));       // geez option is not defined
+        $this->assertSame($default, $preset->getRelatedPreset('Geez','geez', $default)); // default value
     }
 
     public function test__getRelatedPresetOrFail()
@@ -44,48 +42,61 @@ class RelatedPresetTest extends TestCase
                           ->getMock();
 
         $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
-            use RelatedPreset;
-            public function tGetRelatedPreset(string $class, string $key, ...$args) {
-                return $this->getRelatedPreset($class, $key, ...$args);
-            }
+            use RelatedPreset { getRelatedPresetOrFail as public; }
         };
 
         $other = $this->createStub(PresetInterface::class);
         $default = $this->createStub(PresetInterface::class);
 
-        $aggregate->expects($this->exactly(3))
+        $aggregate->expects($this->once())
                   ->method('getNamedPreset')
-                  ->withConsecutive(['Foo', 'foo1'], ['Foo', 'foo1'], ['Bar', 'bar1'])
-                  ->will($this->onConsecutiveCalls($other, $other, null));
+                  ->with('Foo', 'foo1')
+                  ->willReturn($other);
 
-        $this->assertSame($other, $preset->tGetRelatedPreset('Foo', 'foo')); // ok
-        $this->assertSame($other, $preset->tGetRelatedPreset('Foo', 'foo', $default)); // ok
-        $this->assertNull($preset->tGetRelatedPreset('Bar', 'bar'));         // bar1 not in array of Bar presets
-        $this->assertNull($preset->tGetRelatedPreset('Geez', 'geez'));       // geez option is not defined
-        $this->assertSame($default, $preset->tGetRelatedPreset('Geez','geez', $default)); // default value
+        $this->assertSame($other, $preset->getRelatedPresetOrFail('Foo', 'foo')); // ok
     }
 
-//    public function test__getRelatedPresetOrFail()
-//    {
-//        $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
-//                          ->getMock();
-//
-//        $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
-//            public function tGetRelatedPresetOrFail(string $class, string $key, ...$args) {
-//                return $this->getRelatedPresetOrFail($class, $key, ...$args);
-//            }
-//        };
-//
-//        $other = $this->createStub(PresetInterface::class);
-//
-//        $aggregate->expects($this->exactly(2))
-//                  ->method('getNamedPreset')
-//                  ->withConsecutive(['Foo', 'foo1'], ['Bar', 'bar1'])
-//                  ->will($this->onConsecutiveCalls($other, $other));
-//
-//        $this->assertSame($other, $preset->tGetRelatedPresetOrFail('Foo', 'foo')); // ok
-//        $this->assertSame($other, $preset->tGetRelatedPresetOrFail('Bar', 'bar')); // ok
-//        //$this->assertNull($preset->tGetRelatedPresetOrFail('Bar', 'bar'));         // bar1 not in array of Bar presets
-//        //$this->assertNull($preset->tGetRelatedPresetOrFail('Geez', 'geez'));       // geez option is not defined
-//    }
+    public function test__getRelatedPresetOrFail__throwsPresetException()
+    {
+        $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
+                          ->getMock();
+
+        $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
+            use RelatedPreset { getRelatedPresetOrFail as public; }
+        };
+
+        $other = $this->createStub(PresetInterface::class);
+        $default = $this->createStub(PresetInterface::class);
+
+        // $exception imitates our PresetException
+        $exception = new class ("troubles here") extends \Exception {};
+        $aggregate->expects($this->exactly(1))
+                  ->method('getNamedPreset')
+                  ->with('Bar', 'bar1')
+                  ->willThrowException($exception);
+
+        $this->expectException(get_class($exception));
+        $this->expectExceptionMessage("troubles here");
+        $preset->getRelatedPresetOrFail('Bar', 'bar');         // bar1 not in array of Bar presets
+    }
+
+    public function test__getRelatedPresetOrFail__throwsOptionNotFound()
+    {
+        $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
+                          ->getMock();
+
+        $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
+            use RelatedPreset { getRelatedPresetOrFail as public; }
+        };
+
+        $other = $this->createStub(PresetInterface::class);
+        $default = $this->createStub(PresetInterface::class);
+
+        $aggregate->expects($this->never())
+                  ->method('getNamedPreset');
+
+        $this->expectException(OptionNotFoundException::class);
+        $this->expectExceptionMessage('option "geez" not found');
+        $preset->getRelatedPresetOrFail('Geez', 'geez');         // bar1 not in array of Bar presets
+    }
 }

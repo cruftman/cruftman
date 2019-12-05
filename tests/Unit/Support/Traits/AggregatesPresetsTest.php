@@ -54,7 +54,7 @@ class AggregatesPresetsTest extends TestCase
     protected function createTestObject(?array $options = null)
     {
         return new class ($options) {
-            use AggregatesPresets; {
+            use AggregatesPresets {
                 // public - because we test these methods directly
                 configurePresetOptionsResolver as public;
                 getPresetOptionsKey as public;

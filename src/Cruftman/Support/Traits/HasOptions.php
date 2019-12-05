@@ -18,7 +18,8 @@ use Illuminate\Support\Arr;
 use Cruftman\Support\Exceptions\OptionNotFoundException;
 
 /**
- * Adds protected attribute named ``$options`` and few function to access it.
+ * Adds protected attributes *$options*, *$optionsPrefix* and few function to
+ * access them.
  *
  * Also works with <a href="ValidatesOptions.html">ValidatesOptions</a> trait.
  */
@@ -32,23 +33,37 @@ trait HasOptions
     protected $options = null;
 
     /**
-     * Sets ``$options`` to ``$this->options``.
+     * The prefix for option keys. With *$optionsPrefix* set, we assume that our
+     * *$options* resemble a nested part of larger configuration array. The
+     * *$optionsPrefix* is a key to this sub-array. For example, we can have
+     * ``$options = ['opt1' => 'OPT2', 'opt2' => 'OPT2']`` extracted from the
+     * configuration array
+     * ``['foo' => ['bar' => ['opt1' => 'OPT1', 'opt2' => 'OPT2']]]``
+     * in which case the *$optionsPrefix* shall be set to ``'foo.bar'``.
      *
-     * If a method named ``validateOptions()`` exists, then the following
+     * @var string
+     */
+    protected $optionsPrefix = null;
+
+    /**
+     * Applies user-defined transformations to *$options* and assigns them to
+     * *$this->options*.
+     *
+     * If a method named *validateOptions()* exists, then the following
      * transformation is performed:
      *
      *      $options = $this->valdateOptions($options);
      *
-     * Similarly, if a method named ``wrapOptions()`` exists, then it gets
+     * Similarly, if a method named *wrapOptions()* exists, then it gets
      * called as follows:
      *
      *      $options = $this->wrapOptions($options);
      *
      * The final result of these two transformations (in the order mentioned)
-     * is assigned to ``$this->options``.
+     * is assigned to *$this->options*.
      *
      * @param  array $options
-     * @return object $this
+     * @return object *$this*
      */
     public function setOptions(array $options)
     {
@@ -63,13 +78,47 @@ trait HasOptions
     }
 
     /**
-     * Returns ``$this->options``.
+     * Returns *$this->options*.
      *
-     * @return mixed
+     * @return mixed may return array, object or null
      */
     public function getOptions()
     {
         return $this->options;
+    }
+
+    /**
+     * Assigns *$optionsPrefix* to *$this->optionsPrefix*.
+     *
+     * @param string|null $optionsPrefix
+     * @return object $this
+     */
+    public function setOptionsPrefix(?string $optionsPrefix)
+    {
+        $this->optionsPrefix = $optionsPrefix;
+        return $this;
+    }
+
+    /**
+     * Returns *$this->optionsPrefix*.
+     *
+     * @return string|null
+     */
+    public function getOptionsPrefix() : ?string
+    {
+        return $this->optionsPrefix;
+    }
+
+    /**
+     * Returns *$key* with *$this->prefix* prepended.
+     *
+     * @param string $key
+     * @return string
+     */
+    public function getPrefixedOptionKey(string $key) : string
+    {
+        $prefix = $this->getOptionsPrefix() ?? '';
+        return $prefix ? $prefix . '.' . $key : $key;
     }
 
     /**
@@ -97,7 +146,7 @@ trait HasOptions
         };
         $option = $this->getOption($key, $notfound);
         if ($option === $notfound) {
-            throw new OptionNotFoundException('option "'.$key.'" not found');
+            throw new OptionNotFoundException('option "'.$this->getPrefixedOptionKey($key).'" not found');
         }
         return $option;
     }

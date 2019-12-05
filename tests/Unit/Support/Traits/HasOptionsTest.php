@@ -56,6 +56,27 @@ class HasOptionsTest extends TestCase
         $this->assertSame([['foo' => 'FOO']], $object->getOptions());
     }
 
+    public function test__setOptionsPrefix()
+    {
+        $object = new class {
+            use HasOptions;
+        };
+
+        $this->assertNull($object->getOptionsPrefix('foo.bar'));
+        $this->assertSame($object, $object->setOptionsPrefix('foo.bar'));
+        $this->assertSame('foo.bar', $object->getOptionsPrefix());
+    }
+
+    public function test__getPrefixedOptionsKey()
+    {
+        $object = new class {
+            use HasOptions;
+        };
+        $this->assertSame('geez', $object->getPrefixedOptionKey('geez'));
+        $this->assertSame($object, $object->setOptionsPrefix('foo.bar'));
+        $this->assertSame('foo.bar.geez', $object->getPrefixedOptionKey('geez'));
+    }
+
     public function test__getOptionOrFail()
     {
         $object = new class {
@@ -80,6 +101,21 @@ class HasOptionsTest extends TestCase
 
         $this->expectException(OptionNotFoundException::class);
         $this->expectExceptionMessage('option "bar" not found');
+
+        $object->getOptionOrFail('bar');
+    }
+
+    public function test__getOptionOrFail__withOptionsPrefix__throwsOptionNotFoundException()
+    {
+        $object = new class {
+            use HasOptions;
+        };
+
+        $object->setOptions(['geez' => 'GEEZ']);
+        $object->setOptionsPrefix("foo");
+
+        $this->expectException(OptionNotFoundException::class);
+        $this->expectExceptionMessage('option "foo.bar" not found');
 
         $object->getOptionOrFail('bar');
     }

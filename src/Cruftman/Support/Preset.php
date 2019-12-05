@@ -44,6 +44,7 @@ class Preset implements PresetInterface
      * @param string $class type of the target preset,
      * @param string $key name of option that holds the name of the target preset.
      * @return PresetInterface|null
+     * @throws PresetException
      */
     protected function getRelatedPreset(string $class, string $key, $default = null) : ?PresetInterface
     {
@@ -72,9 +73,10 @@ class Preset implements PresetInterface
      *
      * @param string $class type of the target presets,
      * @param string $key name of option that holds the array of names of the target presets.
-     * @return PresetInterface|null
+     * @return array|null
+     * @throws PresetException
      */
-    protected function getRelatedPresetsArray(string $class, string $key, array $default = []) : array
+    protected function getRelatedPresetsArray(string $class, string $key, ?array $default = null) : ?array
     {
         if (($optionsArray = $this->getOption($key)) === null) {
             return $default;
