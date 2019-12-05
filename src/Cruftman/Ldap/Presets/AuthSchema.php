@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Preset/AuthSchema.php
+ * @file src/Cruftman/Ldap/Presets/AuthSchema.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Preset;
+namespace Cruftman\Ldap\Presets;
 
 //use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 //use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;

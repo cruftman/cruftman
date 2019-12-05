@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Preset/Search.php
+ * @file src/Cruftman/Ldap/Presets/Search.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Preset;
+namespace Cruftman\Ldap\Presets;
 
 use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
