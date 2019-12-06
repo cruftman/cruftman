@@ -53,7 +53,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *        ...     ],
  *        ...     'sessions' => [
  *        ...         // An array of Session presets.
- *        ...         'admin@cruftman' => ['connection' => 'cruftman', 'bind' => 'admin'],
+ *        ...         'admin@cruftman' => ['connection' => 'cruftman', 'binding' => 'admin'],
  *        ...     ],
  *        ...     'searches' => [
  *        ...         // An array of Search presets.
@@ -82,7 +82,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *        >>> $session->substOptions();
  *        => [
  *             "connection" => "cruftman",
- *             "bind" => "admin",
+ *             "binding" => "admin",
  *           ]
  *        >>> $search = $presets->search('person-by-uid');
  *        => Cruftman\Ldap\Presets\Search {#3095}

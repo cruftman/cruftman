@@ -36,30 +36,52 @@ class AuthAttempt extends Preset
      */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
-         $resolver->setRequired(['bind'])
+         $resolver->setRequired(['binding'])
                   ->setDefined(['connections', 'filter', 'attributes'])
                   ->setAllowedTypes('connections', 'array')
-                  ->setAllowedTypes('bind', ['string', 'array'])
+                  ->setAllowedTypes('binding', ['string', 'array'])
                   ->setAllowedTypes('filter', 'string')
                   ->setAllowedTypes('attributes', 'array');
+    }
+
+    /**
+     * Returns the Binding Preset as declared in ``'binding'`` option.
+     * @return Binding|null
+     */
+    public function binding() : Binding
+    {
+        return $this->getRelatedPresetOrFail(Binding::class, 'binding');
     }
 
     /**
      * Returns array of Connection presets as listed in ``'connections'`` option.
      * @return Connection[]|null
      */
-    public function getConnections() : ?array
+    public function connections() : ?array
     {
         return $this->getRelatedPresetsArray(Connection::class, 'connections', null);
     }
 
     /**
-     * Returns the Binding Preset as declared in ``'bind'`` option.
-     * @return Binding|null
+     * Returns search filter string.
+     *
+     * @param array $arguments
+     * @return string|null
      */
-    public function getBinding() : Binding
+    public function filter(array $arguments = []) : ?string
     {
-        return $this->getRelatedPresetOrFail(Binding::class, 'bind');
+        return $this->substOption('filter', $arguments);
+    }
+
+    /**
+     * Returns array of attribute names to be returned by successful attempt.
+     *
+     * @param array $arguments
+     * @return array|null
+     */
+    public function attributes(array $arguments = []) : ?array
+    {
+        return $this->substOption('attributes', $arguments);
     }
 }
 

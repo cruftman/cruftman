@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Presets;
 
-use Korowai\Lib\Ldap\LdapInterface;
 use Cruftman\Support\Preset;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Support\Traits\RelatedPreset;
@@ -24,51 +23,33 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class Session extends Preset
 {
-    use ValidatesOptions;
+    use ValidatesOptions,
+        RelatedPreset;
 
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
         $resolver->setRequired(['connection'])
-                 ->setDefined(['bind'])
+                 ->setDefined(['binding'])
                  ->setAllowedTypes('connection', ['string', 'array'])
-                 ->setAllowedTypes('bind', ['string', 'array']);
+                 ->setAllowedTypes('binding', ['string', 'array']);
     }
 
     /**
-     * @todo Write documentation
+     * Returns the Connection preset specified in ``'connection'`` option of this preset.
      * @return Connection
      */
-    public function getConnection() : Connection
+    public function connection() : Connection
     {
         return $this->getRelatedPresetOrFail(Connection::class, 'connection');
     }
 
     /**
-     * @todo Write documentation
+     * Returns the Binding preset specified in ``'binding'`` option of this preset.
      * @return Binding|null
      */
-    public function getBinding() : ?Binding
+    public function binding() : ?Binding
     {
-        return $this->getRelatedPreset(Binding::class, 'bind');
-    }
-
-    /**
-     * Create new instance of LdapInterface.
-     *
-     * @param  array $arguments
-     * @return LdapInterface
-     */
-    public function createLdap(array $arguments = []) : LdapInterface
-    {
-        $connection = $this->getConnection();
-
-        $ldap = $connection->createLdap($arguments);
-
-        if (($binding = $this->getBinding()) !== null) {
-            $binding->bindLdapInterface($ldap, $arguments);
-        }
-
-        return $ldap;
+        return $this->getRelatedPreset(Binding::class, 'binding');
     }
 }
 

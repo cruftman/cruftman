@@ -13,25 +13,22 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Presets;
 
-use Korowai\Lib\Ldap\Ldap;
-use Korowai\Lib\Ldap\LdapInterface;
 use Cruftman\Support\Preset;
 
 /**
- * Parametrized LDAP connection.
+ * LDAP connection preset.
  */
 class Connection extends Preset
 {
     /**
-     * Creates and returns LDAP instance using on connection options.
+     * Returns configuration array that may be passed to *Ldap::createWithConfig()*.
      *
-     * @param  array $arguments
-     * @return \Korowai\Lib\Ldap\LdapInterface
+     * @param array $arguments
+     * @return array
      */
-    public function createLdap(array $arguments = []) : LdapInterface
+    public function ldapConfig(array $arguments = [])
     {
-        $options = $this->substOptions($arguments);
-        return Ldap::createWithConfig($options);
+        return $this->substOptions($arguments);
     }
 }
 

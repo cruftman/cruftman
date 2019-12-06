@@ -36,19 +36,33 @@ class Search extends Preset
     }
 
     /**
-     * Creates and returns an instance of SearchQueryInterface.
-     *
-     * @param  AdapterInterface $ldap
-     * @param  array $arguments
-     * @return SearchQueryInterface
+     * Returns base DN for the search preset.
+     * @param array $arguments
+     * @return string
      */
-    public function createQuery(AdapterInterface $ldap, array $arguments = []) : SearchQueryInterface
+    public function base(array $arguments = []) : string
     {
-        $base = $this->substOptionOrFail('base', $arguments);
-        $filter = $this->substOptionOrFail('filter', $arguments);
-        $options = $this->substOption('options', $arguments, []);
+        return $this->substOptionOrFail('base', $arguments);
+    }
 
-        return $ldap->createSearchQuery($base, $filter, $options);
+    /**
+     * Returns search filter for the search.
+     * @param array $arguments
+     * @return string
+     */
+    public function filter(array $arguments = []) : string
+    {
+        return $this->substOptionOrFail('filter', $arguments);
+    }
+
+    /**
+     * Returns search options for the search.
+     * @param array $arguments
+     * @return array
+     */
+    public function options(array $arguments) : array
+    {
+        return $this->substOption('options', $arguments, []);
     }
 }
 

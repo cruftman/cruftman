@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Presets;
 
-use Korowai\Lib\Ldap\Adapter\BindingInterface;
 use Cruftman\Support\Preset;
 
 /**
@@ -21,26 +20,13 @@ use Cruftman\Support\Preset;
  */
 class Binding extends Preset
 {
-
-    /**
-     * Invokes ``bind()`` method on the *$ldap* object.
-     *
-     * @param  BindingInterface $ldap
-     * @param  array $arguments
-     * @return bool
-     */
-    public function bindLdapInterface(BindingInterface $ldap, array $arguments = [])
-    {
-        return $ldap->bind($this->getBindDn($arguments), $this->getBindPassword($arguments));
-    }
-
     /**
      * Returns the DN option.
      *
      * @param  array $arguments
      * @return string
      */
-    public function getBindDn(array $arguments = []) : string
+    public function dn(array $arguments = []) : string
     {
         return $this->substOptionOrFail('0', $arguments);
     }
@@ -51,7 +37,7 @@ class Binding extends Preset
      * @param  array $arguments
      * @return string
      */
-    public function getBindPassword(array $arguments = []) : string
+    public function password(array $arguments = []) : string
     {
         return $this->substOptionOrFail('1', $arguments);
     }

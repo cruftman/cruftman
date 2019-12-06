@@ -49,21 +49,34 @@ class AuthSchema extends Preset
     }
 
     /**
-     * @todo Write documentation.
-     * @return Source[]
+     * Returns an array of AuthSource presets as defined in ``'sources'`` option.
+     * @return AuthSource[]
      */
-    public function getSources() : array
+    public function sources() : array
     {
         return $this->getRelatedPresetsArrayOrFail(AuthSource::class, 'sources');
     }
 
     /**
-     * @todo Write documentation
-     * @return string
+     * Returns the value of ``'ambiguous'`` option of this preset.
+     *
+     * @param mixed $default default value to be used when ambiguous option is not set.
+     * @return string|null
      */
-    public function getAmbiguous() : string
+    public function ambiguous(?string $default = null) : ?string
     {
-        return $this->getOption('ambiguous', 'fail');
+        return $this->getOption('ambiguous', $default);
+    }
+
+    /**
+     * Returns the ``'arguments'`` array of arguments' mappings of this preset.
+     *
+     * @param mixed $default default mapping to be used when ``arguments`` option was not set.
+     * @return string|null
+     */
+    public function arguments(?array $default = null) : ?array
+    {
+        return $this->getOption('arguments', $default);
     }
 }
 

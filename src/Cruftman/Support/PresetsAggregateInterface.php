@@ -52,8 +52,8 @@ namespace Cruftman\Support;
  *
  *      // An array of named Session presets.
  *      'sessions' => [
- *          'admin@ldap1' => [ 'connection' => 'ldap1', 'bind' => 'admin' ],
- *          'admin@ldap2' => [ 'connection' => 'ldap2', 'bind' => 'admin' ],
+ *          'admin@ldap1' => [ 'connection' => 'ldap1', 'binding' => 'admin' ],
+ *          'admin@ldap2' => [ 'connection' => 'ldap2', 'binding' => 'admin' ],
  *      ],
  *
  *      // An array of named AuthSource presets.

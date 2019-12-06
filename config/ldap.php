@@ -80,19 +80,19 @@ return [
     'sessions' => [
         'london-user-authenticator@default' => [
             'connection' => 'default',
-            'bind' => 'london-user-authenticator',
+            'binding' => 'london-user-authenticator',
         ],
         'manchester-user-authenticator@default' => [
             'connection' => 'default',
-            'bind' => 'manchester-user-authenticator',
+            'binding' => 'manchester-user-authenticator',
         ],
         'london-user-finder@default' => [
             'connection' => 'default',
-            'bind' => 'london-user-finder',
+            'binding' => 'london-user-finder',
         ],
         'manchester-user-finder@default' => [
             'connection' => 'default',
-            'bind' => 'manchester-user-finder',
+            'binding' => 'manchester-user-finder',
         ],
     ],
 
@@ -234,7 +234,7 @@ return [
         'global-users' => [
             'attempt' => [
                 'connections' => ['default'],
-                'bind' => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
+                'binding' => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
                 'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
                 'attributes' => ['*', 'entryuuid'],
             ]
@@ -244,7 +244,7 @@ return [
             'search' => 'london-user-by-name',
             'locate' => 'london-user-by-uuid',
             'attempt' => [
-                'bind' => ['${dn}', '${password}'],
+                'binding' => ['${dn}', '${password}'],
             ]
         ],
         'manchester-users' => [
@@ -252,7 +252,7 @@ return [
             'search' => 'manchester-user-by-name',
             'locate' => 'manchester-user-by-uuid',
             'attempt' => [
-                'bind' => ['${dn}', '${password}'],
+                'binding' => ['${dn}', '${password}'],
             ]
         ],
     ],

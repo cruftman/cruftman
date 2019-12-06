@@ -59,7 +59,7 @@ class AttemptTest extends TestCase
     {
         $ldap = $this->getMockBuilder(LdapInterface::class)->getMock();
         $ldap->expects($this->once())
-             ->method('bind')
+             ->method('binding')
              ->with($dn, $password)
              ->will($bindWill);
         return $ldap;
@@ -113,7 +113,7 @@ class AttemptTest extends TestCase
 
     public function test__bind__withConnectionArg__trueResult()
     {
-        $options = ['bind' => ['uid=${username},dc=foo', '${password}']];
+        $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
         $attempt = $this->createAttemptWithOptions($options);
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
@@ -132,7 +132,7 @@ class AttemptTest extends TestCase
 
     public function test__bind__withConnectionArg__falseResult()
     {
-        $options = ['bind' => ['uid=${username},dc=foo', '${password}']];
+        $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
         $attempt = $this->createAttemptWithOptions($options);
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
@@ -155,7 +155,7 @@ class AttemptTest extends TestCase
 
     public function test__bind__withConnectionArg__invalidCredentialsException()
     {
-        $options = ['bind' => ['uid=${username},dc=foo', '${password}']];
+        $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
         $attempt = $this->createAttemptWithOptions($options);
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
@@ -178,7 +178,7 @@ class AttemptTest extends TestCase
 
     public function test__bind__withConnectionArg__recoverableException()
     {
-        $options = ['bind' => ['uid=${username},dc=foo', '${password}']];
+        $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
         $attempt = $this->createAttemptWithOptions($options);
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
@@ -201,7 +201,7 @@ class AttemptTest extends TestCase
 
     public function test__bind__withConnectionArg__unrecoverableException()
     {
-        $options = ['bind' => ['uid=${username},dc=foo', '${password}' ]];
+        $options = ['binding' => ['uid=${username},dc=foo', '${password}' ]];
         $attempt = $this->createAttemptWithOptions($options);
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
