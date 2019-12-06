@@ -28,7 +28,7 @@ trait RelatedPreset
      *
      * @return PresetsAggregateInterface|null
      */
-    abstract function getPresetsAggregate() : ?PresetsAggregateInterface;
+    abstract public function getPresetsAggregate() : ?PresetsAggregateInterface;
 
     /**
      * Get a single option.
@@ -37,7 +37,7 @@ trait RelatedPreset
      * @param mixed $default
      * @return mixed
      */
-    abstract function getOption(string $key, $default = null);
+    abstract public function getOption(string $key, $default = null);
 
     /**
      * Get an option if exists or throw an exception otherwise.
@@ -46,7 +46,7 @@ trait RelatedPreset
      * @return mixed
      * @throws OptionNotFoundExcpetion
      */
-    abstract function getOptionOrFail(string $key);
+    abstract public function getOptionOrFail(string $key);
 
     /**
      * Returns a **preset** that is pointed to by this preset's configuration option.

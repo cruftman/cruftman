@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Auth;
 
-use Korowai\Lib\Ldap\LdapInterface;
+use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
@@ -28,76 +28,139 @@ class Attempt
     use HasAuthAttemptPreset;
 
     /**
+     * @var callable
+     */
+    protected $ldapConstructor;
+
+    /**
+     * @var Status
+     */
+    protected $status;
+
+    /**
      * Initializes the object.
      *
      * @param  AuthAttempt $preset
+     * @param  Status $status
      */
-    public function __construct(AuthAttempt $preset)
+    public function __construct(AuthAttempt $preset, ?Status $status = null, ?callable $ldapConstructor = null)
     {
         $this->setAuthAttemptPreset($preset);
+        $this->setStatus($status);
+        $this->setLdapConstructor($ldapConstructor);
+    }
+
+    /**
+     * Assigns *Status* object to *$this*.
+     * @return Attempt $this
+     */
+    public function setStatus(?Status $status = null)
+    {
+        if ($status === null) {
+            $this->status = new Status();
+        } else {
+            $this->status = $status;
+        }
+        return $this;
+    }
+
+    /**
+     * Returns the *Status* object assigned with *setStatus()*.
+     * @return Status
+     */
+    public function getStatus() : Status
+    {
+        return $this->status;
+    }
+
+    /**
+     * Sets the function used to create Ldap instances.
+     * @param callable $ldapConstructor
+     * @return Attempt $this
+     */
+    public function setLdapConstructor(?callable $ldapConstructor = null)
+    {
+        if ($ldapConstructor === null) {
+            $this->ldapConstructor = [Ldap::class, 'createWithConfig'];
+        } else {
+            $this->ldapConstructor = $ldapConstructor;
+        }
+        return $this;
+    }
+
+    /**
+     * Returns the ldap constructor callback used to create Ldap isntances.
+     * @return callable
+     */
+    public function getLdapConstructor()
+    {
+        return $this->ldapConstructor;
     }
 
     /**
      * Attempt to authenticate using LDAP bind method.
      *
-     * @param  Status $status
      * @param  array $arguments
      * @param  Connection|null $connection
      *
      * @return bool
      * @throws LdapException
      */
-    public function bind(Status $status, array $arguments, ?Connection $connection = null) : bool
+    public function bind(array $arguments, ?Connection $connection = null) : bool
     {
         if ($connection !== null) {
             $connections = [$connection];
         } else {
-            $connections = $this->getAuthAttemptPreset()->getConnections();
-            // FIXME: connections can be null here, we should check and throw!
+            $connections = $this->getAuthAttemptPreset()->connections();
+            if ($connections === null) {
+                // FIXME: specialized exception?
+                throw new \RuntimeException('Missing "connections" in AuthAttempt preset, check your config.');
+            }
         }
-        return $this->tryConnections($status, $connections, $arguments);
+        return $this->tryConnections($connections, $arguments);
     }
 
     /**
-     * Tries to bind using Connection presets specified in $connections.
+     * Tries to bind using Connection presets specified in *$connections*.
      *
-     * @param  Status $status
      * @param  array $connections
      * @param  array $arguments
      *
      * @return bool
      * @throws LdapException
      */
-    protected function tryConnections(Status $status, array $connections, array $arguments) : bool
+    protected function tryConnections(array $connections, array $arguments) : bool
     {
         foreach ($connections as $connection) {
             try {
-                return $this->tryConnection($status, $connection, $arguments);
+                return $this->tryConnection($connection, $arguments);
             } catch (LdapException $exception) {
                 $this->rethrowIfUnrecoverable($exception);
             }
         }
-        $status->resetBindStatus();
+        $this->status->resetBindStatus();
         return false;
     }
 
     /**
      * Tries to bind using a Connection preset.
      *
-     * @param  Status $status
      * @param  Connection $connection
      * @param  array $arguments
      *
      * @return bool
      * @throws LdapException
      */
-    protected function tryConnection(Status $status, Connection $connection, array $arguments) : bool
+    protected function tryConnection(Connection $connection, array $arguments) : bool
     {
-        $binding = $this->getAuthAttemptPreset()->getBinding();
+        $binding = $this->getAuthAttemptPreset()->binding();
+        $bindDn = $binding->dn($arguments);
+        $bindPw = $binding->password($arguments);
 
         try {
-            $ldap = $connection->createLdap($arguments);
-            $result = $binding->bindLdapInterface($ldap, $arguments);
+            $config = $connection->ldapConfig($arguments);
+            $ldap = call_user_func($this->ldapConstructor, $config);
+            $result = $ldap->bind($bindDn, $bindPw);
         } catch (LdapException $exception) {
             if ($exception->getCode() !== 0x31) {
                 throw $exception;
@@ -106,10 +169,10 @@ class Attempt
             $result = false;
         }
 
-        $status->setBindResult($result)
-               ->setBindDn($binding->getBindDn($arguments))
-               ->setBindLdap($ldap)
-               ->setBindConnection($connection);
+        $this->status->setBindResult($result)
+                     ->setBindDn($bindDn)
+                     ->setBindLdap($ldap)
+                     ->setBindConnection($connection);
 
         return $result;
     }

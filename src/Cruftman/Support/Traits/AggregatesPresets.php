@@ -39,7 +39,7 @@ trait AggregatesPresets
      * @param string $name option name
      * @return mixed
      */
-    abstract function getOption(string $name);
+    abstract public function getOption(string $name);
 
     /**
      * Returns an option's value from configuration array used to setup this aggregate.
@@ -47,7 +47,7 @@ trait AggregatesPresets
      * @param string $name option name
      * @throws OptionNotFoundException should be thrown when requested a nonexistent option.
      */
-    abstract function getOptionOrFail(string $name);
+    abstract public function getOptionOrFail(string $name);
 
     /**
      * Returns an array that maps preset classes onto their keys in the configuration array.
@@ -56,7 +56,7 @@ trait AggregatesPresets
      *
      * @return array
      */
-    abstract function getPresetKeysByClasses() : array;
+    abstract protected function getPresetKeysByClasses() : array;
 
     /**
      * Tells whether the *$class* is a singleton preset.
@@ -67,7 +67,7 @@ trait AggregatesPresets
      *                   and ``null`` if *$class* is not a **preset** class supported
      *                   by this **preset aggregate**.
      */
-    abstract function isSingletonPreset(string $class) : ?bool;
+    abstract public function isSingletonPreset(string $class) : ?bool;
 
     /**
      * Given an array of preset *$options* creates an instance of **preset** *$class*.
@@ -75,7 +75,7 @@ trait AggregatesPresets
      * @param string $class
      * @return PresetInterface
      */
-    abstract function createPresetWithOptions(string $class, array $options) : PresetInterface;
+    abstract protected function createPresetWithOptions(string $class, array $options) : PresetInterface;
 
     /**
      * An array of instantiated preset objects by type.
