@@ -86,17 +86,28 @@ class AttemptTest extends TestCase
         return $binding;
     }
 
-    protected function authAttemptPresetMock($connectionsWill, $bindingWill, $iterations = 1)
+    protected function authAttemptPresetMock($connectionsWill = null, $bindingWill = null, $iterations = 1)
     {
         $preset = $this->createMock(AuthAttemptPreset::class);
-        $preset->expects($this->once())
-               ->method('connections')
-               ->with()
-               ->will($connectionsWill);
-        $preset->expects($this->exactly($iterations))
-               ->method('binding')
-               ->with()
-               ->will($bindingWill);
+        if ($connectionsWill === null) {
+            $preset->expects($this->never())
+                   ->method('connections');
+        } else {
+            $preset->expects($this->once())
+                   ->method('connections')
+                   ->with()
+                   ->will($connectionsWill);
+        }
+
+        if ($bindingWill === null) {
+            $preset->expects($this->never())
+                   ->method('binding');
+        } else {
+            $preset->expects($this->exactly($iterations))
+                   ->method('binding')
+                   ->with()
+                   ->will($bindingWill);
+        }
         return $preset;
     }
 
@@ -242,6 +253,17 @@ class AttemptTest extends TestCase
         $this->expectExceptionCode(0x15);
 
         $attempt->bind($arguments, $connection);
+    }
+
+    public function test__bind__withMissingConnectionOption()
+    {
+        $preset = $this->authAttemptPresetMock($this->returnValue(null));
+
+        $attempt = new Attempt($preset);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Missing "connections" in AuthAttempt preset, check your config.');
+        $attempt->bind([]);
     }
 
     /**
