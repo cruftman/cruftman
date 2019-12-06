@@ -16,8 +16,8 @@ class RelatedPresetTest extends TestCase
     {
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
-
-        $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
+        $options = ['foo' => 'foo1', 'bar' => 'bar1'];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPreset { getRelatedPreset as public; }
         };
 
@@ -40,8 +40,8 @@ class RelatedPresetTest extends TestCase
     {
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
-
-        $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
+        $options = ['foo' => 'foo1', 'bar' => 'bar1'];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPreset { getRelatedPresetOrFail as public; }
         };
 
@@ -61,7 +61,8 @@ class RelatedPresetTest extends TestCase
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
 
-        $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
+        $options = ['foo' => 'foo1', 'bar' => 'bar1'];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPreset { getRelatedPresetOrFail as public; }
         };
 
@@ -85,7 +86,8 @@ class RelatedPresetTest extends TestCase
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
 
-        $preset = new class ($aggregate, ['foo' => 'foo1', 'bar' => 'bar1']) extends Preset {
+        $options = ['foo' => 'foo1', 'bar' => 'bar1'];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPreset { getRelatedPresetOrFail as public; }
         };
 

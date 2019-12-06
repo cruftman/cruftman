@@ -203,7 +203,7 @@ class Service implements OptionsInterface, PresetsAggregateInterface
      */
     protected function createPresetWithOptions(string $class, array $options) : PresetInterface
     {
-        return new $class($this, $options);
+        return new $class($options, $this);
     }
 
 //    /**

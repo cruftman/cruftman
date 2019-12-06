@@ -50,7 +50,7 @@ trait AggregatesPresets
     abstract function getOptionOrFail(string $name);
 
     /**
-     * Returns an array that maps preset classes into their keys in the configuration array.
+     * Returns an array that maps preset classes onto their keys in the configuration array.
      *
      * This defines correspondence between classes and sections of configuration array.
      *
@@ -250,6 +250,27 @@ trait AggregatesPresets
         $presetKeys = array_keys($this->presetsByClasses[$class] ?? []);
 
         return array_unique(array_merge($optionKeys, $presetKeys));
+    }
+
+    /**
+     * Allows injecting additional named presets into aggregate.
+     *
+     * @param string $class
+     * @param string $name
+     * @param PresetInterface|null $preset
+     * @return object $this
+     */
+    public function setNamedPreset(string $class, string $name, ?PresetInterface $preset)
+    {
+        if ($preset !== null) {
+            $this->presetsByClasses[$class][$name] = $preset;
+            $preset->setPresetsAggregate($this);
+        } elseif (array_key_exists($name, $this->presetsByClasses[$class] ?? [])) {
+            $preset = $this->presetsByClasses[$class][$name];
+            unset($this->presetsByClasses[$class][$name]);
+            $preset->setPresetsAggregate(null);
+        }
+        return $this;
     }
 
     /**

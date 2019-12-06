@@ -17,7 +17,8 @@ class RelatedPresetsArrayTest extends TestCase
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
 
-        $preset = new class ($aggregate, ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']]) extends Preset {
+        $options = ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPresetsArray { getRelatedPresetsArray as public; }
         };
 
@@ -42,7 +43,8 @@ class RelatedPresetsArrayTest extends TestCase
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
 
-        $preset = new class ($aggregate, ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']]) extends Preset {
+        $options = ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPresetsArray { getRelatedPresetsArrayOrFail as public; }
         };
 
@@ -58,8 +60,6 @@ class RelatedPresetsArrayTest extends TestCase
 
         $this->assertSame([$foo1, $foo2], $preset->getRelatedPresetsArrayOrFail('Foo', 'foo')); // ok
         $this->assertSame([$bar1], $preset->getRelatedPresetsArrayOrFail('Bar', 'bar'));  // bar1 not in array of Bar presets
-        //$this->assertNull($preset->getRelatedPresetsArrayOrFail('Geez', 'geez'));         // geez option is not defined
-        //$this->assertSame([$default], $preset->getRelatedPresetsArrayOrFail('Geez','geez', [$default])); // default value
     }
 
     public function test__getRelatedPresetsArrayOrFail__throwsPresetException()
@@ -67,7 +67,8 @@ class RelatedPresetsArrayTest extends TestCase
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
 
-        $preset = new class ($aggregate, ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']]) extends Preset {
+        $options = ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPresetsArray { getRelatedPresetsArrayOrFail as public; }
         };
 
@@ -92,7 +93,8 @@ class RelatedPresetsArrayTest extends TestCase
         $aggregate = $this->getMockBuilder(PresetsAggregateInterface::class)
                           ->getMock();
 
-        $preset = new class ($aggregate, ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']]) extends Preset {
+        $options = ['foo' => ['foo1', 'foo2'], 'bar' => ['bar1']];
+        $preset = new class ($options, $aggregate) extends Preset {
             use RelatedPresetsArray { getRelatedPresetsArrayOrFail as public; }
         };
 

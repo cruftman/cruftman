@@ -21,5 +21,8 @@ class HasPresetsAggregateTest extends TestCase
         $this->assertSame($object, $object->setPresetsAggregate($stub));
 
         $this->assertSame($stub, $object->getPresetsAggregate());
+
+        $this->assertSame($object, $object->setPresetsAggregate(null));
+        $this->assertNull($object->getPresetsAggregate());
     }
 }

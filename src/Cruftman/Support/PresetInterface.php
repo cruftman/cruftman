@@ -28,6 +28,14 @@ use Cruftman\Support\TemplateOptionsInterface;
 interface PresetInterface extends TemplateOptionsInterface
 {
     /**
+     * Assigns new PresetsAggregateInterface (or null) to this object.
+     *
+     * @param PresetsAggregateInterface|null $presetsAggregate
+     * @return object $this
+     */
+    public function setPresetsAggregate(?PresetsAggregateInterface $presetsAggregate);
+
+    /**
      * Returns the aggregate containing this presset.
      *
      * @return PresetsAggregateInterface|null

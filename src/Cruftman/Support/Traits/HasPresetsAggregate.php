@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cruftman\Support\Traits;
 
+use Cruftman\Support\PresetInterface;
 use Cruftman\Support\PresetsAggregateInterface;
 
 /**
@@ -21,7 +22,7 @@ use Cruftman\Support\PresetsAggregateInterface;
 trait HasPresetsAggregate
 {
     /**
-     * @var \Cruftman\Support\PresetsAggregateInterface
+     * @var PresetsAggregateInterface
      */
     protected $presetsAggregate;
 
@@ -31,7 +32,7 @@ trait HasPresetsAggregate
      * @param  PresetsAggregateInterface $presetsAggregate
      * @return object $this
      */
-    public function setPresetsAggregate(PresetsAggregateInterface $presetsAggregate)
+    public function setPresetsAggregate(?PresetsAggregateInterface $presetsAggregate)
     {
         $this->presetsAggregate = $presetsAggregate;
         return $this;

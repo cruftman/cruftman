@@ -29,13 +29,13 @@ class Preset implements PresetInterface
     /**
      * Initializes the object.
      *
-     * @param  PresetsAggregateInterface $presetsAggregate
      * @param  array $options
+     * @param  PresetsAggregateInterface $presetsAggregate
      */
-    public function __construct(PresetsAggregateInterface $presetsAggregate, array $options)
+    public function __construct(array $options, PresetsAggregateInterface $presetsAggregate = null)
     {
-        $this->setPresetsAggregate($presetsAggregate);
         $this->setOptions($options);
+        $this->setPresetsAggregate($presetsAggregate);
     }
 
     /**
