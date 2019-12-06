@@ -15,7 +15,7 @@ class LdapServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(LdapService::class, function ($app) {
-            return new LdapService($app->config->get('ldap'));
+            return LdapService::createWithConfig($app->config->get('ldap'));
         });
     }
 

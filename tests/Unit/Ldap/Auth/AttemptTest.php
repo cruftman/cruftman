@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Auth\Attempt;
 use Cruftman\Ldap\Auth\Status;
-use Cruftman\Ldap\Service;
+use Cruftman\Ldap\Presets\Aggregate;
 use Cruftman\Ldap\Presets\AuthAttempt as AuthAttemptPreset;
 use Cruftman\Ldap\Presets\Binding as BindingPreset;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
@@ -18,20 +18,20 @@ use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 
 class AttemptTest extends TestCase
 {
-    protected function createService(array $options = null)
+    protected function createPresetsAggregate(array $options = null)
     {
         if ($options === null) {
             $options = ['auth_schema' => []];
         }
-        return new Service($options);
+        return new Aggregate($options);
     }
 
-    protected function createAuthAttemptPreset(array $options, ?Service $service = null)
+    protected function createAuthAttemptPreset(array $options, ?Aggregate $presets = null)
     {
-        if ($service === null) {
-            $service = $this->createService();
+        if ($presets === null) {
+            $presets = $this->createPresetsAggregate();
         }
-        return $service->getAuthAttempt($options);
+        return $presets->authAttempt($options);
     }
 
     protected function createAttemptWithOptions(array $options, ?Service $service = null)
