@@ -13,13 +13,10 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Presets;
 
-//use Korowai\Lib\Ldap\Adapter\AdapterInterface;
-//use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
 use Cruftman\Support\Preset;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Support\Traits\RelatedPresetsArray;
-//use Cruftman\Ldap\Service;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -31,7 +28,8 @@ class AuthSchema extends Preset
         RelatedPresetsArray;
 
     /**
-     * {@inheritdoc}
+     * Configure options resolver to validate and resolve options.
+     * @param  OptionsResolver $resolver
      */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
@@ -49,8 +47,8 @@ class AuthSchema extends Preset
     }
 
     /**
-     * Returns an array of AuthSource presets as defined in ``'sources'`` option.
-     * @return AuthSource[]
+     * Returns an array of *AuthSource* presets as defined in ``'sources'`` option.
+     * @return array
      */
     public function sources() : array
     {
@@ -71,8 +69,8 @@ class AuthSchema extends Preset
     /**
      * Returns the ``'arguments'`` array of arguments' mappings of this preset.
      *
-     * @param mixed $default default mapping to be used when ``arguments`` option was not set.
-     * @return string|null
+     * @param mixed $default default mapping to be used when ``'arguments'`` option was not set.
+     * @return array|null
      */
     public function arguments(?array $default = null) : ?array
     {

@@ -5,8 +5,9 @@ namespace Tests\Unit\Ldap\Presets;
 use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Presets\AuthSource;
-//use Cruftman\Ldap\Presets\Connection;
-//use Cruftman\Ldap\Presets\Binding;
+use Cruftman\Ldap\Presets\AuthAttempt;
+use Cruftman\Ldap\Presets\Session;
+use Cruftman\Ldap\Presets\Search;
 use Cruftman\Ldap\Presets\Aggregate;
 use Cruftman\Support\Preset;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
@@ -29,85 +30,104 @@ class AuthSourceTest extends TestCase
         new AuthSource([]);
     }
 
-//    public function test__sources()
-//    {
-//        $options = ['sources' => [['attempt' => ['ATT']], 'src2']];
-//        $schema = new AuthSource($options, new Aggregate(['auth_sources' => [
-//                'src2' => ['attempt' => ['SRC2ATT']]
-//        ]]));
-//
-//        $sources = $schema->sources();
-//        $this->assertIsArray($sources);
-//        $this->assertCount(2, $sources);
-//
-//        $this->assertInstanceOf(AuthSource::class, $sources[0]);
-//        $this->assertSame(['attempt' => ['ATT']], $sources[0]->getOptions()->getArrayCopy());
-//        $this->assertInstanceOf(AuthSource::class, $sources[1]);
-//        $this->assertSame(['attempt' => ['SRC2ATT']], $sources[1]->getOptions()->getArrayCopy());
-//    }
-//
-//    public function test__ambiguous__validation()
-//    {
-//        $this->assertInstanceOf(AuthSource::class, new AuthSource(['sources' => [], 'ambiguous' => 'first']));
-//        $this->assertInstanceOf(AuthSource::class, new AuthSource(['sources' => [], 'ambiguous' => 'each']));
-//        $this->assertInstanceOf(AuthSource::class, new AuthSource(['sources' => [], 'ambiguous' => 'fail']));
-//
-//        $this->expectException(InvalidOptionsException::class);
-//        $this->expectExceptionMessage('"ambiguous" with value "xyz"');
-//        new AuthSource(['sources' => [], 'ambiguous' => 'xyz']);
-//    }
-//
-//    public function test__validation()
-//    {
-//        new AuthSource(['sources' => [], 'arguments' => []]);
-//        new AuthSource(['sources' => [], 'arguments' => ['useruuid' => 'UUID']]);
-//        new AuthSource(['sources' => [], 'arguments' => ['username' => 'NAME']]);
-//        new AuthSource(['sources' => [], 'arguments' => ['password' => 'PASS']]);
-//
-//        $this->expectException(UndefinedOptionsException::class);
-//        $this->expectExceptionMessage('option "xyz" does not exist');
-//        new AuthSource(['sources' => [], 'arguments' => ['xyz' => 'XYZ']]);
-//    }
-//
-//    public function test__ambiguous()
-//    {
-//        $options = ['sources' => [], 'ambiguous' => 'first'];
-//        $schema = new AuthSource($options);
-//
-//        $this->assertSame('first', $schema->ambiguous());
-//        $this->assertSame('first', $schema->ambiguous('xyz'));
-//    }
-//
-//    public function test__ambiguous__null()
-//    {
-//        $options = ['sources' => []];
-//        $schema = new AuthSource($options);
-//
-//        $this->assertNull($schema->ambiguous());
-//    }
-//
-//    public function test__ambiguous__default()
-//    {
-//        $options = ['sources' => []];
-//        $schema = new AuthSource($options);
-//
-//        $this->assertSame('xyz', $schema->ambiguous('xyz'));
-//    }
-//
-//    public function test__arguments()
-//    {
-//        $options = [
-//            'sources' => [],
-//            'arguments' => [
-//                'useruuid' => 'entryuuid',
-//                'username' => 'uid',
-//                'password' => 'password'
-//            ],
-//        ];
-//        $schema = new AuthSource($options);
-//
-//        $arguments = $schema->arguments();
-//        $this->assertSame($options['arguments'], $schema->arguments());
-//        $this->assertSame($options['arguments'], $schema->arguments(['xyz']));
-//    }
+    public function test__sessions__validation()
+    {
+        $source = new AuthSource(['attempt' => [], 'sessions' => []]);
+
+        $this->expectException(InvalidOptionsException::class);
+        $this->expectExceptionMessage('option "sessions" with value "FOO"');
+        new AuthSource(['attempt' => [], 'sessions' => 'FOO']);
+    }
+
+    public function test__search__validation()
+    {
+        $source = new AuthSource(['attempt' => [], 'sessions' => [], 'search' => []]);
+
+        $this->expectException(MissingOptionsException::class);
+        $this->expectExceptionMessage('The required option "sessions" is missing (required by "search" option)');
+        new AuthSource(['attempt' => [], 'search' => []]);
+    }
+
+    public function test__locate__validation()
+    {
+        $source = new AuthSource(['attempt' => [], 'sessions' => [], 'locate' => []]);
+
+        $this->expectException(MissingOptionsException::class);
+        $this->expectExceptionMessage('The required option "sessions" is missing (required by "locate" option)');
+        new AuthSource(['attempt' => [], 'locate' => []]);
+    }
+
+    public function test__attempt()
+    {
+        $source = new AuthSource(['attempt' => [ 'binding' => ['BIND'] ]], new Aggregate());
+        $attempt = $source->attempt();
+        $this->assertInstanceOf(AuthAttempt::class, $attempt);
+        $this->assertSame(['binding' => ['BIND']], $attempt->getOptions()->getArrayCopy());
+    }
+
+    public function test__attempt__ref()
+    {
+        $presets = new Aggregate(['auth_attempts' => ['aat1' => ['binding' => ['BIND']]]]);
+        $source = new AuthSource(['attempt' => 'aat1'], $presets);
+        $attempt = $source->attempt();
+        $this->assertInstanceOf(AuthAttempt::class, $attempt);
+        $this->assertSame(['binding' => ['BIND']], $attempt->getOptions()->getArrayCopy());
+    }
+
+    public function test__sessions()
+    {
+        $sess1 = ['connection' => ['S1CONN'], 'binding' => ['S1BIND']];
+        $sess2 = ['connection' => ['S2CONN'], 'binding' => ['S2BIND']];
+        $presets = new Aggregate(['sessions' => ['sess2' => $sess2]]);
+
+        $options = ['attempt' => [], 'sessions' => [$sess1, 'sess2']];
+        $schema = new AuthSource($options, $presets);
+
+        $sessions = $schema->sessions();
+        $this->assertIsArray($sessions);
+        $this->assertCount(2, $sessions);
+
+        $this->assertInstanceOf(Session::class, $sessions[0]);
+        $this->assertSame($sess1, $sessions[0]->getOptions()->getArrayCopy());
+        $this->assertInstanceOf(Session::class, $sessions[1]);
+        $this->assertSame($sess2, $sessions[1]->getOptions()->getArrayCopy());
+    }
+
+    public function test__search()
+    {
+        $srch1 = ['base' => 'ou=people,dc=example,dc=org', 'filter' => 'uid=*'];
+        $source = new AuthSource(['attempt' => [], 'sessions' => [], 'search' => $srch1], new Aggregate());
+        $search = $source->search();
+        $this->assertInstanceOf(Search::class, $search);
+        $this->assertSame($srch1, $search->getOptions()->getArrayCopy());
+    }
+
+    public function test__search__ref()
+    {
+        $srch1 = ['base' => 'ou=people,dc=example,dc=org', 'filter' => 'uid=*'];
+        $presets = new Aggregate(['searches' => ['srch1' => $srch1]]);
+        $source = new AuthSource(['attempt' => [], 'sessions' => [], 'search' => 'srch1'], $presets);
+        $search = $source->search();
+        $this->assertInstanceOf(Search::class, $search);
+        $this->assertSame($srch1, $search->getOptions()->getArrayCopy());
+    }
+
+    public function test__locate()
+    {
+        $srch1 = ['base' => 'ou=people,dc=example,dc=org', 'filter' => 'uid=*'];
+        $source = new AuthSource(['attempt' => [], 'sessions' => [], 'locate' => $srch1], new Aggregate());
+        $locate = $source->locate();
+        $this->assertInstanceOf(Search::class, $locate);
+        $this->assertSame($srch1, $locate->getOptions()->getArrayCopy());
+    }
+
+    public function test__locate__ref()
+    {
+        $srch1 = ['base' => 'ou=people,dc=example,dc=org', 'filter' => 'uid=*'];
+        $presets = new Aggregate(['searches' => ['srch1' => $srch1]]);
+        $source = new AuthSource(['attempt' => [], 'sessions' => [], 'locate' => 'srch1'], $presets);
+        $locate = $source->locate();
+        $this->assertInstanceOf(Search::class, $locate);
+        $this->assertSame($srch1, $locate->getOptions()->getArrayCopy());
+    }
 }

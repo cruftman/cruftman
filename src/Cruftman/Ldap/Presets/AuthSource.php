@@ -26,7 +26,8 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
 /**
- * @todo Write documentation
+ * A *preset* object that represents single ldap data source for
+ * authentication.
  */
 class AuthSource extends Preset
 {
@@ -35,7 +36,8 @@ class AuthSource extends Preset
         RelatedPresetsArray;
 
     /**
-     * {@inheritdoc}
+     * Configure options resolver to validate and resolve options.
+     * @param  OptionsResolver $resolver
      */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
@@ -50,7 +52,7 @@ class AuthSource extends Preset
     }
 
     /**
-     * @todo Write documentation.
+     * Setup option normalization for all options that use it.
      * @param  OptionsResolver $resolver
      */
     protected function setOptionsNormalizers(OptionsResolver $resolver)
@@ -61,7 +63,8 @@ class AuthSource extends Preset
     }
 
     /**
-     * @todo Write documentation.
+     * Setup option normalization for a search-type option (search, locate, etc.).
+     *
      * @param  OptionsResolver $resolver
      * @param  string $key
      */
@@ -77,39 +80,39 @@ class AuthSource extends Preset
     }
 
     /**
-     * @todo Write documentation.
-     * @return Session[]
+     * Returns the *AuthAttempt* preset specified in *$this$ preset's ``'attempt'`` option.
+     * @return AuthAttempt
      */
-    public function getSessions() : array
+    public function attempt() : AuthAttempt
+    {
+        return $this->getRelatedPreset(AuthAttempt::class, 'attempt');
+    }
+
+    /**
+     * Returns an array of *Session* presets listed in *$this* preset's ``'session'`` option.
+     * @return array
+     */
+    public function sessions() : array
     {
         return $this->getRelatedPresetsArray(Session::class, 'sessions');
     }
 
     /**
-     * @todo Write documentation
+     * Returns the *Search* preset specified in *$this* preset's ``'search'`` option.
      * @return Search|null
      */
-    public function getSearch() : ?Search
+    public function search() : ?Search
     {
         return $this->getRelatedPreset(Search::class, 'search');
     }
 
     /**
-     * @todo Write documentation
+     * Returns the *Search* preset specified in *$this* preset's ``'locate'`` option.
      * @return Search|null
      */
-    public function getLocate() : ?Search
+    public function locate() : ?Search
     {
         return $this->getRelatedPreset(Search::class, 'locate');
-    }
-
-    /**
-     * @todo Write documentation
-     * @return AuthAttempt
-     */
-    public function getAuthAttempt() : AuthAttempt
-    {
-        return $this->getRelatedPreset(AuthAttempt::class, 'attempt');
     }
 }
 
