@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Support/Traits/RelatedPreset.php
+ * @file src/Cruftman/Support/Traits/RelatedPresetsArray.php
  *
  * This file is part of the Cruftman package
  *
