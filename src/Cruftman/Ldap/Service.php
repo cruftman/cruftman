@@ -47,9 +47,9 @@ final class Service
     /**
      * Same as getPresetsAggregate().
      *
-     * @return PresetsAggregateInterface|null
+     * @return Aggregate|null
      */
-    public function getPresets() : ?PresetsAggregateInterface
+    public function getPresets() : ?Aggregate
     {
         return $this->getPresetsAggregate();
     }
