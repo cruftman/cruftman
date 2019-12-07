@@ -34,6 +34,11 @@ class Source
     protected $attempt = null;
 
     /**
+     * @var Failover
+     */
+    protected $failover;
+
+    /**
      * Initializes the object.
      *
      * @param  AuthSource $preset
@@ -41,6 +46,7 @@ class Source
     public function __construct(AuthSource $preset)
     {
         $this->setAuthSourcePreset($preset);
+        $this->initFailover();
     }
 
     /**
@@ -54,6 +60,21 @@ class Source
             $this->attempt = new Attempt($this->getAuthSourcePreset()->getAuthAttempt());
         }
         return $this->attempt;
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function initFailover()
+    {
+        $this->failover = new Failover(
+            function (Session $session, array $arguments) {
+                return $this->trySession($session, $arguments);
+            },
+            function (array $sessions, array $arguments) {
+                return $this->handleFailure($sessions, $arguments);
+            }
+        );
     }
 
     /**
@@ -177,19 +198,19 @@ class Source
         $result = $query->getResult();
         return $result->getEntries(false);
     }
-
-    /**
-     * Rethrow the $exception if it can't be recovered with failover.
-     *
-     * @param  LdapException $exception
-     * @throws LdapException
-     */
-    protected function rethrowIfUnrecoverable(LdapException $exception)
-    {
-        if ($exception->getCode() !== -1) {
-            throw $exception;
-        }
-    }
+//
+//    /**
+//     * Rethrow the $exception if it can't be recovered with failover.
+//     *
+//     * @param  LdapException $exception
+//     * @throws LdapException
+//     */
+//    protected function rethrowIfUnrecoverable(LdapException $exception)
+//    {
+//        if ($exception->getCode() !== -1) {
+//            throw $exception;
+//        }
+//    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

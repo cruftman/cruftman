@@ -19,7 +19,7 @@ use Cruftman\Ldap\Traits\HasEntry;
 use Cruftman\Ldap\Traits\DecoratesEntryInterface;
 
 /**
- * @todo Write documentation.
+ * Decorated ldap Entry for authentication.
  */
 class Entry implements EntryInterface
 {

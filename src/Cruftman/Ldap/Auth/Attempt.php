@@ -38,6 +38,11 @@ class Attempt
     protected $status;
 
     /**
+     * @var Failover
+     */
+    protected $failover;
+
+    /**
      * Initializes the object.
      *
      * @param  AuthAttempt $preset
@@ -48,6 +53,22 @@ class Attempt
         $this->setAuthAttemptPreset($preset);
         $this->setStatus($status);
         $this->setLdapConstructor($ldapConstructor);
+        $this->initFailover();
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function initFailover()
+    {
+        $this->failover = new Failover(
+            function (Connection $connection, array $arguments) {
+                return $this->tryConnection($connection, $arguments);
+            },
+            function (array $connections, array $arguments) {
+                return $this->handleFailure($connections, $arguments);
+            }
+        );
     }
 
     /**
@@ -109,29 +130,7 @@ class Attempt
                 throw new \RuntimeException('Missing "connections" in AuthAttempt preset, check your config.');
             }
         }
-        return $this->tryConnections($connections, $arguments);
-    }
-
-    /**
-     * Tries to bind using Connection presets specified in *$connections*.
-     *
-     * @param  array $connections
-     * @param  array $arguments
-     *
-     * @return bool
-     * @throws LdapException
-     */
-    protected function tryConnections(array $connections, array $arguments) : bool
-    {
-        foreach ($connections as $connection) {
-            try {
-                return $this->tryConnection($connection, $arguments);
-            } catch (LdapException $exception) {
-                $this->rethrowIfUnrecoverable($exception);
-            }
-        }
-        $this->status->resetBindStatus();
-        return false;
+        return ($this->failover)($connections, $arguments);
     }
 
     /**
@@ -161,26 +160,25 @@ class Attempt
             $result = false;
         }
 
-        $this->status->setBindResult($result)
-                     ->setBindDn($bindDn)
-                     ->setBindLdap($ldap)
-                     ->setBindConnection($connection);
+        $this->getStatus()->setBindResult($result)
+                          ->setBindDn($bindDn)
+                          ->setBindLdap($ldap)
+                          ->setBindConnection($connection);
 
         return $result;
     }
 
     /**
-     * Rethrow the $exception if can't be recovered with failover.
-     *
-     * @param  LdapException $exception
-     * @throws LdapException
+     * Invoked when all connections failed.
+     * @param  array $connections
+     * @param  array $arguments
      */
-    protected function rethrowIfUnrecoverable(LdapException $exception)
+    protected function handleFailure(array $connections, array $arguments) : bool
     {
-        if ($exception->getCode() !== -1) {
-            throw $exception;
-        }
+        $this->getStatus()->resetBindStatus();
+        return false;
     }
+
 }
 
 // vim: syntax=php sw=4 ts=4 et:
