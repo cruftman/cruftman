@@ -11,7 +11,6 @@ use Cruftman\Ldap\Presets\AuthAttempt as AuthAttemptPreset;
 use Cruftman\Ldap\Presets\Binding as BindingPreset;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 
-//use Cruftman\Ldap\Auth\Source;
 use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
@@ -157,6 +156,45 @@ class AttemptTest extends TestCase
         $attempt = new Attempt($preset, null, null);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertInstanceOf(Status::class, $attempt->getStatus());
+        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
+    }
+
+    public function test__setStatus()
+    {
+        $preset = $this->createStub(AuthAttemptPreset::class);
+        $status = new Status();
+
+        $attempt = new Attempt($preset);
+
+        $attempt->setStatus($status);
+        $this->assertSame($status, $attempt->getStatus());
+
+        $attempt->setStatus(null);
+        $newstat = $attempt->getStatus();
+        $this->assertInstanceOf(Status::class, $newstat);
+        $this->assertNotSame($status, $newstat);
+
+        $attempt->setStatus();
+        $newstat2 = $attempt->getStatus();
+        $this->assertInstanceOf(Status::class, $newstat2);
+        $this->assertNotSame($status, $newstat2);
+        $this->assertNotSame($newstat, $newstat2);
+    }
+
+    public function test__setLdapConstructor()
+    {
+        $preset = $this->createStub(AuthAttemptPreset::class);
+        $ctor = function () {};
+
+        $attempt = new Attempt($preset);
+
+        $attempt->setLdapConstructor($ctor);
+        $this->assertSame($ctor, $attempt->getLdapConstructor());
+
+        $attempt->setLdapConstructor(null);
+        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
+
+        $attempt->setLdapConstructor();
         $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
     }
 

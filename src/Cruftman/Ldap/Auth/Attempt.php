@@ -56,11 +56,7 @@ class Attempt
      */
     public function setStatus(?Status $status = null)
     {
-        if ($status === null) {
-            $this->status = new Status();
-        } else {
-            $this->status = $status;
-        }
+        $this->status = $status ?? new Status();
         return $this;
     }
 
@@ -80,11 +76,7 @@ class Attempt
      */
     public function setLdapConstructor(?callable $ldapConstructor = null)
     {
-        if ($ldapConstructor === null) {
-            $this->ldapConstructor = [Ldap::class, 'createWithConfig'];
-        } else {
-            $this->ldapConstructor = $ldapConstructor;
-        }
+        $this->ldapConstructor = $ldapConstructor ?? [Ldap::class, 'createWithConfig'];
         return $this;
     }
 
