@@ -38,11 +38,6 @@ class Attempt
     protected $status;
 
     /**
-     * @var Failover
-     */
-    protected $failover;
-
-    /**
      * Initializes the object.
      *
      * @param  AuthAttempt $preset
@@ -53,22 +48,6 @@ class Attempt
         $this->setAuthAttemptPreset($preset);
         $this->setStatus($status);
         $this->setLdapConstructor($ldapConstructor);
-        $this->initFailover();
-    }
-
-    /**
-     * @todo Write documentation
-     */
-    protected function initFailover()
-    {
-        $this->failover = new Failover(
-            function (Connection $connection, array $arguments) {
-                return $this->tryConnection($connection, $arguments);
-            },
-            function (array $connections, array $arguments) {
-                return $this->handleFailure($connections, $arguments);
-            }
-        );
     }
 
     /**
@@ -130,7 +109,28 @@ class Attempt
                 throw new \RuntimeException('Missing "connections" in AuthAttempt preset, check your config.');
             }
         }
-        return ($this->failover)($connections, $arguments);
+        return $this->tryConnections($connections, $arguments);
+    }
+
+    /**
+     * Tries to bind using an array of Connection presets (failover).
+     *
+     * @param  array $connections
+     * @param  array $arguments
+     *
+     * @return bool
+     * @throws LdapException
+     */
+    protected function tryConnections(array $connections, array $arguments) : bool
+    {
+        return (new Failover(
+            function (Connection $connection) use ($arguments)  {
+                return $this->tryConnection($connection, $arguments);
+            },
+            function (array $connections) use ($arguments) {
+                return $this->bindFallback($connections, $arguments);
+            }
+        ))->tryWith($connections);
     }
 
     /**
@@ -149,8 +149,8 @@ class Attempt
         $bindPw = $binding->password($arguments);
 
         try {
-            $config = $connection->ldapConfig($arguments);
-            $ldap = call_user_func($this->ldapConstructor, $config);
+            $config = $connection->config($arguments);
+            $ldap = call_user_func($this->getLdapConstructor(), $config);
             $result = $ldap->bind($bindDn, $bindPw);
         } catch (LdapException $exception) {
             if ($exception->getCode() !== 0x31) {
@@ -173,7 +173,7 @@ class Attempt
      * @param  array $connections
      * @param  array $arguments
      */
-    protected function handleFailure(array $connections, array $arguments) : bool
+    protected function bindFallback(array $connections, array $arguments) : bool
     {
         $this->getStatus()->resetBindStatus();
         return false;

@@ -60,7 +60,7 @@ class Search extends Preset
      * @param array $arguments
      * @return array
      */
-    public function options(array $arguments) : array
+    public function options(array $arguments = []) : array
     {
         return $this->substOption('options', $arguments, []);
     }

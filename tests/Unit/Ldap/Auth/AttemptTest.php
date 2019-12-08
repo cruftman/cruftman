@@ -210,7 +210,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -234,7 +234,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -258,7 +258,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -282,7 +282,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -312,7 +312,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -346,7 +346,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -380,7 +380,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -414,7 +414,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
         $connection->expects($this->once())
-                   ->method('ldapConfig')
+                   ->method('config')
                    ->with($arguments)
                    ->will($this->returnValue([]));
 
@@ -449,12 +449,12 @@ class AttemptTest extends TestCase
 
         $connection1 = $this->createMock(ConnectionPreset::class);
         $connection1->expects($this->once())
-                    ->method('ldapConfig')
+                    ->method('config')
                     ->with($arguments)
                     ->will($this->returnValue(['CONN1']));
         $connection2 = $this->createMock(ConnectionPreset::class);
         $connection2->expects($this->never())
-                    ->method('ldapConfig');
+                    ->method('config');
 
         $binding = $this->bindingPresetMock(
             $arguments,
@@ -487,12 +487,12 @@ class AttemptTest extends TestCase
 
         $connection1 = $this->createMock(ConnectionPreset::class);
         $connection1->expects($this->once())
-                    ->method('ldapConfig')
+                    ->method('config')
                     ->with($arguments)
                     ->will($this->returnValue(['CONN1']));
         $connection2 = $this->createMock(ConnectionPreset::class);
         $connection2->expects($this->once())
-                    ->method('ldapConfig')
+                    ->method('config')
                     ->with($arguments)
                     ->will($this->returnValue(['CONN2']));
 

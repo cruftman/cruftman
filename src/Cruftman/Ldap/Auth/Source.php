@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Auth;
 
+use Korowai\Lib\Ldap\Ldap;
+use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthSourcePreset;
@@ -20,6 +22,7 @@ use Cruftman\Ldap\Traits\HasAuthSourcePreset;
 use Cruftman\Ldap\Presets\AuthSource;
 use Cruftman\Ldap\Presets\Search;
 use Cruftman\Ldap\Presets\Session;
+use Cruftman\Ldap\Presets\Connection;
 
 /**
  * Authentication source.
@@ -34,74 +37,61 @@ class Source
     protected $attempt = null;
 
     /**
-     * @var Failover
+     * @var callable
      */
-    protected $failover;
+    protected $ldapConstructor = null;
 
     /**
      * Initializes the object.
      *
      * @param  AuthSource $preset
      */
-    public function __construct(AuthSource $preset)
+    public function __construct(AuthSource $preset, ?Attempt $attempt = null, ?callable $ldapConstructor = null)
     {
         $this->setAuthSourcePreset($preset);
-        $this->initFailover();
+        $this->setAttempt($attempt);
+        $this->setLdapConstructor($ldapConstructor);
+    }
+
+    /**
+     * Sets the function used to create Ldap instances.
+     * @param callable $ldapConstructor
+     * @return Attempt $this
+     */
+    public function setLdapConstructor(?callable $ldapConstructor = null)
+    {
+        $this->ldapConstructor = $ldapConstructor ?? [Ldap::class, 'createWithConfig'];
+        return $this;
+    }
+
+    /**
+     * Returns the ldap constructor callback used to create Ldap isntances.
+     * @return callable
+     */
+    public function getLdapConstructor()
+    {
+        return $this->ldapConstructor;
+    }
+
+    /**
+     * @todo Write documentation.
+     * @param  Attempt|null $attempt
+     * @return Source $this
+     */
+    public function setAttempt(?Attempt $attempt)
+    {
+        $this->attempt = $attempt ?? new Attempt($this->getAuthSourcePreset()->attempt());
+        return $this;
     }
 
     /**
      * Returns an Attempt object.
      *
-     * @return Attempt
+     * @return Attempt|null
      */
-    public function getAttempt() : Attempt
+    public function getAttempt() : ?Attempt
     {
-        if (!isset($this->attempt)) {
-            $this->attempt = new Attempt($this->getAuthSourcePreset()->getAuthAttempt());
-        }
         return $this->attempt;
-    }
-
-    /**
-     * @todo Write documentation
-     */
-    protected function initFailover()
-    {
-        $this->failover = new Failover(
-            function (Session $session, array $arguments) {
-                return $this->trySession($session, $arguments);
-            },
-            function (array $sessions, array $arguments) {
-                return $this->handleFailure($sessions, $arguments);
-            }
-        );
-    }
-
-    /**
-     * Returns the nested Search preset.
-     * @return Search|null
-     */
-    public function getSearchPreset() : ?Search
-    {
-        return $this->getAuthSourcePreset()->getSearch();
-    }
-
-    /**
-     * Returns the nested Search preset.
-     * @return Search|null
-     */
-    public function getLocatePreset() : ?Search
-    {
-        return $this->getAuthSourcePreset()->getLocate();
-    }
-
-    /**
-     * Returns the nested array of Session presets.
-     * @return Session[]|null
-     */
-    public function getSessionsPresets() : ?array
-    {
-        return $this->getAuthSourcePreset()->getSessions();
     }
 
     /**
@@ -112,7 +102,7 @@ class Source
      */
     public function search(array $arguments = []) : array
     {
-        $search = $this->getSearchPreset();
+        $search = $this->getAuthSourcePreset()->search();
         return $this->searchWithPreset($search, $arguments);
     }
 
@@ -124,7 +114,7 @@ class Source
      */
     public function locate(array $arguments = []) : array
     {
-        $search = $this->getLocatePreset();
+        $search = $this->getAuthSourcePreset()->locate();
         return $this->searchWithPreset($search, $arguments);
     }
 
@@ -140,7 +130,7 @@ class Source
         if ($search === null) {
             return [];
         }
-        $sessions = $this->getAuthSourcePreset()->getSessions();
+        $sessions = $this->getAuthSourcePreset()->sessions();
         return $this->searchWithSessions($search, $sessions, $arguments);
     }
 
@@ -154,15 +144,14 @@ class Source
      */
     protected function searchWithSessions(Search $search, array $sessions, array $arguments) : array
     {
-        foreach ($sessions as $session) {
-            try {
+        return (new Failover(
+            function (Session $session) use ($search, $arguments) {
                 return $this->searchWithSession($search, $session, $arguments);
-            } catch (LdapException $exception) {
-                $this->rethrowIfUnrecoverable($exception);
+            },
+            function (array $sessions) use ($search, $arguments) {
+                return $this->searchFallback($search, $sessions, $arguments);
             }
-        }
-        // FIXME: notify that the whole failover algorithm failed.
-        return [];
+        ))->tryWith($sessions);
     }
 
     /**
@@ -175,42 +164,57 @@ class Source
      */
     protected function searchWithSession(Search $search, Session $session, array $arguments) : array
     {
-        $entries = $this->doSearchWithSession($search, $session, $arguments);
-        $connection = $session->getConnection();
+        $connection = $session->connection();
+        $binding = $session->binding();
+        $config = $connection->config($arguments);
+        $ldap = call_user_func($this->getLdapConstructor(), $config);
+        $ldap->bind($binding->dn($arguments), $binding->password($arguments));
+        $entries = $this->searchWithLdap($search, $ldap, $arguments);
+        return $this->wrapEntries($entries, $connection);
+    }
+
+    /**
+     * Perform search query using LdapInterface.
+     *
+     * @param  Search $search
+     * @param  LdapInterface $ldap
+     * @param  array $arguments
+     * @return array
+     */
+    protected function searchWithLdap(Search $search, LdapInterface $ldap, array $arguments) : array
+    {
+        $base = $search->base($arguments);
+        $filter = $search->filter($arguments);
+        $options = $search->options($arguments);
+        $result = $ldap->search($base, $filter, $options);
+        return $result->getEntries(false);
+    }
+
+    /**
+     * @param  Search $search
+     * @param  array $sessions
+     * @param  array $arguments
+     * @return array
+     */
+    protected function searchFallback(Search $search, array $sessions, array $arguments) : array
+    {
+        // FIXME: notify that the whole failover algorithm failed.
+        return [];
+    }
+
+    /**
+     * @todo Write documentation
+     * @param  array $entries
+     * @param  Session $session
+     * @return array
+     */
+    protected function wrapEntries(array $entries, Connection $connection) : array
+    {
         return array_map(function ($entry) use ($connection) {
             return (new Entry($entry))->setConnectionPreset($connection)
                                       ->setSource($this);
         }, $entries);
     }
-
-    /**
-     * Perform search query.
-     *
-     * @param  Search $search
-     * @param  Session $session
-     * @param  array $arguments
-     * @return Korowai\Lib\Ldap\Entry[]
-     */
-    protected function doSearchWithSession(Search $search, Session $session, array $arguments) : array
-    {
-        $ldap = $session->createLdap($arguments);
-        $query = $search->createQuery($ldap, $arguments);
-        $result = $query->getResult();
-        return $result->getEntries(false);
-    }
-//
-//    /**
-//     * Rethrow the $exception if it can't be recovered with failover.
-//     *
-//     * @param  LdapException $exception
-//     * @throws LdapException
-//     */
-//    protected function rethrowIfUnrecoverable(LdapException $exception)
-//    {
-//        if ($exception->getCode() !== -1) {
-//            throw $exception;
-//        }
-//    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

@@ -28,32 +28,33 @@ class Failover
     /**
      * @var callable
      */
-    protected $failureHandler;
+    protected $fallback;
 
     /**
      * Initializes the object.
      *
      * @param callable $callback
-     * @param callable $failureHandler
+     * @param callable $fallback
      */
-    public function __construct(callable $callback, callable $failureHandler)
+    public function __construct(callable $callback, callable $fallback = null)
     {
         $this->setCallback($callback);
-        $this->setFailureHandler($failureHandler);
+        $this->setFallback($fallback);
     }
 
     /**
-     * @todo Write documentation
+     * Sets *$callback* called by the failover algorithm.
+     * @param  callable|null $callback
      * @return Failover $this
      */
-    public function setCallback(callable $callback)
+    public function setCallback(?callable $callback)
     {
         $this->callback = $callback;
         return $this;
     }
 
     /**
-     * @todo Write documentation
+     * Return the callback set with *setCallback()*.
      * @return callable|null
      */
     public function getCallback()
@@ -62,22 +63,25 @@ class Failover
     }
 
     /**
-     * @todo Write documentation
+     * Sets the callack called after all providers fail.
+     *
+     * @param  callable|null $fallback
      * @return Failover $this
      */
-    public function setFailureHandler(callable $failureHandler)
+    public function setFallback(?callable $fallback)
     {
-        $this->failureHandler = $failureHandler;
+        $this->fallback = $fallback;
         return $this;
     }
 
     /**
-     * @todo Write documentation
+     * Returns the failure handling callback provided with *setFallback()*.
+     *
      * @return callable|null
      */
-    public function getFailureHandler()
+    public function getFallback()
     {
-        return $this->failureHandler;
+        return $this->fallback;
     }
 
     /**
@@ -86,17 +90,17 @@ class Failover
      * @param array $providers
      * @param array $arguments
      */
-    public function __invoke(array $providers, array $arguments)
+    public function tryWith(array $providers)
     {
         $callback = $this->getCallback();
         foreach ($providers as $provider) {
             try {
-                return call_user_func_array($callback,  [$provider, $arguments]);
+                return call_user_func_array($callback,  [$provider]);
             } catch (LdapException $exception) {
                 $this->rethrowIfUnrecoverable($exception);
             }
         }
-        return call_user_func_array($this->getFailureHandler(), [$providers, $arguments]);
+        return call_user_func_array($this->getFallback(), [$providers]);
     }
 
     /**

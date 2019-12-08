@@ -16,11 +16,11 @@ class ConnectionTest extends TestCase
         $this->assertContains(Preset::class, $parents);
     }
 
-    public function test__ldapConfig()
+    public function test__config()
     {
         $options = ['uri' => 'ldap://${server}'];
         $connection = new Connection($options);
         $config = ['uri' => 'ldap://ldap1.example.org'];
-        $this->assertSame($config, $connection->ldapConfig(['server' => 'ldap1.example.org']));
+        $this->assertSame($config, $connection->config(['server' => 'ldap1.example.org']));
     }
 }

@@ -23,10 +23,10 @@ class Connection extends Preset
     /**
      * Returns configuration array that may be passed to *Ldap::createWithConfig()*.
      *
-     * @param array $arguments
+     * @param  array $arguments
      * @return array
      */
-    public function ldapConfig(array $arguments = [])
+    public function config(array $arguments = [])
     {
         return $this->substOptions($arguments);
     }
