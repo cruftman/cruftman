@@ -65,36 +65,37 @@ class Connector
      * @param array $arguments
      * @return LdapInterface
      */
-    public function createUnbound(Connection $connection, array $arguments) : LdapInterface
+    public function createLdap(Connection $connection, array $arguments) : LdapInterface
     {
         $config = $connection->config($arguments);
         return Ldap::createWithConfig($config);
     }
 
     /**
-     * Creates Ldap instance (bound).
+     * Creates and binds new Ldap instance using Connection and Binding presets.
      *
-     * @param Session $session
-     * @param array $arguments
+     * @param  Connection $connection
+     * @param  Binding $binding
+     * @param  array $arguments
      * @return LdapInterface
      */
-    public function createBound(Connection $connection, Binding $binding, array $arguments) : LdapInterface
+    public function createAndBindLdap(Connection $connection, Binding $binding, array $arguments) : LdapInterface
     {
-        $ldap = $this->createUnbound($session->connection(), $arguments);
+        $ldap = $this->createLdap($session->connection(), $arguments);
         $this->getBinder()->bind($binding, $ldap, $arguments);
         return $ldap;
     }
 
     /**
-     * Creates Ldap instance (bound).
+     * Creates and binds Ldap using Session preset.
      *
      * @param Session $session
      * @param array $arguments
      * @return LdapInterface
      */
-    public function createSession(Session $session, array $arguments) : LdapInterface
+    public function createLdapWithSession(Session $session, array $arguments) : LdapInterface
     {
-        return $this->createBound($session->connection(), $session->binding(), $arguments);
+        return $this->createAndBindLdap($session->connection(), $session->binding(), $arguments);
     }
 }
 

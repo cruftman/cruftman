@@ -47,10 +47,10 @@ class AttemptTest extends TestCase
                           ->getMock();
         if ($connectorWill === null) {
             $connector->expects($this->never())
-                      ->method('createUnbound');
+                      ->method('createLdap');
         } else {
             $connector->expects($this->exactly($iterations))
-                      ->method('createUnbound')
+                      ->method('createLdap')
                       ->will($connectorWill);
         }
         return new Attempt($preset, null, $connector);
@@ -476,7 +476,7 @@ class AttemptTest extends TestCase
 
         $connector = $this->createMock(Connector::class);
         $connector->expects($this->exactly(2))
-                  ->method('createUnbound')
+                  ->method('createLdap')
                   ->withConsecutive([$connection1, $arguments], [$connection2, $arguments])
                   ->will($this->onConsecutiveCalls($ldap1, $ldap2));
 

@@ -150,7 +150,7 @@ class Attempt
         $bindPw = $binding->password($arguments);
 
         try {
-            $ldap = $this->getConnector()->createUnbound($connection, $arguments);
+            $ldap = $this->getConnector()->createLdap($connection, $arguments);
             $result = $ldap->bind($bindDn, $bindPw);
         } catch (LdapException $exception) {
             if ($exception->getCode() !== 0x31) {
