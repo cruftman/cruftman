@@ -13,12 +13,13 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Auth;
 
-use Korowai\Lib\Ldap\Ldap;
+//use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\Connection;
+use Cruftman\Ldap\Functors\Connector;
 
 /**
  * Attempts to bind user using one or more connections (failover).
@@ -30,7 +31,7 @@ class Attempt
     /**
      * @var callable
      */
-    protected $ldapConstructor;
+    protected $connector;
 
     /**
      * @var Status
@@ -43,11 +44,11 @@ class Attempt
      * @param  AuthAttempt $preset
      * @param  Status $status
      */
-    public function __construct(AuthAttempt $preset, ?Status $status = null, ?callable $ldapConstructor = null)
+    public function __construct(AuthAttempt $preset, ?Status $status = null, ?Connector $connector = null)
     {
         $this->setAuthAttemptPreset($preset);
         $this->setStatus($status);
-        $this->setLdapConstructor($ldapConstructor);
+        $this->setConnector($connector);
     }
 
     /**
@@ -71,22 +72,22 @@ class Attempt
 
     /**
      * Sets the function used to create Ldap instances.
-     * @param callable $ldapConstructor
+     * @param Connector|null $connector
      * @return Attempt $this
      */
-    public function setLdapConstructor(?callable $ldapConstructor = null)
+    public function setConnector(?Connector $connector)
     {
-        $this->ldapConstructor = $ldapConstructor ?? [Ldap::class, 'createWithConfig'];
+        $this->connector = $connector ?? new Connector;
         return $this;
     }
 
     /**
      * Returns the ldap constructor callback used to create Ldap isntances.
-     * @return callable
+     * @return Connector|null
      */
-    public function getLdapConstructor()
+    public function getConnector() : ?Connector
     {
-        return $this->ldapConstructor;
+        return $this->connector;
     }
 
     /**
@@ -149,8 +150,7 @@ class Attempt
         $bindPw = $binding->password($arguments);
 
         try {
-            $config = $connection->config($arguments);
-            $ldap = call_user_func($this->getLdapConstructor(), $config);
+            $ldap = $this->getConnector()->createUnbound($connection, $arguments);
             $result = $ldap->bind($bindDn, $bindPw);
         } catch (LdapException $exception) {
             if ($exception->getCode() !== 0x31) {

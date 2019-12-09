@@ -9,12 +9,13 @@ use Cruftman\Ldap\Auth\Status;
 use Cruftman\Ldap\Presets\Aggregate;
 use Cruftman\Ldap\Presets\AuthAttempt as AuthAttemptPreset;
 use Cruftman\Ldap\Presets\Binding as BindingPreset;
+use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
+use Cruftman\Ldap\Functors\Connector;
 
 use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
-use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 
 class AttemptTest extends TestCase
 {
@@ -34,16 +35,25 @@ class AttemptTest extends TestCase
         return $presets->authAttempt($options);
     }
 
-    protected function createAttemptWithOptions(array $options, $ldapMock = null, ?Aggregate $presets = null)
+    protected function createAttemptWithOptions(array $options, $connectorWill = null, ?Aggregate $presets = null, $iterations = 1)
     {
         $preset = $this->createAuthAttemptPreset($options, $presets);
-        return $this->createAttemptWithPreset($preset, $ldapMock);
+        return $this->createAttemptWithPreset($preset, $connectorWill, $iterations);
     }
 
-    protected function createAttemptWithPreset(AuthAttemptPreset $preset, $ldapMock = null)
+    protected function createAttemptWithPreset(AuthAttemptPreset $preset, $connectorWill = null, $iterations = 1)
     {
-        $ctor = $ldapMock ? function (array $options = []) use ($ldapMock) { return $ldapMock; } : null;
-        return new Attempt($preset, null, $ctor);
+        $connector = $this->getMockBuilder(Connector::class)
+                          ->getMock();
+        if ($connectorWill === null) {
+            $connector->expects($this->never())
+                      ->method('createUnbound');
+        } else {
+            $connector->expects($this->exactly($iterations))
+                      ->method('createUnbound')
+                      ->will($connectorWill);
+        }
+        return new Attempt($preset, null, $connector);
     }
 
     protected function ldapInterfaceMock(array $bindWith, $bindWill)
@@ -123,7 +133,7 @@ class AttemptTest extends TestCase
         $attempt = new Attempt($preset);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertInstanceOf(Status::class, $attempt->getStatus());
-        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
+        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
     }
 
     public function test__construct__withTwoArgs()
@@ -134,29 +144,39 @@ class AttemptTest extends TestCase
         $attempt = new Attempt($preset, $status);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertSame($status, $attempt->getStatus());
-        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
+        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
 
         $attempt = new Attempt($preset, null);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertInstanceOf(Status::class, $attempt->getStatus());
-        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
+        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
     }
 
     public function test__construct__withThreeArgs()
     {
         $preset = $this->createStub(AuthAttemptPreset::class);
         $status = new Status();
-        $ctor = function ($config) {};
+        $connector = $this->createStub(Connector::class);
 
-        $attempt = new Attempt($preset, $status, $ctor);
+        $attempt = new Attempt($preset, $status, $connector);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertSame($status, $attempt->getStatus());
-        $this->assertSame($ctor, $attempt->getLdapConstructor());
+        $this->assertSame($connector, $attempt->getConnector());
 
         $attempt = new Attempt($preset, null, null);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertInstanceOf(Status::class, $attempt->getStatus());
-        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
+        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
+    }
+
+    public function test__setConnector()
+    {
+        $preset = $this->createStub(AuthAttemptPreset::class);
+        $attempt = new Attempt($preset);
+        $connector = $this->createStub(Connector::class);
+
+        $this->assertSame($attempt, $attempt->setConnector($connector));
+        $this->assertSame($connector, $attempt->getConnector());
     }
 
     public function test__setStatus()
@@ -181,23 +201,6 @@ class AttemptTest extends TestCase
         $this->assertNotSame($newstat, $newstat2);
     }
 
-    public function test__setLdapConstructor()
-    {
-        $preset = $this->createStub(AuthAttemptPreset::class);
-        $ctor = function () {};
-
-        $attempt = new Attempt($preset);
-
-        $attempt->setLdapConstructor($ctor);
-        $this->assertSame($ctor, $attempt->getLdapConstructor());
-
-        $attempt->setLdapConstructor(null);
-        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
-
-        $attempt->setLdapConstructor();
-        $this->assertSame([Ldap::class, 'createWithConfig'], $attempt->getLdapConstructor());
-    }
-
     /**
      * @dataProvider boolProvider
      */
@@ -205,14 +208,10 @@ class AttemptTest extends TestCase
     {
         $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
         $ldap = $this->ldapInterfaceMock(['uid=jsmith,dc=foo', 'secret'], $this->returnValue($expect));
-        $attempt = $this->createAttemptWithOptions($options, $ldap);
+        $attempt = $this->createAttemptWithOptions($options, $this->returnValue($ldap));
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $status = $attempt->getStatus();
         $this->assertSame($expect, $attempt->bind($arguments, $connection));
@@ -229,14 +228,10 @@ class AttemptTest extends TestCase
             ['uid=jsmith,dc=foo', 'secret'],
             $this->throwException(new LdapException('Invalid Credentials', 0x31))
         );
-        $attempt = $this->createAttemptWithOptions($options, $ldap);
+        $attempt = $this->createAttemptWithOptions($options, $this->returnValue($ldap));
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $status = $attempt->getStatus();
 
@@ -253,14 +248,10 @@ class AttemptTest extends TestCase
             ['uid=jsmith,dc=foo', 'secret'],
             $this->throwException(new LdapException("can't connect to LDAP server", -1))
         );
-        $attempt = $this->createAttemptWithOptions($options, $ldap);
+        $attempt = $this->createAttemptWithOptions($options, $this->returnValue($ldap));
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $status = $attempt->getStatus();
         $this->assertFalse($attempt->bind($arguments, $connection));
@@ -277,14 +268,10 @@ class AttemptTest extends TestCase
             ['uid=jsmith,dc=foo', 'secret'],
             $this->throwException(new LdapException('Invalid syntax', 0x15))
         );
-        $attempt = $this->createAttemptWithOptions($options, $ldap);
+        $attempt = $this->createAttemptWithOptions($options, $this->returnValue($ldap));
 
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $this->expectException(LdapException::class);
         $this->expectExceptionMessage('Invalid syntax');
@@ -311,10 +298,6 @@ class AttemptTest extends TestCase
     {
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $binding = $this->bindingPresetMock(
             $arguments,
@@ -330,7 +313,7 @@ class AttemptTest extends TestCase
             $this->returnValue($expect)
         );
 
-        $attempt = $this->createAttemptWithPreset($preset, $ldap);
+        $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
         $status = $attempt->getStatus();
 
@@ -345,10 +328,6 @@ class AttemptTest extends TestCase
     {
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $binding = $this->bindingPresetMock(
             $arguments,
@@ -364,7 +343,7 @@ class AttemptTest extends TestCase
             $this->throwException(new LdapException('Invalid Credentials', 0x31))
         );
 
-        $attempt = $this->createAttemptWithPreset($preset, $ldap);
+        $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
         $status = $attempt->getStatus();
 
@@ -379,10 +358,6 @@ class AttemptTest extends TestCase
     {
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $binding = $this->bindingPresetMock(
             $arguments,
@@ -398,7 +373,7 @@ class AttemptTest extends TestCase
             $this->throwException(new LdapException("can't connect to LDAP server", -1))
         );
 
-        $attempt = $this->createAttemptWithPreset($preset, $ldap);
+        $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
         $status = $attempt->getStatus();
 
@@ -413,10 +388,6 @@ class AttemptTest extends TestCase
     {
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
-        $connection->expects($this->once())
-                   ->method('config')
-                   ->with($arguments)
-                   ->will($this->returnValue([]));
 
         $binding = $this->bindingPresetMock(
             $arguments,
@@ -432,7 +403,7 @@ class AttemptTest extends TestCase
             $this->throwException(new LdapException('Invalid syntax', 0x15))
         );
 
-        $attempt = $this->createAttemptWithPreset($preset, $ldap);
+        $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
         $status = $attempt->getStatus();
 
@@ -448,13 +419,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
 
         $connection1 = $this->createMock(ConnectionPreset::class);
-        $connection1->expects($this->once())
-                    ->method('config')
-                    ->with($arguments)
-                    ->will($this->returnValue(['CONN1']));
         $connection2 = $this->createMock(ConnectionPreset::class);
-        $connection2->expects($this->never())
-                    ->method('config');
 
         $binding = $this->bindingPresetMock(
             $arguments,
@@ -470,7 +435,7 @@ class AttemptTest extends TestCase
             ['uid=jsmith,dc=foo', 'secret'],
             $this->returnValue(true)
         );
-        $attempt = $this->createAttemptWithPreset($preset, $ldap1);
+        $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap1));
 
         $status = $attempt->getStatus();
 
@@ -486,15 +451,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
 
         $connection1 = $this->createMock(ConnectionPreset::class);
-        $connection1->expects($this->once())
-                    ->method('config')
-                    ->with($arguments)
-                    ->will($this->returnValue(['CONN1']));
         $connection2 = $this->createMock(ConnectionPreset::class);
-        $connection2->expects($this->once())
-                    ->method('config')
-                    ->with($arguments)
-                    ->will($this->returnValue(['CONN2']));
 
         $binding = $this->bindingPresetMock(
             $arguments,
@@ -516,14 +473,15 @@ class AttemptTest extends TestCase
             ['uid=jsmith,dc=foo', 'secret'],
             $this->returnValue(true)
         );
+
+        $connector = $this->createMock(Connector::class);
+        $connector->expects($this->exactly(2))
+                  ->method('createUnbound')
+                  ->withConsecutive([$connection1, $arguments], [$connection2, $arguments])
+                  ->will($this->onConsecutiveCalls($ldap1, $ldap2));
+
         $attempt = $this->createAttemptWithPreset($preset);
-        $attempt->setLdapConstructor(function (array $options) use ($ldap1, $ldap2) {
-            if ($options == ['CONN1']) {
-                return $ldap1;
-            } else {
-                return $ldap2;
-            }
-        });
+        $attempt->setConnector($connector);
 
         $status = $attempt->getStatus();
 
