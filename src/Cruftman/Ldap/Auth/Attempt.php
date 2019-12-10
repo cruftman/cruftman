@@ -31,12 +31,12 @@ class Attempt
     /**
      * @var callable
      */
-    protected $connector;
+    protected $connector = null;
 
     /**
      * @var Status
      */
-    protected $status;
+    protected $status = null;
 
     /**
      * Initializes the object.
@@ -57,7 +57,7 @@ class Attempt
      */
     public function setStatus(?Status $status = null)
     {
-        $this->status = $status ?? new Status();
+        $this->status = $status;
         return $this;
     }
 
@@ -67,6 +67,9 @@ class Attempt
      */
     public function getStatus() : Status
     {
+        if ($this->status === null) {
+            $this->setStatus(new Status);
+        }
         return $this->status;
     }
 
@@ -77,7 +80,7 @@ class Attempt
      */
     public function setConnector(?Connector $connector)
     {
-        $this->connector = $connector ?? new Connector;
+        $this->connector = $connector;
         return $this;
     }
 
@@ -85,8 +88,11 @@ class Attempt
      * Returns the ldap constructor callback used to create Ldap isntances.
      * @return Connector|null
      */
-    public function getConnector() : ?Connector
+    public function getConnector() : Connector
     {
+        if ($this->connector === null) {
+            $this->setConnector(new Connector);
+        }
         return $this->connector;
     }
 
@@ -125,7 +131,7 @@ class Attempt
     protected function tryConnections(array $connections, array $arguments) : bool
     {
         return (new Failover(
-            function (Connection $connection) use ($arguments)  {
+            function (Connection $connection) use ($arguments) {
                 return $this->tryConnection($connection, $arguments);
             },
             function (array $connections) use ($arguments) {
@@ -178,7 +184,6 @@ class Attempt
         $this->getStatus()->resetBindStatus();
         return false;
     }
-
 }
 
 // vim: syntax=php sw=4 ts=4 et:

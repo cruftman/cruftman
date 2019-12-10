@@ -24,6 +24,8 @@ use Cruftman\Ldap\Presets\Search;
 use Cruftman\Ldap\Presets\Session;
 use Cruftman\Ldap\Presets\Connection;
 use Cruftman\Ldap\Tools\Failover;
+use Cruftman\Ldap\Tools\Connector;
+use Cruftman\Ldap\Tools\Finder;
 
 /**
  * Authentication source.
@@ -38,40 +40,44 @@ class Source
     protected $attempt = null;
 
     /**
-     * @var callable
+     * @var Connector
      */
-    protected $ldapConstructor = null;
+    protected $connector = null;
 
     /**
      * Initializes the object.
      *
      * @param  AuthSource $preset
      */
-    public function __construct(AuthSource $preset, ?Attempt $attempt = null, ?callable $ldapConstructor = null)
+    //public function __construct(AuthSource $preset, ?Attempt $attempt = null, ?callable $connector = null)
+    public function __construct(AuthSource $preset, ?Attempt $attempt = null, ?Connector $connector = null)
     {
         $this->setAuthSourcePreset($preset);
         $this->setAttempt($attempt);
-        $this->setLdapConstructor($ldapConstructor);
+        $this->setConnector($connector);
     }
 
     /**
      * Sets the function used to create Ldap instances.
-     * @param callable $ldapConstructor
-     * @return Attempt $this
+     * @param  Connector $connector
+     * @return Source $this
      */
-    public function setLdapConstructor(?callable $ldapConstructor = null)
+    public function setConnector(?Connector $connector = null)
     {
-        $this->ldapConstructor = $ldapConstructor ?? [Ldap::class, 'createWithConfig'];
+        $this->connector = $connector;
         return $this;
     }
 
     /**
      * Returns the ldap constructor callback used to create Ldap isntances.
-     * @return callable
+     * @return Connector
      */
-    public function getLdapConstructor()
+    public function getConnector() : Connector
     {
-        return $this->ldapConstructor;
+        if ($this->connector === null) {
+            $this->setConnector(new Connector);
+        }
+        return $this->connector;
     }
 
     /**
@@ -81,7 +87,7 @@ class Source
      */
     public function setAttempt(?Attempt $attempt)
     {
-        $this->attempt = $attempt ?? new Attempt($this->getAuthSourcePreset()->attempt());
+        $this->attempt = $attempt;
         return $this;
     }
 
@@ -90,8 +96,12 @@ class Source
      *
      * @return Attempt|null
      */
-    public function getAttempt() : ?Attempt
+    public function getAttempt() : Attempt
     {
+        if ($this->attempt === null) {
+            $attemptPreset = $this->getAuthSourcePreset()->attempt();
+            $this->setAttempt(new Attempt($attemptPreset));
+        }
         return $this->attempt;
     }
 
@@ -167,9 +177,7 @@ class Source
     {
         $connection = $session->connection();
         $binding = $session->binding();
-        $config = $connection->config($arguments);
-        $ldap = call_user_func($this->getLdapConstructor(), $config);
-        $ldap->bind($binding->dn($arguments), $binding->password($arguments));
+        $ldap = $this->getConnector()->createAndBindLdap($connection, $binding, $arguments);
         $entries = $this->searchWithLdap($search, $ldap, $arguments);
         return $this->wrapEntries($entries, $connection);
     }
@@ -184,10 +192,11 @@ class Source
      */
     protected function searchWithLdap(Search $search, LdapInterface $ldap, array $arguments) : array
     {
-        $base = $search->base($arguments);
-        $filter = $search->filter($arguments);
-        $options = $search->options($arguments);
-        $result = $ldap->search($base, $filter, $options);
+//        $base = $search->base($arguments);
+//        $filter = $search->filter($arguments);
+//        $options = $search->options($arguments);
+//        $result = $ldap->search($base, $filter, $options);
+        $result = (new Finder)->search($search, $ldap, $arguments);
         return $result->getEntries(false);
     }
 
