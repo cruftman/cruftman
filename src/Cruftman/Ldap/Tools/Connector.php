@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Functors/Connector.php
+ * @file src/Cruftman/Ldap/Tools/Connector.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Functors;
+namespace Cruftman\Ldap\Tools;
 
 use Cruftman\Ldap\Presets\Connection;
 use Cruftman\Ldap\Presets\Session;
@@ -29,9 +29,25 @@ class Connector
      */
     protected $binder = null;
 
-    public function __construct(Binder $binder = null)
+    /**
+     * @var callable
+     */
+    protected $constructor = null;
+
+    /**
+     * Initializes the object.
+     *
+     * @param  Binder|null $binder
+     * @param  callable|null $constructor
+     */
+    public function __construct(?Binder $binder = null, ?callable $constructor = null)
     {
-        $this->setBinder($binder);
+        if ($binder !== null) {
+            $this->setBinder($binder);
+        }
+        if ($constructor !== null) {
+            $this->setConstructor($constructor);
+        }
     }
 
     /**
@@ -41,9 +57,6 @@ class Connector
      */
     public function setBinder(?Binder $binder)
     {
-        if ($binder === null) {
-            $binder = new Binder;
-        }
         $this->binder = $binder;
         return $this;
     }
@@ -52,23 +65,50 @@ class Connector
      * Returns the *Binder* functor assigned to this object.
      * @return Binder|null
      */
-    public function getBinder() : ?Binder
+    public function getBinder() : Binder
     {
+        if ($this->binder === null) {
+            $this->setBinder(new Binder);
+        }
         return $this->binder;
     }
 
+    /**
+     * Assigns a function that creates LdapInterface instances.
+     *
+     * @param  callable|null $construcotr
+     * @return Connector $this
+     */
+    public function setConstructor(?callable $constructor)
+    {
+        $this->constructor = $constructor;
+        return $this;
+    }
+
+    /**
+     * Returns the LdapInterface constructor assigned to this object.
+     *
+     * @return callable
+     */
+    public function getConstructor()
+    {
+        if ($this->constructor === null) {
+            $this->setConstructor([Ldap::class, 'createWithConfig']);
+        }
+        return $this->constructor;
+    }
 
     /**
      * Creates Ldap instance (unbound).
      *
-     * @param Connection $connection
-     * @param array $arguments
+     * @param  Connection $connection
+     * @param  array $arguments
      * @return LdapInterface
      */
     public function createLdap(Connection $connection, array $arguments) : LdapInterface
     {
         $config = $connection->config($arguments);
-        return Ldap::createWithConfig($config);
+        return call_user_func($this->getConstructor(), $config);
     }
 
     /**
@@ -81,7 +121,7 @@ class Connector
      */
     public function createAndBindLdap(Connection $connection, Binding $binding, array $arguments) : LdapInterface
     {
-        $ldap = $this->createLdap($session->connection(), $arguments);
+        $ldap = $this->createLdap($connection, $arguments);
         $this->getBinder()->bind($binding, $ldap, $arguments);
         return $ldap;
     }

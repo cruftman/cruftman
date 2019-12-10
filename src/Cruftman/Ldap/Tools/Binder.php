@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Functors/Binder.php
+ * @file src/Cruftman/Ldap/Tools/Binder.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,14 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Functors;
+namespace Cruftman\Ldap\Tools;
 
 use Cruftman\Ldap\Presets\Binding;
-use Korowai\Lib\Ldap\LdapInterface;
+use Korowai\Lib\Ldap\Adapter\BindingInterface;
 
 /**
- * Invokes *bind()* on an instance of *LdapInterface* according to *Binding*
- * preset.
+ * Invokes *bind()* on a *BindingInterface* according to *Binding* preset.
  */
 class Binder
 {
@@ -27,11 +26,11 @@ class Binder
      * *$binding* preset.
      *
      * @param  Binding $binding
-     * @param  LdapInterface $ldap
+     * @param  BindingInterface $ldap
      * @param  array $arguments
      * @return bool
      */
-    public function bind(Binding $binding, LdapInterface $ldap, array $arguments) : bool
+    public function bind(Binding $binding, BindingInterface $ldap, array $arguments) : bool
     {
         return $ldap->bind($binding->dn($arguments), $binding->password($arguments));
     }

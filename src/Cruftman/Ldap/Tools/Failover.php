@@ -1,6 +1,6 @@
 <?php
 /**
- * @file src/Cruftman/Ldap/Traits/Failover.php
+ * @file src/Cruftman/Ldap/Tools/Failover.php
  *
  * This file is part of the Cruftman package
  *
@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Cruftman\Ldap\Auth;
+namespace Cruftman\Ldap\Tools;
 
 use Korowai\Lib\Ldap\Exception\LdapException;
 
@@ -95,12 +95,13 @@ class Failover
         $callback = $this->getCallback();
         foreach ($providers as $provider) {
             try {
-                return call_user_func_array($callback,  [$provider]);
+                return call_user_func_array($callback, [$provider]);
             } catch (LdapException $exception) {
                 $this->rethrowIfUnrecoverable($exception);
             }
         }
-        return call_user_func_array($this->getFallback(), [$providers]);
+        $fallback = $this->getFallback();
+        return $fallback ? call_user_func_array($fallback, [$providers]) : null;
     }
 
     /**

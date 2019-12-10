@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Auth;
 
-//use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\Connection;
-use Cruftman\Ldap\Functors\Connector;
+use Cruftman\Ldap\Tools\Connector;
+use Cruftman\Ldap\Tools\Failover;
 
 /**
  * Attempts to bind user using one or more connections (failover).

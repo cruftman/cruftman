@@ -23,6 +23,7 @@ use Cruftman\Ldap\Presets\AuthSource;
 use Cruftman\Ldap\Presets\Search;
 use Cruftman\Ldap\Presets\Session;
 use Cruftman\Ldap\Presets\Connection;
+use Cruftman\Ldap\Tools\Failover;
 
 /**
  * Authentication source.

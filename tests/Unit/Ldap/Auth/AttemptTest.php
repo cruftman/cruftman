@@ -11,7 +11,7 @@ use Cruftman\Ldap\Presets\AuthAttempt as AuthAttemptPreset;
 use Cruftman\Ldap\Presets\Binding as BindingPreset;
 use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
-use Cruftman\Ldap\Functors\Connector;
+use Cruftman\Ldap\Tools\Connector;
 
 use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
