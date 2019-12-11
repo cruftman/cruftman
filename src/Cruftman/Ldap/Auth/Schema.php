@@ -61,32 +61,21 @@ class Schema
     {
         return array_map(function ($preset) {
             return new Source($preset);
-        }, $this->getAuthSourcesPresets());
-    }
-
-    /**
-     * Returns the array of nested AuthSource presets.
-     *
-     * @return AuthSource[]
-     */
-    public function getAuthSourcesPresets() : array
-    {
-        return $this->getAuthSchemaPreset()->getSources();
+        }, $this->getAuthSchemaPreset()->sources());
     }
 
     /**
      * @todo Write documentation.
      *
-     * @param  Status $status
      * @param  array $credentials
      * @return bool
      */
-    public function attempt(Status $status, array $credentials) : bool
+    public function attempt(array $credentials) : bool
     {
-        if ($this->attemptDirectBind($status, $credentials)) {
+        if ($this->attemptDirectBind($credentials)) {
             return true;
         }
-        return $this->attemptIndirectBind($status, $credentials);
+        return $this->attemptIndirectBind($credentials);
     }
 
     /**
@@ -95,7 +84,7 @@ class Schema
      * @param  array $arguments
      * @return Entry[]
      */
-    public function search(array $arguments = [])
+    public function search(array $arguments)
     {
         return $this->findWithSources($this->getSources(), 'search', $arguments);
     }
@@ -106,7 +95,7 @@ class Schema
      * @param  array $arguments
      * @return Entry[]
      */
-    public function locate(array $arguments = [])
+    public function locate(array $arguments)
     {
         return $this->findWithSources($this->getSources(), 'locate', $arguments);
     }
@@ -114,27 +103,29 @@ class Schema
     /**
      * @todo Write documentation.
      */
-    protected function attemptDirectBind(Status $status, array $arguments)
+    protected function attemptDirectBind(array $arguments)
     {
         $sources = array_filter($this->getSources(), function ($source) {
-            return (($source->getSearchPreset() === null) && ($source->getLocatePreset() === null));
+            $preset = $source->getAuthSourcePreset();
+            $search = $preset ? $preset->search() : null;
+            $locate = $preset ? $preset->locate() : null;
+            return (($search === null) && ($locate === null));
         });
-        return $this->attemptDirectBindWithSources($status, $sources, $arguments);
+        return $this->attemptDirectBindWithSources($sources, $arguments);
     }
 
     /**
      * @todo Write documentation.
      *
-     * @param  Status $status
      * @param  Source[] $sources
      * @param  array $arguments
      *
      * @return bool
      */
-    protected function attemptDirectBindWithSources(Status $status, array $sources, array $arguments) : bool
+    protected function attemptDirectBindWithSources(array $sources, array $arguments) : bool
     {
         foreach ($sources as $source) {
-            if ($this->attemptDirectBindWithSource($status, $source, $arguments)) {
+            if ($this->attemptDirectBindWithSource($source, $arguments)) {
                 return true;
             }
         }
@@ -144,16 +135,15 @@ class Schema
     /**
      * @todo Write documentation.
      *
-     * @param  Status $status
      * @param  Source $source
      * @param  array $arguments
      *
      * @return bool
      */
-    protected function attemptDirectBindWithSource(Status $status, Source $source, array $arguments) : bool
+    protected function attemptDirectBindWithSource(Source $source, array $arguments) : bool
     {
         $attempt = $source->getAttempt();
-        if (!$attempt->bind($status, $arguments)) {
+        if (!$attempt->bind($arguments)) {
             return false;
         }
         return true;
@@ -163,11 +153,10 @@ class Schema
      * Make an indirect bind attempt by first searching for bind DN and then
      * trying to bind.
      *
-     * @param  Status $status
      * @param  array $arguments
      * @return bool
      */
-    protected function attemptIndirectBind(Status $status, array $arguments) : bool
+    protected function attemptIndirectBind(array $arguments) : bool
     {
         $uuidkey = $this->getAuthSchemaPreset()->substOption('arguments.useruuid', $arguments, 'useruuid');
         if (($arguments[$uuidkey] ?? null) !== null) {
@@ -176,29 +165,28 @@ class Schema
             $entries = $this->search($arguments);
         }
 
-        return $this->attemptIndirectBindEntries($status, $entries, $arguments);
+        return $this->attemptIndirectBindEntries($entries, $arguments);
     }
 
     /**
      * @todo Write documentation.
      *
-     * @param  Status $status
      * @param  array $entries
      * @param  array $arguments
      *
      * @return bool
      */
-    protected function attemptIndirectBindEntries(Status $status, array $entries, array $arguments) : bool
+    protected function attemptIndirectBindEntries(array $entries, array $arguments) : bool
     {
-        $ambiguous = $this->getAuthSchemaPreset()->getAmbiguous();
+        $ambiguous = $this->getAuthSchemaPreset()->ambiguous();
         $count = count($entries);
 
         if ($count === 0) {
             return false;
         } elseif ($count === 1 || $ambiguous === 'first') {
-            return $this->attemptBindEntry($status, $entries[0], $arguments);
+            return $this->attemptBindEntry($entries[0], $arguments);
         } elseif ($ambiguous === 'each') {
-            return $this->attemptBindEntries($status, $entries, $arguments);
+            return $this->attemptBindEntries($entries, $arguments);
         } else {
             return false;
         }
@@ -208,16 +196,15 @@ class Schema
      * Attempt to bind using DNs and connections of the $entries (previously
      * found within our sources).
      *
-     * @param  Status $status
      * @param  array $entries
      * @param  array $arguments
      *
      * @return bool
      */
-    protected function attemptBindEntries(Status $status, array $entries, array $arguments = []) : bool
+    protected function attemptBindEntries(array $entries, array $arguments = []) : bool
     {
         foreach ($entries as $entry) {
-            if ($this->attemptBindEntry($status, $entry, $arguments)) {
+            if ($this->attemptBindEntry($entry, $arguments)) {
                 return true;
             }
         }
@@ -227,13 +214,12 @@ class Schema
     /**
      * Attempt to bind using $entry's DN and connection preset.
      *
-     * @param  Status $status
      * @param  Entry $entry
      * @param  array $arguments
      *
      * @return bool
      */
-    protected function attemptBindEntry(Status $status, Entry $entry, array $arguments)
+    protected function attemptBindEntry(Entry $entry, array $arguments)
     {
         $connection = $entry->getConnectionPreset();
         $source = $entry->getSource();
@@ -242,7 +228,7 @@ class Schema
         }
         $attempt = $source->getAttempt();
         $arguments = array_merge(['dn' => $entry->getDn()], $arguments);
-        if (!$attempt->bind($status, $arguments, $connection)) {
+        if (!$attempt->bind($arguments, $connection)) {
             return false;
         }
         return true;

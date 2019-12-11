@@ -19,6 +19,7 @@ use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\Connection;
 use Cruftman\Ldap\Tools\Connector;
+use Cruftman\Ldap\Tools\Binder;
 use Cruftman\Ldap\Tools\Failover;
 
 /**
@@ -34,6 +35,11 @@ class Attempt
     protected $connector = null;
 
     /**
+     * @var callable
+     */
+    protected $binder = null;
+
+    /**
      * @var Status
      */
     protected $status = null;
@@ -44,11 +50,16 @@ class Attempt
      * @param  AuthAttempt $preset
      * @param  Status $status
      */
-    public function __construct(AuthAttempt $preset, ?Status $status = null, ?Connector $connector = null)
-    {
+    public function __construct(
+        AuthAttempt $preset,
+        ?Status $status = null,
+        ?Connector $connector = null,
+        ?Binder $binder = null
+    ) {
         $this->setAuthAttemptPreset($preset);
         $this->setStatus($status);
         $this->setConnector($connector);
+        $this->setBinder($binder);
     }
 
     /**
@@ -94,6 +105,29 @@ class Attempt
             $this->setConnector(new Connector);
         }
         return $this->connector;
+    }
+
+    /**
+     * Sets the function used to create Ldap instances.
+     * @param Binder|null $binder
+     * @return Attempt $this
+     */
+    public function setBinder(?Binder $binder)
+    {
+        $this->binder = $binder;
+        return $this;
+    }
+
+    /**
+     * Returns the ldap constructor callback used to create Ldap isntances.
+     * @return Binder|null
+     */
+    public function getBinder() : Binder
+    {
+        if ($this->binder === null) {
+            $this->setBinder(new Binder);
+        }
+        return $this->binder;
     }
 
     /**
@@ -152,12 +186,11 @@ class Attempt
     protected function tryConnection(Connection $connection, array $arguments) : bool
     {
         $binding = $this->getAuthAttemptPreset()->binding();
-        $bindDn = $binding->dn($arguments);
-        $bindPw = $binding->password($arguments);
+        $bindDn = null;
 
         try {
             $ldap = $this->getConnector()->createLdap($connection, $arguments);
-            $result = $ldap->bind($bindDn, $bindPw);
+            $result = $this->getBinder()->bindDn($binding, $ldap, $arguments, $bindDn);
         } catch (LdapException $exception) {
             if ($exception->getCode() !== 0x31) {
                 throw $exception;

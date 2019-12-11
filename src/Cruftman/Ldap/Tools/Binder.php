@@ -34,6 +34,21 @@ class Binder
     {
         return $ldap->bind($binding->dn($arguments), $binding->password($arguments));
     }
+
+    /**
+     * Like *bind()* but returns bind dn via last argument.
+     *
+     * @param  Binding $binding
+     * @param  BindingInterface $ldap
+     * @param  array $arguments
+     * @param  string $dnRet
+     * @return bool
+     */
+    public function bindDn(Binding $binding, BindingInterface $ldap, array $arguments, string &$dnRet = null) : bool
+    {
+        $dnRet = $binding->dn($arguments);
+        return $ldap->bind($dnRet, $binding->password($arguments));
+    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

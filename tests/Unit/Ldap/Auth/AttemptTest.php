@@ -12,6 +12,7 @@ use Cruftman\Ldap\Presets\Binding as BindingPreset;
 use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 use Cruftman\Ldap\Tools\Connector;
+use Cruftman\Ldap\Tools\Binder;
 
 use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
@@ -162,11 +163,33 @@ class AttemptTest extends TestCase
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertSame($status, $attempt->getStatus());
         $this->assertSame($connector, $attempt->getConnector());
+        $this->assertInstanceOf(Binder::class, $attempt->getBinder());
 
         $attempt = new Attempt($preset, null, null);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
         $this->assertInstanceOf(Status::class, $attempt->getStatus());
         $this->assertInstanceOf(Connector::class, $attempt->getConnector());
+        $this->assertInstanceOf(Binder::class, $attempt->getBinder());
+    }
+
+    public function test__construct__withFourArgs()
+    {
+        $preset = $this->createStub(AuthAttemptPreset::class);
+        $status = new Status();
+        $connector = $this->createStub(Connector::class);
+        $binder = $this->createStub(Binder::class);
+
+        $attempt = new Attempt($preset, $status, $connector, $binder);
+        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
+        $this->assertSame($status, $attempt->getStatus());
+        $this->assertSame($connector, $attempt->getConnector());
+        $this->assertSame($binder, $attempt->getBinder());
+
+        $attempt = new Attempt($preset, null, null, null);
+        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
+        $this->assertInstanceOf(Status::class, $attempt->getStatus());
+        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
+        $this->assertInstanceOf(Binder::class, $attempt->getBinder());
     }
 
     public function test__setConnector()

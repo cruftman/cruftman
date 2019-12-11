@@ -14,9 +14,6 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Tools;
 
 use Cruftman\Ldap\Presets\Search;
-//use Cruftman\Ldap\Presets\Session;
-//use Cruftman\Ldap\Presets\Binding;
-//use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Korowai\Lib\Ldap\Adapter\ResultInterface;
@@ -32,7 +29,7 @@ class Finder
      * @param  Search $connection
      * @param  AdapterInterface $ldap
      * @param  array $arguments
-     * @return LdapInterface
+     * @return SearchQueryInterface
      */
     public function createQuery(Search $search, AdapterInterface $ldap, array $arguments) : SearchQueryInterface
     {
@@ -48,7 +45,7 @@ class Finder
      * @param  Search $connection
      * @param  AdapterInterface $ldap
      * @param  array $arguments
-     * @return LdapInterface
+     * @return ResultInterface
      */
     public function search(Search $search, AdapterInterface $ldap, array $arguments) : ResultInterface
     {

@@ -45,43 +45,32 @@ class Source
     protected $connector = null;
 
     /**
+     * @var Finder
+     */
+    protected $finder = null;
+
+    /**
      * Initializes the object.
      *
      * @param  AuthSource $preset
+     * @param  Attempt|null $attempt
+     * @param  Connector|null $connector
+     * @param  Fider|null $finder
      */
-    //public function __construct(AuthSource $preset, ?Attempt $attempt = null, ?callable $connector = null)
-    public function __construct(AuthSource $preset, ?Attempt $attempt = null, ?Connector $connector = null)
-    {
+    public function __construct(
+        AuthSource $preset,
+        ?Attempt $attempt = null,
+        ?Connector $connector = null,
+        ?Finder $finder = null
+    ) {
         $this->setAuthSourcePreset($preset);
         $this->setAttempt($attempt);
         $this->setConnector($connector);
+        $this->setFinder($finder);
     }
 
     /**
-     * Sets the function used to create Ldap instances.
-     * @param  Connector $connector
-     * @return Source $this
-     */
-    public function setConnector(?Connector $connector = null)
-    {
-        $this->connector = $connector;
-        return $this;
-    }
-
-    /**
-     * Returns the ldap constructor callback used to create Ldap isntances.
-     * @return Connector
-     */
-    public function getConnector() : Connector
-    {
-        if ($this->connector === null) {
-            $this->setConnector(new Connector);
-        }
-        return $this->connector;
-    }
-
-    /**
-     * @todo Write documentation.
+     * Assigns an Attempt object to this one.
      * @param  Attempt|null $attempt
      * @return Source $this
      */
@@ -106,12 +95,58 @@ class Source
     }
 
     /**
+     * Assigns Connector tool to this object.
+     * @param  Connector $connector
+     * @return Source $this
+     */
+    public function setConnector(?Connector $connector = null)
+    {
+        $this->connector = $connector;
+        return $this;
+    }
+
+    /**
+     * Returns the Connector tool assigned to this object.
+     * @return Connector
+     */
+    public function getConnector() : Connector
+    {
+        if ($this->connector === null) {
+            $this->setConnector(new Connector);
+        }
+        return $this->connector;
+    }
+
+    /**
+     * Assigns Finder tool to this object.
+     * @param  Finder $finder
+     * @return Source $this
+     */
+    public function setFinder(?Finder $finder = null)
+    {
+        $this->finder = $finder;
+        return $this;
+    }
+
+    /**
+     * Returns the Finder tool assigned to this object.
+     * @return Finder
+     */
+    public function getFinder() : Finder
+    {
+        if ($this->finder === null) {
+            $this->setFinder(new Finder);
+        }
+        return $this->finder;
+    }
+
+    /**
      * @todo Write documentation.
      *
      * @param  array $arguments
      * @return Entry[]
      */
-    public function search(array $arguments = []) : array
+    public function search(array $arguments) : array
     {
         $search = $this->getAuthSourcePreset()->search();
         return $this->searchWithPreset($search, $arguments);
@@ -123,7 +158,7 @@ class Source
      * @param  array $arguments
      * @return Entry[]
      */
-    public function locate(array $arguments = []) : array
+    public function locate(array $arguments) : array
     {
         $search = $this->getAuthSourcePreset()->locate();
         return $this->searchWithPreset($search, $arguments);
@@ -175,11 +210,9 @@ class Source
      */
     protected function searchWithSession(Search $search, Session $session, array $arguments) : array
     {
-        $connection = $session->connection();
-        $binding = $session->binding();
-        $ldap = $this->getConnector()->createAndBindLdap($connection, $binding, $arguments);
+        $ldap = $this->getConnector()->createLdapWithSession($session, $arguments);
         $entries = $this->searchWithLdap($search, $ldap, $arguments);
-        return $this->wrapEntries($entries, $connection);
+        return $this->wrapEntries($entries, $session->connection());
     }
 
     /**
@@ -192,11 +225,7 @@ class Source
      */
     protected function searchWithLdap(Search $search, LdapInterface $ldap, array $arguments) : array
     {
-//        $base = $search->base($arguments);
-//        $filter = $search->filter($arguments);
-//        $options = $search->options($arguments);
-//        $result = $ldap->search($base, $filter, $options);
-        $result = (new Finder)->search($search, $ldap, $arguments);
+        $result = $this->getFinder()->search($search, $ldap, $arguments);
         return $result->getEntries(false);
     }
 
@@ -213,7 +242,9 @@ class Source
     }
 
     /**
-     * @todo Write documentation
+     * Decorates entries returned by *searchWithLdap()* wrapping them with our
+     * Entry object.
+     *
      * @param  array $entries
      * @param  Session $session
      * @return array
