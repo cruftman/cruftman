@@ -33,8 +33,8 @@ trait RelatedPreset
     /**
      * Get a single option.
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  string $key
+     * @param  mixed $default
      * @return mixed
      */
     abstract public function getOption(string $key, $default = null);
@@ -67,8 +67,8 @@ trait RelatedPreset
     /**
      * Returns a **preset** that is pointed to by this preset's configuration option.
      *
-     * @param string $class type of the target preset,
-     * @param string $key name of option (of this preset) that holds the name of the target preset.
+     * @param  string $class type of the target preset,
+     * @param  string $key name of option (of this preset) that holds the name of the target preset.
      * @return PresetInterface
      * @throws PresetException
      * @throws OptionNotFoundException

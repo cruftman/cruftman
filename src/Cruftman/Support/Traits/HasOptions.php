@@ -90,7 +90,7 @@ trait HasOptions
     /**
      * Assigns *$optionsPrefix* to *$this->optionsPrefix*.
      *
-     * @param string|null $optionsPrefix
+     * @param  string|null $optionsPrefix
      * @return object $this
      */
     public function setOptionsPrefix(?string $optionsPrefix)
@@ -112,7 +112,7 @@ trait HasOptions
     /**
      * Returns *$key* with *$this->prefix* prepended.
      *
-     * @param string $key
+     * @param  string $key
      * @return string
      */
     public function getPrefixedOptionKey(string $key) : string

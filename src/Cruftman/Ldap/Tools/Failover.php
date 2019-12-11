@@ -33,8 +33,8 @@ class Failover
     /**
      * Initializes the object.
      *
-     * @param callable $callback
-     * @param callable $fallback
+     * @param  callable $callback
+     * @param  callable $fallback
      */
     public function __construct(callable $callback, callable $fallback = null)
     {
@@ -87,7 +87,7 @@ class Failover
     /**
      * Try multiple providers.
      *
-     * @param array $providers
+     * @param  array $providers
      */
     public function tryWith(array $providers)
     {

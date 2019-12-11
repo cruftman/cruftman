@@ -88,7 +88,7 @@ class Attempt
 
     /**
      * Sets the function used to create Ldap instances.
-     * @param Connector|null $connector
+     * @param  Connector|null $connector
      * @return Attempt $this
      */
     public function setConnector(?Connector $connector)
@@ -111,7 +111,7 @@ class Attempt
 
     /**
      * Sets the function used to create Ldap instances.
-     * @param Binder|null $binder
+     * @param  Binder|null $binder
      * @return Attempt $this
      */
     public function setBinder(?Binder $binder)

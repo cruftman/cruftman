@@ -40,7 +40,7 @@ class ModelController extends Controller
     /**
      * Returns a collection of model instances for the $request.
      *
-     * @param Request $request
+     * @param  Request $request
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function retrieveCollection(Request $request)
@@ -51,8 +51,8 @@ class ModelController extends Controller
     /**
      * Returns a single model instance for the $request.
      *
-     * @param Request $request
-     * @param $id Instance identifier
+     * @param  Request $request
+     * @param  $id Instance identifier
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */

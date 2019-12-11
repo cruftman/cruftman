@@ -65,7 +65,7 @@ class AuthAttempt extends Preset
     /**
      * Returns search filter string.
      *
-     * @param array $arguments
+     * @param  array $arguments
      * @return string|null
      */
     public function filter(array $arguments) : ?string
@@ -76,7 +76,7 @@ class AuthAttempt extends Preset
     /**
      * Returns array of attribute names to be returned by successful attempt.
      *
-     * @param array $arguments
+     * @param  array $arguments
      * @return array|null
      */
     public function attributes(array $arguments) : ?array

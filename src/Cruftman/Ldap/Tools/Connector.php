@@ -129,8 +129,8 @@ class Connector
     /**
      * Creates and binds Ldap using Session preset.
      *
-     * @param Session $session
-     * @param array $arguments
+     * @param  Session $session
+     * @param  array $arguments
      * @return LdapInterface
      */
     public function createLdapWithSession(Session $session, array $arguments) : LdapInterface

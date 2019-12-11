@@ -182,7 +182,7 @@ class Aggregate implements OptionsInterface, PresetsAggregateInterface
      *
      * Implemented here to fulfill requirements of *AggregatesPresets* trait.
      *
-     * @param string $class
+     * @param  string $class
      * @return bool|null
      * @see \Cruftman\Support\Traits\AggregatesPresets
      */
@@ -272,7 +272,7 @@ class Aggregate implements OptionsInterface, PresetsAggregateInterface
     /**
      * Returns a Connection preset.
      *
-     * @param string|array $options
+     * @param  string|array $options
      * @return Connection
      * @throws OptionNotFoundException
      */
@@ -284,7 +284,7 @@ class Aggregate implements OptionsInterface, PresetsAggregateInterface
     /**
      * Returns a Binding preset.
      *
-     * @param string|array $options
+     * @param  string|array $options
      * @return Binding
      * @throws OptionNotFoundException
      */

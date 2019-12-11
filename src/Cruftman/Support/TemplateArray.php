@@ -184,7 +184,7 @@ class TemplateArray extends \ArrayObject
     /**
      * Returns a placeholder for given $key.
      *
-     * @param string $key
+     * @param  string $key
      */
     public function placeholder(string $key) : string
     {

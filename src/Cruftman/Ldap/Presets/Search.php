@@ -37,7 +37,7 @@ class Search extends Preset
 
     /**
      * Returns base DN for the search preset.
-     * @param array $arguments
+     * @param  array $arguments
      * @return string
      */
     public function base(array $arguments) : string
@@ -47,7 +47,7 @@ class Search extends Preset
 
     /**
      * Returns search filter for the search.
-     * @param array $arguments
+     * @param  array $arguments
      * @return string
      */
     public function filter(array $arguments) : string
@@ -57,7 +57,7 @@ class Search extends Preset
 
     /**
      * Returns search options for the search.
-     * @param array $arguments
+     * @param  array $arguments
      * @return array
      */
     public function options(array $arguments) : array

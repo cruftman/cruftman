@@ -58,7 +58,7 @@ class AuthSchema extends Preset
     /**
      * Returns the value of ``'ambiguous'`` option of this preset.
      *
-     * @param mixed $default default value to be used when ambiguous option is not set.
+     * @param  mixed $default default value to be used when ambiguous option is not set.
      * @return string|null
      */
     public function ambiguous(?string $default = null) : ?string
@@ -69,7 +69,7 @@ class AuthSchema extends Preset
     /**
      * Returns the ``'arguments'`` array of arguments' mappings of this preset.
      *
-     * @param mixed $default default mapping to be used when ``'arguments'`` option was not set.
+     * @param  mixed $default default mapping to be used when ``'arguments'`` option was not set.
      * @return array|null
      */
     public function arguments(?array $default = null) : ?array

@@ -36,7 +36,7 @@ trait AggregatesPresets
     /**
      * Returns an option's value from configuration array used to setup this aggregate.
      *
-     * @param string $name option name
+     * @param  string $name option name
      * @return mixed
      */
     abstract public function getOption(string $name);
@@ -44,7 +44,7 @@ trait AggregatesPresets
     /**
      * Returns an option's value from configuration array used to setup this aggregate.
      *
-     * @param string $name option name
+     * @param  string $name option name
      * @throws OptionNotFoundException should be thrown when requested a nonexistent option.
      */
     abstract public function getOptionOrFail(string $name);
@@ -61,7 +61,7 @@ trait AggregatesPresets
     /**
      * Tells whether the *$class* is a singleton preset.
      *
-     * @param string $class
+     * @param  string $class
      * @return bool|null ``true`` if *$class* is a singleton **preset** class,
      *                   ``false`` if *$class* is a non-singleton **preset** class,
      *                   and ``null`` if *$class* is not a **preset** class supported
@@ -175,8 +175,8 @@ trait AggregatesPresets
     /**
      * Returns options encapsulated by a preset (named).
      *
-     * @param string $class preset class
-     * @param string $name preset name
+     * @param  string $class preset class
+     * @param  string $name preset name
      * @return array|null
      */
     protected function getNamedPresetOptions(string $class, string $name) : ?array
@@ -191,8 +191,8 @@ trait AggregatesPresets
     /**
      * Returns options encapsulated by a preset (named).
      *
-     * @param string $class preset class
-     * @param string $name preset name
+     * @param  string $class preset class
+     * @param  string $name preset name
      * @return array
      * @throws PresetException when *$class* is a singleton preset or is not supported by this aggregate
      * @throws OptionNotFoundException when there is no configuration option for the requested preset
@@ -209,7 +209,7 @@ trait AggregatesPresets
     /**
      * Returns options encapsulated by a preset (singleton).
      *
-     * @param string $class preset class
+     * @param  string $class preset class
      * @return array|null
      */
     protected function getSingletonPresetOptions(string $class) : ?array
@@ -224,7 +224,7 @@ trait AggregatesPresets
     /**
      * Returns options encapsulated by a preset (singleton).
      *
-     * @param string $class preset class
+     * @param  string $class preset class
      * @return array
      * @throws PresetException when *$class* is a non-singleton preset or is not supported by this aggregate
      * @throws OptionNotFoundException when there is no configuration option for the requested preset
@@ -256,9 +256,9 @@ trait AggregatesPresets
     /**
      * Allows injecting additional named presets into aggregate.
      *
-     * @param string $class
-     * @param string $name
-     * @param PresetInterface|null $preset
+     * @param  string $class
+     * @param  string $name
+     * @param  PresetInterface|null $preset
      * @return object $this
      */
     public function setNamedPreset(string $class, string $name, ?PresetInterface $preset)

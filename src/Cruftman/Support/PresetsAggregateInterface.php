@@ -175,7 +175,7 @@ interface PresetsAggregateInterface
     /**
      * Tells whether the *$class* is a singleton preset type.
      *
-     * @param string $class
+     * @param  string $class
      * @return bool|null ``true`` if *$class* is a singleton **preset** class,
      *                   ``false`` if *$class* is a non-singleton **preset** class,
      *                   and ``null`` if *$class* is not a **preset** class supported
