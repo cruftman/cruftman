@@ -11,6 +11,9 @@ use Cruftman\Ldap\Presets\AuthAttempt as AuthAttemptPreset;
 use Cruftman\Ldap\Presets\Binding as BindingPreset;
 use Cruftman\Ldap\Presets\Connection as ConnectionPreset;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
+use Cruftman\Ldap\Traits\HasAuthStatus;
+use Cruftman\Ldap\Traits\HasConnectorTool;
+use Cruftman\Ldap\Traits\HasBinderTool;
 use Cruftman\Ldap\Tools\Connector;
 use Cruftman\Ldap\Tools\Binder;
 
@@ -54,7 +57,7 @@ class AttemptTest extends TestCase
                       ->method('createLdap')
                       ->will($connectorWill);
         }
-        return new Attempt($preset, null, $connector);
+        return (new Attempt($preset))->setConnector($connector);
     }
 
     protected function ldapInterfaceMock(array $bindWith, $bindWill)
@@ -127,69 +130,32 @@ class AttemptTest extends TestCase
         $this->assertContains(HasAuthAttemptPreset::class, $uses);
     }
 
+    public function test__uses__HasAuthStatus()
+    {
+        $uses = class_uses(Attempt::class);
+        $this->assertContains(HasAuthStatus::class, $uses);
+    }
+
+    public function test__uses__HasConnectorTool()
+    {
+        $uses = class_uses(Attempt::class);
+        $this->assertContains(HasConnectorTool::class, $uses);
+    }
+
+    public function test__uses__HasBinderTool()
+    {
+        $uses = class_uses(Attempt::class);
+        $this->assertContains(HasBinderTool::class, $uses);
+    }
+
     public function test__construct__withOneArg()
     {
         $preset = $this->createStub(AuthAttemptPreset::class);
 
         $attempt = new Attempt($preset);
         $this->assertSame($preset, $attempt->getAuthAttemptPreset());
-        $this->assertInstanceOf(Status::class, $attempt->getStatus());
+        $this->assertInstanceOf(Status::class, $attempt->getAuthStatus());
         $this->assertInstanceOf(Connector::class, $attempt->getConnector());
-    }
-
-    public function test__construct__withTwoArgs()
-    {
-        $preset = $this->createStub(AuthAttemptPreset::class);
-        $status = new Status();
-
-        $attempt = new Attempt($preset, $status);
-        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
-        $this->assertSame($status, $attempt->getStatus());
-        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
-
-        $attempt = new Attempt($preset, null);
-        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
-        $this->assertInstanceOf(Status::class, $attempt->getStatus());
-        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
-    }
-
-    public function test__construct__withThreeArgs()
-    {
-        $preset = $this->createStub(AuthAttemptPreset::class);
-        $status = new Status();
-        $connector = $this->createStub(Connector::class);
-
-        $attempt = new Attempt($preset, $status, $connector);
-        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
-        $this->assertSame($status, $attempt->getStatus());
-        $this->assertSame($connector, $attempt->getConnector());
-        $this->assertInstanceOf(Binder::class, $attempt->getBinder());
-
-        $attempt = new Attempt($preset, null, null);
-        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
-        $this->assertInstanceOf(Status::class, $attempt->getStatus());
-        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
-        $this->assertInstanceOf(Binder::class, $attempt->getBinder());
-    }
-
-    public function test__construct__withFourArgs()
-    {
-        $preset = $this->createStub(AuthAttemptPreset::class);
-        $status = new Status();
-        $connector = $this->createStub(Connector::class);
-        $binder = $this->createStub(Binder::class);
-
-        $attempt = new Attempt($preset, $status, $connector, $binder);
-        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
-        $this->assertSame($status, $attempt->getStatus());
-        $this->assertSame($connector, $attempt->getConnector());
-        $this->assertSame($binder, $attempt->getBinder());
-
-        $attempt = new Attempt($preset, null, null, null);
-        $this->assertSame($preset, $attempt->getAuthAttemptPreset());
-        $this->assertInstanceOf(Status::class, $attempt->getStatus());
-        $this->assertInstanceOf(Connector::class, $attempt->getConnector());
-        $this->assertInstanceOf(Binder::class, $attempt->getBinder());
     }
 
     public function test__setConnector()
@@ -202,26 +168,30 @@ class AttemptTest extends TestCase
         $this->assertSame($connector, $attempt->getConnector());
     }
 
-    public function test__setStatus()
+    public function test__setBinder()
+    {
+        $preset = $this->createStub(AuthAttemptPreset::class);
+        $attempt = new Attempt($preset);
+        $binder = $this->createStub(Binder::class);
+
+        $this->assertSame($attempt, $attempt->setBinder($binder));
+        $this->assertSame($binder, $attempt->getBinder());
+    }
+
+    public function test__setAuthStatus()
     {
         $preset = $this->createStub(AuthAttemptPreset::class);
         $status = new Status();
 
         $attempt = new Attempt($preset);
 
-        $attempt->setStatus($status);
-        $this->assertSame($status, $attempt->getStatus());
+        $attempt->setAuthStatus($status);
+        $this->assertSame($status, $attempt->getAuthStatus());
 
-        $attempt->setStatus(null);
-        $newstat = $attempt->getStatus();
+        $attempt->setAuthStatus(null);
+        $newstat = $attempt->getAuthStatus();
         $this->assertInstanceOf(Status::class, $newstat);
         $this->assertNotSame($status, $newstat);
-
-        $attempt->setStatus();
-        $newstat2 = $attempt->getStatus();
-        $this->assertInstanceOf(Status::class, $newstat2);
-        $this->assertNotSame($status, $newstat2);
-        $this->assertNotSame($newstat, $newstat2);
     }
 
     /**
@@ -236,7 +206,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
         $this->assertSame($expect, $attempt->bind($arguments, $connection));
         $this->assertSame($expect, $status->getBindResult());
         $this->assertSame('uid=jsmith,dc=foo', $status->getBindDn());
@@ -256,7 +226,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
 
         $this->assertFalse($attempt->bind($arguments, $connection));
         $this->assertFalse($status->getBindResult());
@@ -276,7 +246,7 @@ class AttemptTest extends TestCase
         $arguments = ['username' => 'jsmith', 'password' => 'secret'];
         $connection = $this->createMock(ConnectionPreset::class);
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
         $this->assertFalse($attempt->bind($arguments, $connection));
         $this->assertNull($status->getBindResult());
         $this->assertNull($status->getBindDn());
@@ -338,7 +308,7 @@ class AttemptTest extends TestCase
 
         $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
 
         $this->assertSame($expect, $attempt->bind($arguments));
         $this->assertSame($expect, $status->getBindResult());
@@ -368,7 +338,7 @@ class AttemptTest extends TestCase
 
         $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
 
         $this->assertFalse($attempt->bind($arguments));
         $this->assertFalse($status->getBindResult());
@@ -398,7 +368,7 @@ class AttemptTest extends TestCase
 
         $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
 
         $this->assertFalse($attempt->bind($arguments));
         $this->assertNull($status->getBindResult());
@@ -428,7 +398,7 @@ class AttemptTest extends TestCase
 
         $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap));
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
 
         $this->expectException(LdapException::class);
         $this->expectExceptionMessage('Invalid syntax');
@@ -460,7 +430,7 @@ class AttemptTest extends TestCase
         );
         $attempt = $this->createAttemptWithPreset($preset, $this->returnValue($ldap1));
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
 
         $this->assertTrue($attempt->bind($arguments));
         $this->assertTrue($status->getBindResult());
@@ -506,7 +476,7 @@ class AttemptTest extends TestCase
         $attempt = $this->createAttemptWithPreset($preset);
         $attempt->setConnector($connector);
 
-        $status = $attempt->getStatus();
+        $status = $attempt->getAuthStatus();
 
         $this->assertTrue($attempt->bind($arguments));
         $this->assertTrue($status->getBindResult());

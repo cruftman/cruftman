@@ -16,6 +16,9 @@ namespace Cruftman\Ldap\Auth;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
+use Cruftman\Ldap\Traits\HasAuthStatus;
+use Cruftman\Ldap\Traits\HasConnectorTool;
+use Cruftman\Ldap\Traits\HasBinderTool;
 use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\Connection;
 use Cruftman\Ldap\Tools\Connector;
@@ -27,109 +30,19 @@ use Cruftman\Ldap\Tools\Failover;
  */
 class Attempt
 {
-    use HasAuthAttemptPreset;
-
-    /**
-     * @var callable
-     */
-    protected $connector = null;
-
-    /**
-     * @var callable
-     */
-    protected $binder = null;
-
-    /**
-     * @var Status
-     */
-    protected $status = null;
+    use HasAuthAttemptPreset,
+        HasAuthStatus,
+        HasConnectorTool,
+        HasBinderTool;
 
     /**
      * Initializes the object.
      *
      * @param  AuthAttempt $preset
-     * @param  Status|null $status
-     * @param  Connector|null $connector
-     * @param  Binder|null $binder
      */
-    public function __construct(
-        AuthAttempt $preset,
-        ?Status $status = null,
-        ?Connector $connector = null,
-        ?Binder $binder = null
-    ) {
+    public function __construct(AuthAttempt $preset)
+    {
         $this->setAuthAttemptPreset($preset);
-        $this->setStatus($status);
-        $this->setConnector($connector);
-        $this->setBinder($binder);
-    }
-
-    /**
-     * Assigns *Status* object to *$this*.
-     * @return Attempt $this
-     */
-    public function setStatus(?Status $status = null)
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    /**
-     * Returns the *Status* object assigned with *setStatus()*.
-     * @return Status
-     */
-    public function getStatus() : Status
-    {
-        if ($this->status === null) {
-            $this->setStatus(new Status);
-        }
-        return $this->status;
-    }
-
-    /**
-     * Sets the function used to create Ldap instances.
-     * @param  Connector|null $connector
-     * @return Attempt $this
-     */
-    public function setConnector(?Connector $connector)
-    {
-        $this->connector = $connector;
-        return $this;
-    }
-
-    /**
-     * Returns the ldap constructor callback used to create Ldap isntances.
-     * @return Connector|null
-     */
-    public function getConnector() : Connector
-    {
-        if ($this->connector === null) {
-            $this->setConnector(new Connector);
-        }
-        return $this->connector;
-    }
-
-    /**
-     * Sets the function used to create Ldap instances.
-     * @param  Binder|null $binder
-     * @return Attempt $this
-     */
-    public function setBinder(?Binder $binder)
-    {
-        $this->binder = $binder;
-        return $this;
-    }
-
-    /**
-     * Returns the ldap constructor callback used to create Ldap isntances.
-     * @return Binder|null
-     */
-    public function getBinder() : Binder
-    {
-        if ($this->binder === null) {
-            $this->setBinder(new Binder);
-        }
-        return $this->binder;
     }
 
     /**
@@ -201,10 +114,10 @@ class Attempt
             $result = false;
         }
 
-        $this->getStatus()->setBindResult($result)
-                          ->setBindDn($bindDn)
-                          ->setBindLdap($ldap)
-                          ->setBindConnection($connection);
+        $this->getAuthStatus()->setBindResult($result)
+                              ->setBindDn($bindDn)
+                              ->setBindLdap($ldap)
+                              ->setBindConnection($connection);
 
         return $result;
     }
@@ -216,7 +129,7 @@ class Attempt
      */
     protected function bindFallback(array $connections, array $arguments) : bool
     {
-        $this->getStatus()->resetBindStatus();
+        $this->getAuthStatus()->resetBindStatus();
         return false;
     }
 }

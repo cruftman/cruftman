@@ -64,7 +64,7 @@ class AuthSchemaTest extends TestCase
         new AuthSchema(['sources' => [], 'arguments' => ['password' => 'PASS']]);
 
         $this->expectException(UndefinedOptionsException::class);
-        $this->expectExceptionMessage('option "xyz" does not exist');
+        $this->expectExceptionMessageRegexp('/option "(arguments\\[)?xyz(\\])?" does not exist/');
         new AuthSchema(['sources' => [], 'arguments' => ['xyz' => 'XYZ']]);
     }
 

@@ -14,15 +14,27 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Auth;
 
 use Cruftman\Ldap\Traits\HasAuthSchemaPreset;
+use Cruftman\Ldap\Traits\HasAuthStatus;
+use Cruftman\Ldap\Traits\HasConnectorTool;
+use Cruftman\Ldap\Traits\HasBinderTool;
+use Cruftman\Ldap\Traits\HasFinderTool;
 use Cruftman\Ldap\Presets\AuthSchema;
 use Cruftman\Ldap\Presets\AuthSource;
 
+use Cruftman\Ldap\Tools\Connector;
+use Cruftman\Ldap\Tools\Finder;
+use Cruftman\Ldap\Tools\Binder;
+
 /**
- * Drives authentication against multiple authentication sources.
+ * Drives authentication against multiple ldap auth sources.
  */
 class Schema
 {
-    use HasAuthSchemaPreset;
+    use HasAuthSchemaPreset,
+        HasAuthStatus,
+        HasConnectorTool,
+        HasBinderTool,
+        HasFinderTool;
 
     /**
      * @var Source[]
@@ -40,6 +52,17 @@ class Schema
     }
 
     /**
+     * Assings auth Sources to this object.
+     *
+     * @param  array|null $sources
+     * @return Schema $this
+     */
+    public function setSources(?array $sources)
+    {
+        $this->sources = $sources;
+    }
+
+    /**
      * Get the array of Source objects related to this Schema.
      *
      * @return Source[]
@@ -47,7 +70,7 @@ class Schema
     public function getSources() : array
     {
         if (!isset($this->sources)) {
-            $this->sources = $this->createSources();
+            $this->setSources($this->createSources());
         }
         return $this->sources;
     }
@@ -59,13 +82,20 @@ class Schema
      */
     protected function createSources() : array
     {
-        return array_map(function ($preset) {
-            return new Source($preset);
+        $connector = $this->getConnector();
+        $binder = $this->getBinder();
+        $finder = $this->getFinder();
+        return array_map(function ($preset) use ($connector, $binder, $finder) {
+            $source = new Source($preset);
+            $source->setConnector($connector)
+                   ->setBinder($binder)
+                   ->setFinder($finder);
+            return $source;
         }, $this->getAuthSchemaPreset()->sources());
     }
 
     /**
-     * @todo Write documentation.
+     * Try to authenticate user with given *$credentials*.
      *
      * @param  array $credentials
      * @return bool
@@ -79,40 +109,46 @@ class Schema
     }
 
     /**
-     * @todo Write documentation.
+     * Search user (by username or such) within auth sources.
      *
      * @param  array $arguments
      * @return Entry[]
      */
-    public function search(array $arguments)
+    public function search(array $arguments) : array
     {
         return $this->findWithSources($this->getSources(), 'search', $arguments);
     }
 
     /**
-     * @todo Write documentation.
+     * Search user (by useruuid or such) within auth sources.
      *
      * @param  array $arguments
      * @return Entry[]
      */
-    public function locate(array $arguments)
+    public function locate(array $arguments) : array
     {
         return $this->findWithSources($this->getSources(), 'locate', $arguments);
     }
 
     /**
-     * @todo Write documentation.
+     * Attempt to bind user against all sources that provide neither *search*
+     * nor *locate* presets.
+     *
+     * @param  array $arguments
+     * @return bool
      */
-    protected function attemptDirectBind(array $arguments)
+    protected function attemptDirectBind(array $arguments) : bool
     {
         $sources = $this->getSourcesWithoutSearchPresets();
         return $this->attemptDirectBindWithSources($sources, $arguments);
     }
 
     /**
-     * @todo Write documentation.
+     * Returns auth sources that have neither *search* nor *locate* presets.
+     *
+     * @return array
      */
-    protected function getSourcesWithoutSearchPresets()
+    protected function getSourcesWithoutSearchPresets() : array
     {
         return array_filter($this->getSources(), function ($source) {
             $preset = $source->getAuthSourcePreset();
@@ -154,6 +190,7 @@ class Schema
         if (!$attempt->bind($arguments)) {
             return false;
         }
+        $this->setAuthStatus($attempt->getAuthStatus());
         return true;
     }
 
@@ -239,6 +276,7 @@ class Schema
         if (!$attempt->bind($arguments, $connection)) {
             return false;
         }
+        $this->setAuthStatus($attempt->getAuthStatus());
         return true;
     }
 

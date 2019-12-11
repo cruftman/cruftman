@@ -18,6 +18,10 @@ use Korowai\Lib\Ldap\LdapInterface;
 use Korowai\Lib\Ldap\Exception\LdapException;
 
 use Cruftman\Ldap\Traits\HasAuthSourcePreset;
+use Cruftman\Ldap\Traits\HasAuthStatus;
+use Cruftman\Ldap\Traits\HasConnectorTool;
+use Cruftman\Ldap\Traits\HasBinderTool;
+use Cruftman\Ldap\Traits\HasFinderTool;
 
 use Cruftman\Ldap\Presets\AuthSource;
 use Cruftman\Ldap\Presets\Search;
@@ -32,7 +36,11 @@ use Cruftman\Ldap\Tools\Finder;
  */
 class Source
 {
-    use HasAuthSourcePreset;
+    use HasAuthSourcePreset,
+        HasAuthStatus,
+        HasConnectorTool,
+        HasBinderTool,
+        HasFinderTool;
 
     /**
      * @var Attempt
@@ -40,33 +48,13 @@ class Source
     protected $attempt = null;
 
     /**
-     * @var Connector
-     */
-    protected $connector = null;
-
-    /**
-     * @var Finder
-     */
-    protected $finder = null;
-
-    /**
      * Initializes the object.
      *
      * @param  AuthSource $preset
-     * @param  Attempt|null $attempt
-     * @param  Connector|null $connector
-     * @param  Fider|null $finder
      */
-    public function __construct(
-        AuthSource $preset,
-        ?Attempt $attempt = null,
-        ?Connector $connector = null,
-        ?Finder $finder = null
-    ) {
+    public function __construct(AuthSource $preset)
+    {
         $this->setAuthSourcePreset($preset);
-        $this->setAttempt($attempt);
-        $this->setConnector($connector);
-        $this->setFinder($finder);
     }
 
     /**
@@ -83,65 +71,35 @@ class Source
     /**
      * Returns an Attempt object.
      *
-     * @return Attempt|null
+     * @return Attempt
      */
     public function getAttempt() : Attempt
     {
         if ($this->attempt === null) {
-            $attemptPreset = $this->getAuthSourcePreset()->attempt();
-            $this->setAttempt(new Attempt($attemptPreset));
+            $this->setAttempt($this->createAttempt());
         }
         return $this->attempt;
     }
 
     /**
-     * Assigns Connector tool to this object.
-     * @param  Connector $connector
-     * @return Source $this
+     * Create new auth Attempt object which inherits auth Status object and
+     * Tools.
+     *
+     * @return Attempt
      */
-    public function setConnector(?Connector $connector = null)
+    protected function createAttempt() : Attempt
     {
-        $this->connector = $connector;
-        return $this;
+        $preset = $this->getAuthSourcePreset()->attempt();
+        $attempt = new Attempt($preset);
+        $attempt->setAuthStatus($this->getAuthStatus())
+                ->setConnector($this->getConnector())
+                ->setBinder($this->getBinder());
+        return $attempt;
     }
 
     /**
-     * Returns the Connector tool assigned to this object.
-     * @return Connector
-     */
-    public function getConnector() : Connector
-    {
-        if ($this->connector === null) {
-            $this->setConnector(new Connector);
-        }
-        return $this->connector;
-    }
-
-    /**
-     * Assigns Finder tool to this object.
-     * @param  Finder $finder
-     * @return Source $this
-     */
-    public function setFinder(?Finder $finder = null)
-    {
-        $this->finder = $finder;
-        return $this;
-    }
-
-    /**
-     * Returns the Finder tool assigned to this object.
-     * @return Finder
-     */
-    public function getFinder() : Finder
-    {
-        if ($this->finder === null) {
-            $this->setFinder(new Finder);
-        }
-        return $this->finder;
-    }
-
-    /**
-     * @todo Write documentation.
+     * Search for an entry according to *Search* preset referenced by
+     * ``'search'`` option.
      *
      * @param  array $arguments
      * @return Entry[]
@@ -153,7 +111,8 @@ class Source
     }
 
     /**
-     * @todo Write documentation.
+     * Search for an entry according to *Search* preset referenced by
+     * ``'locate'`` option.
      *
      * @param  array $arguments
      * @return Entry[]
