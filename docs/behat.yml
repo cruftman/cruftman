@@ -9,3 +9,11 @@ default:
         - "%paths.base%/sphinx/Behat"
       contexts:
         - "Cruftman\\Docs\\Behat\\DocExampleContext"
+
+  extensions:
+      Behat\MinkExtension:
+#        Must comment-out for BEHAT_PARAMS to be effective
+#        base_url: 'http://localhost'
+        sessions:
+          default:
+            goutte: ~

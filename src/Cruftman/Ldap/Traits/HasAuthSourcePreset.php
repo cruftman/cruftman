@@ -23,7 +23,7 @@ trait HasAuthSourcePreset
     /**
      * @var AuthSource
      */
-    protected $authSourcePreset;
+    protected $authSourcePreset = null;
 
     /**
      * Sets AuthSource preset to the object.

@@ -18,7 +18,7 @@ use Cruftman\Ldap\Presets\AuthSchema;
 use Cruftman\Ldap\Presets\AuthSource;
 
 /**
- * @todo Write documentation
+ * Drives authentication against multiple authentication sources.
  */
 class Schema
 {
@@ -105,13 +105,21 @@ class Schema
      */
     protected function attemptDirectBind(array $arguments)
     {
-        $sources = array_filter($this->getSources(), function ($source) {
+        $sources = $this->getSourcesWithoutSearchPresets();
+        return $this->attemptDirectBindWithSources($sources, $arguments);
+    }
+
+    /**
+     * @todo Write documentation.
+     */
+    protected function getSourcesWithoutSearchPresets()
+    {
+        return array_filter($this->getSources(), function ($source) {
             $preset = $source->getAuthSourcePreset();
             $search = $preset ? $preset->search() : null;
             $locate = $preset ? $preset->locate() : null;
             return (($search === null) && ($locate === null));
         });
-        return $this->attemptDirectBindWithSources($sources, $arguments);
     }
 
     /**

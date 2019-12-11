@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Cruftman</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -48,6 +48,10 @@
                 font-size: 84px;
             }
 
+            .subtitle {
+                font-size: 24px;
+            }
+
             .links > a {
                 color: #636b6f;
                 padding: 0 25px;
@@ -81,7 +85,11 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Cruftman
+                </div>
+
+                <div class="subtitle m-b-md">
+                    Based on: Laravel
                 </div>
 
                 <div class="links">
