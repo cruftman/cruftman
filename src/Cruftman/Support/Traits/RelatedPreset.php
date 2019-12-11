@@ -51,8 +51,9 @@ trait RelatedPreset
     /**
      * Returns a **preset** that is pointed to by this preset's configuration option.
      *
-     * @param string $class type of the target preset,
-     * @param string $key name of option (of this preset) that holds the name of the target preset.
+     * @param  string $class type of the target preset,
+     * @param  string $key name of option (of this preset) that holds the name of the target preset.
+     * @param  mixed $default
      * @return PresetInterface|null
      */
     protected function getRelatedPreset(string $class, string $key, $default = null) : ?PresetInterface

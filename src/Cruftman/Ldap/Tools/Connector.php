@@ -76,7 +76,7 @@ class Connector
     /**
      * Assigns a function that creates LdapInterface instances.
      *
-     * @param  callable|null $construcotr
+     * @param  callable|null $constructor
      * @return Connector $this
      */
     public function setConstructor(?callable $constructor)

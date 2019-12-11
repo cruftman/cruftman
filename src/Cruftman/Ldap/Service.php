@@ -37,7 +37,7 @@ final class Service
     /**
      * Initializes the service object.
      *
-     * @param array $options
+     * @param  PresetsAggregateInterface|null $presets
      */
     public function __construct(?PresetsAggregateInterface $presets = null)
     {

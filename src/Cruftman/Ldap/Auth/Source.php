@@ -246,7 +246,7 @@ class Source
      * Entry object.
      *
      * @param  array $entries
-     * @param  Session $session
+     * @param  Connection $connection
      * @return array
      */
     protected function wrapEntries(array $entries, Connection $connection) : array

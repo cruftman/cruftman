@@ -144,7 +144,8 @@ class Aggregate implements OptionsInterface, PresetsAggregateInterface
     /**
      * Initializes the service object.
      *
-     * @param array $options
+     * @param  array $options
+     * @param  string $prefix
      */
     public function __construct(array $options = [], string $prefix = "ldap")
     {
@@ -195,7 +196,8 @@ class Aggregate implements OptionsInterface, PresetsAggregateInterface
      *
      * Implemented here to fulfill requirements of *AggregatesPresets* trait.
      *
-     * @param string $class
+     * @param  string $class
+     * @param  array $options
      * @return PresetInterface
      * @see \Cruftman\Support\Traits\AggregatesPresets
      */

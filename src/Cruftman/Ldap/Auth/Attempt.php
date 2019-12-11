@@ -48,7 +48,9 @@ class Attempt
      * Initializes the object.
      *
      * @param  AuthAttempt $preset
-     * @param  Status $status
+     * @param  Status|null $status
+     * @param  Connector|null $connector
+     * @param  Binder|null $binder
      */
     public function __construct(
         AuthAttempt $preset,

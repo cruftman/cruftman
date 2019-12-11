@@ -72,7 +72,8 @@ trait AggregatesPresets
     /**
      * Given an array of preset *$options* creates an instance of **preset** *$class*.
      *
-     * @param string $class
+     * @param  string $class
+     * @param  array $options
      * @return PresetInterface
      */
     abstract protected function createPresetWithOptions(string $class, array $options) : PresetInterface;

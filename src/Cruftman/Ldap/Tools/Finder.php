@@ -26,7 +26,7 @@ class Finder
     /**
      * Creates an Ldap search query according to Search preset.
      *
-     * @param  Search $connection
+     * @param  Search $search
      * @param  AdapterInterface $ldap
      * @param  array $arguments
      * @return SearchQueryInterface
@@ -42,7 +42,7 @@ class Finder
     /**
      * Creates and executes Ldap search query according to Search preset.
      *
-     * @param  Search $connection
+     * @param  Search $search
      * @param  AdapterInterface $ldap
      * @param  array $arguments
      * @return ResultInterface

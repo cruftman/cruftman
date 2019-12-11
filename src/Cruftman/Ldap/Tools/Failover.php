@@ -88,7 +88,6 @@ class Failover
      * Try multiple providers.
      *
      * @param array $providers
-     * @param array $arguments
      */
     public function tryWith(array $providers)
     {

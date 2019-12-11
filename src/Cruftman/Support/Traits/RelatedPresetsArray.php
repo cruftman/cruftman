@@ -51,8 +51,9 @@ trait RelatedPresetsArray
     /**
      * Returns an array of **presets** whose names are stored in this preset's configuration option.
      *
-     * @param string $class type of the target presets,
-     * @param string $key name of option (of this preset) that holds the array of names of the target presets.
+     * @param  string $class type of the target presets,
+     * @param  string $key name of option (of this preset) that holds the array of names of the target presets.
+     * @param  array|null $default
      * @return array
      * @throws PresetException
      */
