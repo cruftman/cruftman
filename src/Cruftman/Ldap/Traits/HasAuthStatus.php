@@ -28,7 +28,7 @@ trait HasAuthStatus
     /**
      * Sets auth Status to the object.
      *
-     * @param  Status|null $authStatus
+     * @param  Status|null $status
      * @return object $this
      */
     public function setAuthStatus(?Status $status)
