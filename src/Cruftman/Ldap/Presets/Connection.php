@@ -26,7 +26,7 @@ class Connection extends Preset
      * @param  array $arguments
      * @return array
      */
-    public function config(array $arguments = [])
+    public function config(array $arguments)
     {
         return $this->substOptions($arguments);
     }

@@ -26,7 +26,7 @@ class Binding extends Preset
      * @param  array $arguments
      * @return string
      */
-    public function dn(array $arguments = []) : string
+    public function dn(array $arguments) : string
     {
         return $this->substOptionOrFail('0', $arguments);
     }
@@ -37,7 +37,7 @@ class Binding extends Preset
      * @param  array $arguments
      * @return string
      */
-    public function password(array $arguments = []) : string
+    public function password(array $arguments) : string
     {
         return $this->substOptionOrFail('1', $arguments);
     }

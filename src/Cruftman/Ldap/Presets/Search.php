@@ -40,7 +40,7 @@ class Search extends Preset
      * @param array $arguments
      * @return string
      */
-    public function base(array $arguments = []) : string
+    public function base(array $arguments) : string
     {
         return $this->substOptionOrFail('base', $arguments);
     }
@@ -50,7 +50,7 @@ class Search extends Preset
      * @param array $arguments
      * @return string
      */
-    public function filter(array $arguments = []) : string
+    public function filter(array $arguments) : string
     {
         return $this->substOptionOrFail('filter', $arguments);
     }
@@ -60,7 +60,7 @@ class Search extends Preset
      * @param array $arguments
      * @return array
      */
-    public function options(array $arguments = []) : array
+    public function options(array $arguments) : array
     {
         return $this->substOption('options', $arguments, []);
     }

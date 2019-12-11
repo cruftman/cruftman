@@ -68,7 +68,7 @@ class AuthAttempt extends Preset
      * @param array $arguments
      * @return string|null
      */
-    public function filter(array $arguments = []) : ?string
+    public function filter(array $arguments) : ?string
     {
         return $this->substOption('filter', $arguments);
     }
@@ -79,7 +79,7 @@ class AuthAttempt extends Preset
      * @param array $arguments
      * @return array|null
      */
-    public function attributes(array $arguments = []) : ?array
+    public function attributes(array $arguments) : ?array
     {
         return $this->substOption('attributes', $arguments);
     }

@@ -201,7 +201,7 @@ class Schema
      *
      * @return bool
      */
-    protected function attemptBindEntries(array $entries, array $arguments = []) : bool
+    protected function attemptBindEntries(array $entries, array $arguments) : bool
     {
         foreach ($entries as $entry) {
             if ($this->attemptBindEntry($entry, $arguments)) {
@@ -243,7 +243,7 @@ class Schema
      *
      * @return Entry[]
      */
-    protected function findWithSources(array $sources, string $method, array $arguments = [])
+    protected function findWithSources(array $sources, string $method, array $arguments)
     {
         $entries = [];
         foreach ($sources as $source) {

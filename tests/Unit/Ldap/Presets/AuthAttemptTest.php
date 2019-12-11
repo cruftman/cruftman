@@ -68,8 +68,7 @@ class AuthAttemptTest extends TestCase
     {
         $options = ['binding' => []];
         $aat = new AuthAttempt($options, new Aggregate([]));
-        $connections = $aat->connections();
-        $this->assertNull($aat->connections());
+        $this->assertNull($aat->connections([]));
     }
 
     public function test__filter()
@@ -85,7 +84,7 @@ class AuthAttemptTest extends TestCase
         $options = ['binding' => []];
         $aat = new AuthAttempt($options, new Aggregate([]));
 
-        $this->assertNull($aat->filter());
+        $this->assertNull($aat->filter([]));
     }
 
     public function test__attributes()
@@ -101,6 +100,6 @@ class AuthAttemptTest extends TestCase
         $options = ['binding' => []];
         $aat = new AuthAttempt($options, new Aggregate([]));
 
-        $this->assertNull($aat->attributes());
+        $this->assertNull($aat->attributes([]));
     }
 }
