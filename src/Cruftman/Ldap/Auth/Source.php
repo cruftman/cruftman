@@ -28,8 +28,6 @@ use Cruftman\Ldap\Presets\Search;
 use Cruftman\Ldap\Presets\Session;
 use Cruftman\Ldap\Presets\Connection;
 use Cruftman\Ldap\Tools\Failover;
-use Cruftman\Ldap\Tools\Connector;
-use Cruftman\Ldap\Tools\Finder;
 
 /**
  * Authentication source.

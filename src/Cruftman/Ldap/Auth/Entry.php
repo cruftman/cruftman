@@ -54,6 +54,7 @@ class Entry implements EntryInterface
     /**
      * Set the Source object.
      *
+     * @param  Source|null $source
      * @return Entry $this
      */
     public function setSource(?Source $source) : Entry
