@@ -60,6 +60,7 @@ class Schema
     public function setSources(?array $sources)
     {
         $this->sources = $sources;
+        return $this;
     }
 
     /**
