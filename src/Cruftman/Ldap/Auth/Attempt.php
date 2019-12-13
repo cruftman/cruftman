@@ -14,15 +14,19 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Auth;
 
 use Korowai\Lib\Ldap\Exception\LdapException;
+use Korowai\Lib\Ldap\Adapter\AdapterInterface;
 
+use Cruftman\Ldap\Presets\Search;
 use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 use Cruftman\Ldap\Traits\HasAuthStatus;
 use Cruftman\Ldap\Traits\HasConnectorTool;
 use Cruftman\Ldap\Traits\HasBinderTool;
+use Cruftman\Ldap\Traits\HasFinderTool;
 use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\Connection;
-use Cruftman\Ldap\Tools\Connector;
-use Cruftman\Ldap\Tools\Binder;
+//use Cruftman\Ldap\Tools\Connector;
+//use Cruftman\Ldap\Tools\Binder;
+//use Cruftman\Ldap\Tools\Finder;
 use Cruftman\Ldap\Tools\Failover;
 
 /**
@@ -33,7 +37,8 @@ class Attempt
     use HasAuthAttemptPreset,
         HasAuthStatus,
         HasConnectorTool,
-        HasBinderTool;
+        HasBinderTool,
+        HasFinderTool;
 
     /**
      * Initializes the object.
@@ -118,8 +123,31 @@ class Attempt
                               ->setBindDn($bindDn)
                               ->setBindLdap($ldap)
                               ->setBindConnection($connection);
-
         return $result;
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    public function getBindEntry(string $bindDn, AdapterInterface $ldap, array $arguments)
+    {
+        $search = $this->createFilterSearchPreset($bindDn, $arguments);
+        $result = $this->getFinder()->search($search, $ldap, $arguments);
+        $entries = $result->getEntries(false);
+        return (count($entries) === 1) ? $entries[0] : null;
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function createFilterSearchPreset(string $bindDn, array $arguments) : Search
+    {
+        $preset = $this->getAuthAttemptPreset();
+        $filter = $preset->filter($arguments) ?? 'objectclass=*';
+        $attributes = $preset->attributes($arguments) ?? ['*'];
+        $options = ['scope' => 'base', 'attributes' => $attributes];
+        $config = ['base' => $bindDn, 'filter' => $filter, 'options' => $options];
+        return new Search($config);
     }
 
     /**

@@ -14,8 +14,10 @@ use Cruftman\Ldap\Traits\HasAuthAttemptPreset;
 use Cruftman\Ldap\Traits\HasAuthStatus;
 use Cruftman\Ldap\Traits\HasConnectorTool;
 use Cruftman\Ldap\Traits\HasBinderTool;
+use Cruftman\Ldap\Traits\HasFinderTool;
 use Cruftman\Ldap\Tools\Connector;
 use Cruftman\Ldap\Tools\Binder;
+use Cruftman\Ldap\Tools\Finder;
 
 use Korowai\Lib\Ldap\Ldap;
 use Korowai\Lib\Ldap\LdapInterface;
@@ -148,6 +150,12 @@ class AttemptTest extends TestCase
         $this->assertContains(HasBinderTool::class, $uses);
     }
 
+    public function test__uses__HasFinderTool()
+    {
+        $uses = class_uses(Attempt::class);
+        $this->assertContains(HasFinderTool::class, $uses);
+    }
+
     public function test__construct__withOneArg()
     {
         $preset = $this->createStub(AuthAttemptPreset::class);
@@ -176,6 +184,16 @@ class AttemptTest extends TestCase
 
         $this->assertSame($attempt, $attempt->setBinder($binder));
         $this->assertSame($binder, $attempt->getBinder());
+    }
+
+    public function test__setFinder()
+    {
+        $preset = $this->createStub(AuthAttemptPreset::class);
+        $attempt = new Attempt($preset);
+        $finder = $this->createStub(Finder::class);
+
+        $this->assertSame($attempt, $attempt->setFinder($finder));
+        $this->assertSame($finder, $attempt->getFinder());
     }
 
     public function test__setAuthStatus()

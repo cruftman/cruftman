@@ -198,14 +198,15 @@ return [
     |       required when 'search' or 'locate' options are present; providing
     |       more than one Session presets enables failover algorithm,
     |   - search
-    |       a Search preset used to search for a user in LDAP when its unique
-    |       identifier (like entryUUID) is NOT known to application,
+    |       a Search preset used to search for users in LDAP when its unique
+    |       identifier (like entryUUID) is NOT known to application, for
+    |       authentication purposes this search uses a sort of username,
     |   - locate
     |       a Search preset used to search for a user in LDAP when its unique
     |       identifier (like entryUUID) is known to application,
     |   - attempt
-    |       settings used to authenticate user, this is an array with the
-    |       following nested options
+    |       settings used to authenticate uniquely identified user, this is an
+    |       array with the following nested options
     |
     |       - bind
     |           a Binding preset providing bind DN and password for the
@@ -276,9 +277,9 @@ return [
     |           try to authenticate first of the multiple entries found,
     |       - each
     |           try to authenticate each of the multiple entries found, until
-    |           success,
+    |           a success, or the list of entries gets exhausted,
     |       - fail
-    |           do not authenticate and return as if the authentication failed.
+    |           do not authenticate and return authentication failure.
     |
     |   - arguments
     |       maps canonical names of arguments onto actual names used by
