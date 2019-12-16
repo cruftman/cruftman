@@ -41,12 +41,18 @@ class AuthAttempt extends Preset
      */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
+        /*
          $resolver->setRequired(['binding'])
                   ->setDefined(['connections', 'filter', 'attributes', 'retrieve'])
                   ->setAllowedTypes('connections', 'array')
                   ->setAllowedTypes('binding', ['string', 'array'])
                   ->setAllowedTypes('filter', 'string')
-                  ->setAllowedTypes('attributes', 'array');
+                  ->setAllowedTypes('attributes', 'array'); */
+         $resolver->setRequired(['binding'])
+                  ->setDefined(['connections', 'search'])
+                  ->setAllowedTypes('binding', ['string', 'array'])
+                  ->setAllowedTypes('connections', 'array')
+                  ->setAllowedTypes('search', ['string', 'array']);
     }
 
     /**
@@ -68,57 +74,54 @@ class AuthAttempt extends Preset
     }
 
     /**
-     * Creates and returns a Search preset that may be used as an additional
-     * filter applied after the bind attempt.
+     * Returns the nested Search preset for additional filtering and entry
+     * retrieving.
      *
      * @return Search
      */
     public function search() : Search
     {
-        if ($this->searchPreset === null) {
-            $this->searchPreset = new Search($this->makeSearchOptions());
-        }
-        return $this->searchPreset;
+        return $this->getRelatedPreset(Search::class, 'search');
     }
 
-    /**
-     * Returns an array of options that may be used to create Search preset.
-     *
-     * @return array
-     */
-    protected function makeSearchOptions() : array
-    {
-        return [
-            'base' => $this->getOptionOrFail('binding'),
-            'filter' => $this->getOption('filter', 'objectclass=*'),
-            'options' => [
-                'scope' => 'base',
-                'attributes' => $this->getOption('attributes', ['*']),
-            ]
-        ];
-    }
-
-    /**
-     * Returns search filter string.
-     *
-     * @param  array $arguments
-     * @return string|null
-     */
-    public function filter(array $arguments) : ?string
-    {
-        return $this->substOption('filter', $arguments);
-    }
-
-    /**
-     * Returns array of attribute names to be returned by successful attempt.
-     *
-     * @param  array $arguments
-     * @return array|null
-     */
-    public function attributes(array $arguments) : ?array
-    {
-        return $this->substOption('attributes', $arguments);
-    }
+//    /**
+//     * Returns an array of options that may be used to create Search preset.
+//     *
+//     * @return array
+//     */
+//    protected function makeSearchOptions() : array
+//    {
+//        return [
+//            'base' => $this->getOptionOrFail('binding'),
+//            'filter' => $this->getOption('filter', 'objectclass=*'),
+//            'options' => [
+//                'scope' => 'base',
+//                'attributes' => $this->getOption('attributes', ['*']),
+//            ]
+//        ];
+//    }
+//
+//    /**
+//     * Returns search filter string.
+//     *
+//     * @param  array $arguments
+//     * @return string|null
+//     */
+//    public function filter(array $arguments) : ?string
+//    {
+//        return $this->substOption('filter', $arguments);
+//    }
+//
+//    /**
+//     * Returns array of attribute names to be returned by successful attempt.
+//     *
+//     * @param  array $arguments
+//     * @return array|null
+//     */
+//    public function attributes(array $arguments) : ?array
+//    {
+//        return $this->substOption('attributes', $arguments);
+//    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

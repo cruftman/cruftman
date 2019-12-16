@@ -236,8 +236,11 @@ return [
             'attempt' => [
                 'connections' => ['default'],
                 'binding' => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
-                'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
-                'attributes' => ['*', 'entryuuid'],
+                'search' => [
+                    'base' => '${dn}',
+                    'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
+                    'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+                ]
             ]
         ],
         'london-users' => [
