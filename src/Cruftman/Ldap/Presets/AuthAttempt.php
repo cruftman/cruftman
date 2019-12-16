@@ -30,6 +30,11 @@ class AuthAttempt extends Preset
         RelatedPresetsArray;
 
     /**
+     * @var Search
+     */
+    protected $searchPreset = null;
+
+    /**
      * Configures OptionsResolver for the AuthAttempt Preset.
      *
      * @param  OptionsResolver $resolver
@@ -37,7 +42,7 @@ class AuthAttempt extends Preset
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
          $resolver->setRequired(['binding'])
-                  ->setDefined(['connections', 'filter', 'attributes'])
+                  ->setDefined(['connections', 'filter', 'attributes', 'retrieve'])
                   ->setAllowedTypes('connections', 'array')
                   ->setAllowedTypes('binding', ['string', 'array'])
                   ->setAllowedTypes('filter', 'string')
@@ -60,6 +65,37 @@ class AuthAttempt extends Preset
     public function connections() : ?array
     {
         return $this->getRelatedPresetsArray(Connection::class, 'connections', null);
+    }
+
+    /**
+     * Creates and returns a Search preset that may be used as an additional
+     * filter applied after the bind attempt.
+     *
+     * @return Search
+     */
+    public function search() : Search
+    {
+        if ($this->searchPreset === null) {
+            $this->searchPreset = new Search($this->makeSearchOptions());
+        }
+        return $this->searchPreset;
+    }
+
+    /**
+     * Returns an array of options that may be used to create Search preset.
+     *
+     * @return array
+     */
+    protected function makeSearchOptions() : array
+    {
+        return [
+            'base' => $this->getOptionOrFail('binding'),
+            'filter' => $this->getOption('filter', 'objectclass=*'),
+            'options' => [
+                'scope' => 'base',
+                'attributes' => $this->getOption('attributes', ['*']),
+            ]
+        ];
     }
 
     /**

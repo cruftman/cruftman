@@ -131,24 +131,25 @@ class Attempt
      */
     public function getBindEntry(string $bindDn, AdapterInterface $ldap, array $arguments)
     {
-        $search = $this->createFilterSearchPreset($bindDn, $arguments);
+        //$search = $this->createFilterSearchPreset($bindDn, $arguments);
+        $search = $this->getAuthAttemptPreset()->search();
         $result = $this->getFinder()->search($search, $ldap, $arguments);
         $entries = $result->getEntries(false);
         return (count($entries) === 1) ? $entries[0] : null;
     }
 
-    /**
-     * @todo Write documentation
-     */
-    protected function createFilterSearchPreset(string $bindDn, array $arguments) : Search
-    {
-        $preset = $this->getAuthAttemptPreset();
-        $filter = $preset->filter($arguments) ?? 'objectclass=*';
-        $attributes = $preset->attributes($arguments) ?? ['*'];
-        $options = ['scope' => 'base', 'attributes' => $attributes];
-        $config = ['base' => $bindDn, 'filter' => $filter, 'options' => $options];
-        return new Search($config);
-    }
+//    /**
+//     * @todo Write documentation
+//     */
+//    protected function createFilterSearchPreset(string $bindDn, array $arguments) : Search
+//    {
+//        $preset = $this->getAuthAttemptPreset();
+//        $filter = $preset->filter($arguments) ?? 'objectclass=*';
+//        $attributes = $preset->attributes($arguments) ?? ['*'];
+//        $options = ['scope' => 'base', 'attributes' => $attributes];
+//        $config = ['base' => $bindDn, 'filter' => $filter, 'options' => $options];
+//        return new Search($config);
+//    }
 
     /**
      * Invoked when all connections failed.
