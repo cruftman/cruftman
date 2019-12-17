@@ -136,6 +136,7 @@ class Aggregate implements OptionsInterface, PresetsAggregateInterface
         Binding::class => 'bindings',
         Session::class => 'sessions',
         Search::class => 'searches',
+        BindSearch::class => 'searches',
         AuthAttempt::class => 'auth_attempts',
         AuthSource::class => 'auth_sources',
         AuthSchema::class => 'auth_schema'

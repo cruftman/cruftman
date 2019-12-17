@@ -237,9 +237,9 @@ return [
                 'connections' => ['default'],
                 'binding' => ['uid=${username},ou=people,dc=example,dc=org', '${password}'],
                 'search' => [
-                    'base' => '${dn}',
+//                    'base' => '${dn}',
                     'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
-                    'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
+//                    'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
                 ]
             ]
         ],

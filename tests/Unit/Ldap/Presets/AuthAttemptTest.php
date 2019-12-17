@@ -8,6 +8,7 @@ use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\Connection;
 use Cruftman\Ldap\Presets\Binding;
 use Cruftman\Ldap\Presets\Aggregate;
+use Cruftman\Ldap\Presets\BindSearch;
 use Cruftman\Support\Preset;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
@@ -71,35 +72,67 @@ class AuthAttemptTest extends TestCase
         $this->assertNull($aat->connections([]));
     }
 
-    public function test__filter()
+    public function test__search()
     {
-        $options = ['binding' => [], 'filter' => 'uid=${username}'];
+        $options = ['binding' => [], 'search' => ['base' => 'FOO', 'filter' => 'BAR', 'options' => ['GEEZ']]];
         $aat = new AuthAttempt($options, new Aggregate([]));
 
-        $this->assertSame('uid=jsmith', $aat->filter(['username' => 'jsmith']));
+        $search = $aat->search();
+        $this->assertInstanceOf(BindSearch::class, $search);
+        $this->assertSame('FOO', $search->base([]));
+        $this->assertSame('BAR', $search->filter([]));
+        $this->assertSame(['GEEZ'], $search->options([]));
     }
 
-    public function test__filter__null()
+    public function test__search__default()
+    {
+        $options = ['binding' => [], 'search' => []];
+        $aat = new AuthAttempt($options, new Aggregate([]));
+
+        $search = $aat->search();
+        $this->assertInstanceOf(BindSearch::class, $search);
+        $this->assertSame('cn=foo,dc=bar', $search->base(['binddn' => 'cn=foo,dc=bar']));
+        $this->assertSame('objectclass=*', $search->filter([]));
+        $this->assertSame(['scope' => 'base', 'attributes' => ['*']], $search->options([]));
+    }
+
+    public function test__search__null()
     {
         $options = ['binding' => []];
         $aat = new AuthAttempt($options, new Aggregate([]));
 
-        $this->assertNull($aat->filter([]));
+        $this->assertNull($aat->search());
     }
 
-    public function test__attributes()
-    {
-        $options = ['binding' => [], 'attributes' => ['${username}', 'cn']];
-        $aat = new AuthAttempt($options, new Aggregate([]));
-
-        $this->assertSame(['uid', 'cn'], $aat->attributes(['username' => 'uid']));
-    }
-
-    public function test__attributes__null()
-    {
-        $options = ['binding' => []];
-        $aat = new AuthAttempt($options, new Aggregate([]));
-
-        $this->assertNull($aat->attributes([]));
-    }
+//    public function test__filter()
+//    {
+//        $options = ['binding' => [], 'filter' => 'uid=${username}'];
+//        $aat = new AuthAttempt($options, new Aggregate([]));
+//
+//        $this->assertSame('uid=jsmith', $aat->filter(['username' => 'jsmith']));
+//    }
+//
+//    public function test__filter__null()
+//    {
+//        $options = ['binding' => []];
+//        $aat = new AuthAttempt($options, new Aggregate([]));
+//
+//        $this->assertNull($aat->filter([]));
+//    }
+//
+//    public function test__attributes()
+//    {
+//        $options = ['binding' => [], 'attributes' => ['${username}', 'cn']];
+//        $aat = new AuthAttempt($options, new Aggregate([]));
+//
+//        $this->assertSame(['uid', 'cn'], $aat->attributes(['username' => 'uid']));
+//    }
+//
+//    public function test__attributes__null()
+//    {
+//        $options = ['binding' => []];
+//        $aat = new AuthAttempt($options, new Aggregate([]));
+//
+//        $this->assertNull($aat->attributes([]));
+//    }
 }

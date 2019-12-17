@@ -10,6 +10,7 @@ use Cruftman\Ldap\Presets\Connection;
 use Cruftman\Ldap\Presets\Binding;
 use Cruftman\Ldap\Presets\Session;
 use Cruftman\Ldap\Presets\Search;
+use Cruftman\Ldap\Presets\BindSearch;
 use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\AuthSource;
 use Cruftman\Ldap\Presets\AuthSchema;
@@ -92,6 +93,7 @@ class AggregateTest extends TestCase
             Binding::class,
             Session::class,
             Search::class,
+            BindSearch::class,
             AuthAttempt::class,
             AuthSource::class,
             AuthSchema::class,

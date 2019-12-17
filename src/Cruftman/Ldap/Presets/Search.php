@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Presets;
 
-use Korowai\Lib\Ldap\Adapter\AdapterInterface;
-use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
 use Cruftman\Support\Preset;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
