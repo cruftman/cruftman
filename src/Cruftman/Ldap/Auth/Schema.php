@@ -191,7 +191,10 @@ class Schema
         if (!$attempt->bind($arguments)) {
             return false;
         }
-        $this->setAuthStatus($attempt->getAuthStatus());
+        $this->setAuthStatus($status = $attempt->getAuthStatus());
+        if (($entry = $status->getBindEntry()) !== null) {
+            $entry->setSource($source);
+        }
         return true;
     }
 
@@ -278,6 +281,9 @@ class Schema
             return false;
         }
         $this->setAuthStatus($attempt->getAuthStatus());
+        if ($this->getAuthStatus()->getBindEntry() === null) {
+            $this->getAuthStatus()->setBindEntry($entry);
+        }
         return true;
     }
 

@@ -41,10 +41,12 @@ class AuthAttempt extends Preset
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
          $resolver->setRequired(['binding'])
-                  ->setDefined(['connections', 'search'])
+                  ->setDefined(['connections', 'search', 'filtering', 'fetching'])
                   ->setAllowedTypes('binding', ['string', 'array'])
                   ->setAllowedTypes('connections', 'array')
-                  ->setAllowedTypes('search', ['string', 'array']);
+                  ->setAllowedTypes('search', ['string', 'array'])
+                  ->setAllowedTypes('filtering', 'bool')
+                  ->setAllowedTypes('fetching', 'bool');
     }
 
     /**
@@ -74,6 +76,22 @@ class AuthAttempt extends Preset
     public function search() : ?BindSearch
     {
         return $this->getRelatedPreset(BindSearch::class, 'search');
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    public function filtering(array $arguments) : ?bool
+    {
+        return $this->substOption('filtering', $arguments);
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    public function fetching(array $arguments) : ?bool
+    {
+        return $this->substOption('fetching', $arguments);
     }
 }
 

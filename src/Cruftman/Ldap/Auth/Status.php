@@ -45,6 +45,11 @@ class Status
     protected $bindConnection;
 
     /**
+     * @var Entry
+     */
+    protected $bindEntry;
+
+    /**
      * @var Source
      */
     protected $source;
@@ -69,6 +74,7 @@ class Status
             'bindDn',
             'bindLdap',
             'bindConnection',
+            'bindEntry',
             'source'
         ];
         foreach ($keys as $key) {
@@ -143,6 +149,28 @@ class Status
     }
 
     /**
+     * Set the Entry of the authenticated user.
+     *
+     * @param  Entry|null $entry
+     * @return Status $this
+     */
+    public function setBindEntry(?Entry $entry) : Status
+    {
+        $this->bindEntry = $entry;
+        return $this;
+    }
+
+    /**
+     * Returns the Entry of the authenticated user.
+     *
+     * @return Entry|null
+     */
+    public function getBindEntry() : ?Entry
+    {
+        return $this->bindEntry;
+    }
+
+    /**
      * Set the instance of LdapInterface used for authentication.
      *
      * @param  LdapInterface|null $ldap
@@ -197,6 +225,7 @@ class Status
         $this->setBindDn(null);
         $this->setBindLdap(null);
         $this->setBindConnection(null);
+        $this->setBindEntry(null);
         return $this;
     }
 }

@@ -212,13 +212,20 @@ return [
     |           a Binding preset providing bind DN and password for the
     |           bind method,
     |       - connections
-    |           an array of Connection presets to use for binding,
-    |       - filter
-    |           an LDAP search filter to re-check user's entry after it's
-    |           successfully authenticated; the filter provides a way to
-    |           filter-out disabled accounts when using "direct bind"
-    |           authentication method (i.e. authenticating without prior
-    |           search).
+    |           an array of Connection presets to use for binding (failover),
+    |       - search
+    |           a Search preset used to retrieve user's entry after successful
+    |           bind operation,
+    |       - filtering
+    |           if set to true (or not present), a successful bind is followed
+    |           by search operation; the result of this search is stored in
+    |           a special status object; if this search returns no result, the
+    |           authentication is considered as failed,
+    |       - fetching
+    |           if set to true (or not present), a successful bind is followed
+    |           by search operation; the result of this search is stored in a
+    |           special status object; if 'filtering' is set to false, the
+    |           search result does not affect the authentication result.
     |
     | The 'sessions' and 'attempt.connections' arrays are used to setup a
     | failover strategy. The consecutive Session/Connection presets from these
@@ -239,8 +246,10 @@ return [
                 'search' => [
 //                    'base' => '${dn}',
                     'filter' => '(&(accountstatus=enabled)(enabledservice=cruftman))',
-//                    'options' => ['scope' => 'one', 'attributes' => ['*', 'entryuuid']],
-                ]
+//                    'options' => ['scope' => 'base', 'attributes' => ['*', 'entryuuid']],
+                ],
+                //'filtering' => true,
+                //'fetching' => true,
             ]
         ],
         'london-users' => [

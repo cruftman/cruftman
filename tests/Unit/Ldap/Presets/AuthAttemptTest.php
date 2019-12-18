@@ -74,14 +74,14 @@ class AuthAttemptTest extends TestCase
 
     public function test__search()
     {
-        $options = ['binding' => [], 'search' => ['base' => 'FOO', 'filter' => 'BAR', 'options' => ['GEEZ']]];
+        $options = ['binding' => [], 'search' => ['base' => 'FOO', 'filter' => 'BAR', 'options' => []]];
         $aat = new AuthAttempt($options, new Aggregate([]));
 
         $search = $aat->search();
         $this->assertInstanceOf(BindSearch::class, $search);
         $this->assertSame('FOO', $search->base([]));
         $this->assertSame('BAR', $search->filter([]));
-        $this->assertSame(['GEEZ'], $search->options([]));
+        $this->assertIsArray($search->options([]));
     }
 
     public function test__search__default()
@@ -104,13 +104,47 @@ class AuthAttemptTest extends TestCase
         $this->assertNull($aat->search());
     }
 
-//    public function test__filter()
-//    {
-//        $options = ['binding' => [], 'filter' => 'uid=${username}'];
-//        $aat = new AuthAttempt($options, new Aggregate([]));
-//
-//        $this->assertSame('uid=jsmith', $aat->filter(['username' => 'jsmith']));
-//    }
+    public function test__fetching__default()
+    {
+        $options = ['binding' => []];
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertNull($aat->fetching([]));
+    }
+
+    public function test__fetching__false()
+    {
+        $options = ['binding' => [], 'fetching' => false];
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertFalse($aat->fetching([]));
+    }
+
+    public function test__fetching__true()
+    {
+        $options = ['binding' => [], 'fetching' => true];
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertTrue($aat->fetching([]));
+    }
+
+    public function test__filtering__default()
+    {
+        $options = ['binding' => []];
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertNull($aat->filtering([]));
+    }
+
+    public function test__filtering__false()
+    {
+        $options = ['binding' => [], 'filtering' => false];
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertFalse($aat->filtering([]));
+    }
+
+    public function test__filtering__true()
+    {
+        $options = ['binding' => [], 'filtering' => true];
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertTrue($aat->filtering([]));
+    }
 //
 //    public function test__filter__null()
 //    {

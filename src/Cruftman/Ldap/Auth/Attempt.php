@@ -24,9 +24,6 @@ use Cruftman\Ldap\Traits\HasBinderTool;
 use Cruftman\Ldap\Traits\HasFinderTool;
 use Cruftman\Ldap\Presets\AuthAttempt;
 use Cruftman\Ldap\Presets\Connection;
-//use Cruftman\Ldap\Tools\Connector;
-//use Cruftman\Ldap\Tools\Binder;
-//use Cruftman\Ldap\Tools\Finder;
 use Cruftman\Ldap\Tools\Failover;
 
 /**
@@ -122,8 +119,57 @@ class Attempt
         $this->getAuthStatus()->setBindResult($result)
                               ->setBindDn($bindDn)
                               ->setBindLdap($ldap)
-                              ->setBindConnection($connection);
+                              ->setBindConnection($connection)
+                              ->setBindEntry(null);
+
+        if ($result) {
+            $result = $this->postBindActions($arguments);
+        }
         return $result;
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function postBindActions(array $arguments)
+    {
+        return $this->postBindSearchIfRequested($arguments);
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function postBindSearchIfRequested(array $arguments)
+    {
+        if (($search = $this->postBindSearchRequested($arguments)) !== null) {
+            return $this->postBindSearch($search, $arguments);
+        }
+        return true;
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function postBindSearchRequested(array $arguments) : ?Search
+    {
+        $preset = $this->getAuthAttemptPreset();
+        $filtering = $preset->filtering($arguments) ?? true;
+        $fetching = $preset->fetching($arguments) ?? true;
+        return ($filtering || $fetching) ? $preset->search() : null;
+    }
+
+    /**
+     * @todo Write documentation
+     */
+    protected function postBindSearch(Search $search, array $arguments)
+    {
+        $bindDn = $this->getAuthStatus()->getBindDn();
+        $bindLdap = $this->getAuthStatus()->getBindLdap();
+        $entry = $this->getBindEntry($bindDn, $bindLdap, $arguments);
+        if ($entry !== null) {
+            $this->getAuthStatus()->setBindEntry(new Entry($entry));
+        }
+        return ($entry !== null) || (!$this->getAuthAttemptPreset()->filtering($arguments));
     }
 
     /**
@@ -131,25 +177,12 @@ class Attempt
      */
     public function getBindEntry(string $bindDn, AdapterInterface $ldap, array $arguments)
     {
-        //$search = $this->createFilterSearchPreset($bindDn, $arguments);
+        $arguments = array_merge(['binddn' => $bindDn], $arguments);
         $search = $this->getAuthAttemptPreset()->search();
         $result = $this->getFinder()->search($search, $ldap, $arguments);
         $entries = $result->getEntries(false);
         return (count($entries) === 1) ? $entries[0] : null;
     }
-
-//    /**
-//     * @todo Write documentation
-//     */
-//    protected function createFilterSearchPreset(string $bindDn, array $arguments) : Search
-//    {
-//        $preset = $this->getAuthAttemptPreset();
-//        $filter = $preset->filter($arguments) ?? 'objectclass=*';
-//        $attributes = $preset->attributes($arguments) ?? ['*'];
-//        $options = ['scope' => 'base', 'attributes' => $attributes];
-//        $config = ['base' => $bindDn, 'filter' => $filter, 'options' => $options];
-//        return new Search($config);
-//    }
 
     /**
      * Invoked when all connections failed.

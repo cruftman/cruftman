@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use Cruftman\Ldap\Auth\Status;
 use Cruftman\Ldap\Auth\Source;
+use Cruftman\Ldap\Auth\Entry;
 use Korowai\Lib\Ldap\LdapInterface;
 use Cruftman\Ldap\Presets\Connection;
 
@@ -26,12 +27,14 @@ class StatusTest extends TestCase
         $ldap = $this->createStub(LdapInterface::class);
         $connection = $this->createStub(Connection::class);
         $source = $this->createStub(Source::class);
+        $entry = $this->createStub(Entry::class);
 
         $status = new Status([
             'bindResult' => true,
             'bindDn' => 'uid=jsmith,ou=people,dc=example,dc=org',
             'bindLdap' => $ldap,
             'bindConnection' => $connection,
+            'bindEntry' => $entry,
             'source' => $source
         ]);
 
@@ -39,6 +42,7 @@ class StatusTest extends TestCase
         $this->assertSame('uid=jsmith,ou=people,dc=example,dc=org', $status->getBindDn());
         $this->assertSame($ldap, $status->getBindLdap());
         $this->assertSame($connection, $status->getBindConnection());
+        $this->assertSame($entry, $status->getBindEntry());
         $this->assertSame($source, $status->getSource());
     }
 
@@ -87,6 +91,17 @@ class StatusTest extends TestCase
         $this->assertNull($status->getBindConnection());
     }
 
+    public function test__bindEntry()
+    {
+        $status = new Status();
+        $entry = $this->createStub(Entry::class);
+        $this->assertNull($status->getBindEntry());
+        $this->assertSame($status, $status->setBindEntry($entry));
+        $this->assertSame($entry, $status->getBindEntry());
+        $this->assertSame($status, $status->setBindEntry(null));
+        $this->assertNull($status->getBindEntry());
+    }
+
     public function test__source()
     {
         $status = new Status();
@@ -102,6 +117,7 @@ class StatusTest extends TestCase
     {
         $ldap = $this->createStub(LdapInterface::class);
         $connection = $this->createStub(Connection::class);
+        $entry = $this->createStub(Entry::class);
         $source = $this->createStub(Source::class);
 
         $status = new Status([
@@ -109,6 +125,7 @@ class StatusTest extends TestCase
             'bindDn' => 'uid=jsmith,ou=people,dc=example,dc=org',
             'bindLdap' => $ldap,
             'bindConnection' => $connection,
+            'bindEntry' => $entry,
             'source' => $source
         ]);
 
@@ -118,6 +135,7 @@ class StatusTest extends TestCase
         $this->assertNull($status->getBindDn());
         $this->assertNull($status->getBindLdap());
         $this->assertNull($status->getBindConnection());
+        $this->assertNull($status->getBindEntry());
         $this->assertSame($source, $status->getSource());
     }
 }

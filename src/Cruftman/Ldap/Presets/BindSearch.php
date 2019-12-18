@@ -14,9 +14,10 @@ declare(strict_types=1);
 namespace Cruftman\Ldap\Presets;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\Options;
 
 /**
- * Search preset.
+ * Search preset for post-bind operations.
  */
 class BindSearch extends Search
 {
@@ -28,37 +29,16 @@ class BindSearch extends Search
                  ->setAllowedTypes('base', 'string')
                  ->setAllowedTypes('filter', 'string')
                  ->setAllowedTypes('options', 'array');
+        $resolver->setNormalizer('options', function (Options $options, $searchOptions) {
+            if (!array_key_exists('scope', $searchOptions)) {
+                $searchOptions['scope'] = 'base';
+            }
+            if (!array_key_exists('attributes', $searchOptions)) {
+                $searchOptions['attributes'] = ['*'];
+            }
+            return $searchOptions;
+        });
     }
-//
-//    /**
-//     * Returns base DN for the search preset.
-//     * @param  array $arguments
-//     * @return string
-//     */
-//    public function base(array $arguments) : string
-//    {
-//        return $this->substOption('base', $arguments, '${binddn}');
-//    }
-//
-//    /**
-//     * Returns search filter for the search.
-//     * @param  array $arguments
-//     * @return string
-//     */
-//    public function filter(array $arguments) : string
-//    {
-//        return $this->substOption('filter', $arguments, 'objectclass=*');
-//    }
-//
-//    /**
-//     * Returns search options for the search.
-//     * @param  array $arguments
-//     * @return array
-//     */
-//    public function options(array $arguments) : array
-//    {
-//        return $this->substOption('options', $arguments, ['scope' => 'base', 'attributes' => ['*']]);
-//    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:
