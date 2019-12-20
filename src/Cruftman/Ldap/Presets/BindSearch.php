@@ -21,6 +21,10 @@ use Symfony\Component\OptionsResolver\Options;
  */
 class BindSearch extends Search
 {
+    /**
+     * Configure options resolver to validate and resolve options.
+     * @param  OptionsResolver $resolver
+     */
     protected function configureOptionsResolver(OptionsResolver $resolver)
     {
         $resolver->setDefault('base', '${binddn}')
@@ -29,6 +33,15 @@ class BindSearch extends Search
                  ->setAllowedTypes('base', 'string')
                  ->setAllowedTypes('filter', 'string')
                  ->setAllowedTypes('options', 'array');
+        $this->setOptionsNormalizers($resolver);
+    }
+
+    /**
+     * Setup option normalization for all options that use it.
+     * @param  OptionsResolver $resolver
+     */
+    protected function setOptionsNormalizers(OptionsResolver $resolver)
+    {
         $resolver->setNormalizer('options', function (Options $options, $searchOptions) {
             if (!array_key_exists('scope', $searchOptions)) {
                 $searchOptions['scope'] = 'base';

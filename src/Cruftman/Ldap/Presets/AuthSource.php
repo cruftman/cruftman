@@ -13,14 +13,10 @@ declare(strict_types=1);
 
 namespace Cruftman\Ldap\Presets;
 
-use Korowai\Lib\Ldap\Adapter\AdapterInterface;
-use Korowai\Lib\Ldap\Adapter\SearchQueryInterface;
-use Korowai\Lib\Ldap\Exception\LdapException;
 use Cruftman\Support\Preset;
 use Cruftman\Support\Traits\ValidatesOptions;
 use Cruftman\Support\Traits\RelatedPreset;
 use Cruftman\Support\Traits\RelatedPresetsArray;
-use Cruftman\Ldap\Service;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;

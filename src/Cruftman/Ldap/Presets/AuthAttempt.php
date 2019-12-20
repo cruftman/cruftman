@@ -29,11 +29,6 @@ class AuthAttempt extends Preset
         RelatedPresetsArray;
 
     /**
-     * @var Search
-     */
-    protected $searchPreset = null;
-
-    /**
      * Configures OptionsResolver for the AuthAttempt Preset.
      *
      * @param  OptionsResolver $resolver
@@ -44,7 +39,7 @@ class AuthAttempt extends Preset
                   ->setDefined(['connections', 'search', 'filtering', 'fetching'])
                   ->setAllowedTypes('binding', ['string', 'array'])
                   ->setAllowedTypes('connections', 'array')
-                  ->setAllowedTypes('search', ['string', 'array'])
+                  ->setAllowedTypes('search', ['string', 'array', 'null'])
                   ->setAllowedTypes('filtering', 'bool')
                   ->setAllowedTypes('fetching', 'bool');
     }
@@ -79,7 +74,10 @@ class AuthAttempt extends Preset
     }
 
     /**
-     * @todo Write documentation
+     * Returns the value of 'filtering' option.
+     *
+     * @param  array $arguments
+     * @return bool|null
      */
     public function filtering(array $arguments) : ?bool
     {
@@ -87,7 +85,10 @@ class AuthAttempt extends Preset
     }
 
     /**
-     * @todo Write documentation
+     * Returns the value of 'fetching' option.
+     *
+     * @param  array $arguments
+     * @return bool|null
      */
     public function fetching(array $arguments) : ?bool
     {

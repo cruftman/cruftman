@@ -198,7 +198,7 @@ return [
     |       required when 'search' or 'locate' options are present; providing
     |       more than one Session presets enables failover algorithm,
     |   - search
-    |       a Search preset used to search for users in LDAP when its unique
+    |       a Search preset used to search for a user when its unique
     |       identifier (like entryUUID) is NOT known to application, for
     |       authentication purposes this search uses a sort of username,
     |   - locate
@@ -215,12 +215,25 @@ return [
     |           an array of Connection presets to use for binding (failover),
     |       - search
     |           a Search preset used to retrieve user's entry after successful
-    |           bind operation,
+    |           bind operation; if not present (or null), the post-search is
+    |           not performed; the placeholder '${binddn}' may be used to
+    |           inject the DN being processed into configuration; to use
+    |           defaults, put 'search' => []; the default settings are:
+    |               'search' => [
+    |                   'base' => '${binddn}',
+    |                   'filter' => 'objectclass=*',
+    |                   'options' => [
+    |                       'scope' => 'base',
+    |                       'attributes' => ['*']
+    |                   ],
+    |               ]
     |       - filtering
     |           if set to true (or not present), a successful bind is followed
     |           by search operation; the result of this search is stored in
-    |           a special status object; if this search returns no result, the
-    |           authentication is considered as failed,
+    |           a special status object; if the search result is empty, the
+    |           authentication is considered as failed; this way we can define
+    |           LDAP filters to exclude certain groups of users from
+    |           authentication,
     |       - fetching
     |           if set to true (or not present), a successful bind is followed
     |           by search operation; the result of this search is stored in a
@@ -232,10 +245,16 @@ return [
     | arrays are tried in sequence in case of connection errors.
     |
     | The 'sessions' array is used when searching for a user prior to
-    | attempting its authentication (we call this as an "indirect bind"). If none
+    | attempting its authentication (we call this an "indirect bind"). If none
     | of 'search' nor 'locate' is present, then it's assumed that a "direct bind"
     | authentication is requested, in which case the application invokes bind
     | function on an already known DN, without searching for user's entry.
+    |
+    | The extra search step in the "direct bind" scheme is performed optionally
+    | after a successful bind. The extra search may be used to exclude user
+    | entries that do not meet requirements (enabled service, group
+    | participation, etc.). It's also used by application to retrieve user
+    | attributes like name, surname etc.
     |
     */
     'auth_sources' => [
@@ -300,8 +319,8 @@ return [
     |
     |           'arguments' => [ 'username' => 'email' ],
     |
-    |       means that the argument used to search user by its username will be
-    |       called will be 'email'; supported canonical argument names are
+    |       means that the placeholder used to search user by its username will
+    |       be '${email}'; supported canonical argument names are
     |
     |       - useruuid
     |           a value used to uniquely determine user's entry across
