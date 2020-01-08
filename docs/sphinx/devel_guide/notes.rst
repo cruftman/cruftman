@@ -45,7 +45,7 @@ Starting interactive PHP shell
 
 .. code-block:: shell
 
-   php vendor/bin/psysh
+   php artisan tinker
 
 
 Running integration tests
@@ -105,8 +105,8 @@ The generated docs go to ``docs/build/html`` and get exposed at
 - ``http://localhost:8001`` -> sami docs (PHP API)
 
 
-Generating user documentation continuously
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Generating (only) user documentation continuously
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: shell
 
@@ -117,8 +117,8 @@ The generated docs go to ``docs/build/html`` and get exposed at
 - ``http://localhost:8002``.
 
 
-Generating API documentation continuously and serving via HTTP
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Generating (only) API documentation continuously
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: shell
 
