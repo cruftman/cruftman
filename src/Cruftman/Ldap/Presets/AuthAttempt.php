@@ -94,6 +94,28 @@ class AuthAttempt extends Preset
     {
         return $this->substOption('fetching', $arguments);
     }
+
+    /**
+     * Returns true if the config imply that extra search step is required.
+     *
+     * @param  array $arguments
+     * @return bool|null
+     */
+    public function isSearchRequested(array $arguments) : bool
+    {
+        return (($this->filtering($arguments) ?? true) || ($this->fetching($arguments) ?? true));
+    }
+
+    /**
+     * Returns the nested BindSearch preset if the search is requested or null if not.
+     *
+     * @param  array $arguments
+     * @return BindSearch|null
+     */
+    public function getSearchIfRequested(array $arguments) : ?BindSearch
+    {
+        return $this->isSearchRequested($arguments) ? $this->search() : null;
+    }
 }
 
 // vim: syntax=php sw=4 ts=4 et:

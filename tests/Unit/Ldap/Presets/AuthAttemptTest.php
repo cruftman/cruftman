@@ -15,6 +15,45 @@ use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 
 class AuthAttemptTest extends TestCase
 {
+    /**
+     * Provides 'filtering' and 'fetching' options that shall make
+     * the isSearchRequested() to return true.
+     */
+    public function ffEnabling()
+    {
+        return [
+            [[]],
+            [['filtering' => true]],
+            [['filtering' => false]],
+            [['fetching' => true]],
+            [['fetching' => false]],
+            [['filtering' => true, 'fetching' => false]],
+            [['filtering' => false, 'fetching' => true]],
+        ];
+    }
+
+    /**
+     * Provides 'filtering' and 'fetching' options that shall make
+     * the isSearchRequested() to return false.
+     */
+    public function ffDisabling()
+    {
+        return [
+            [['filtering' => false, 'fetching' => false]],
+        ];
+    }
+
+    /**
+     * Provides 'filtering' and 'fetching' options -- all possible combinations.
+     */
+    public function ffAll()
+    {
+        return array_merge(
+            $this->ffEnabling(),
+            $this->ffDisabling()
+        );
+    }
+
     public function test__extends__Preset()
     {
         $parents = class_parents(AuthAttempt::class);
@@ -104,7 +143,7 @@ class AuthAttemptTest extends TestCase
         $this->assertNull($aat->search());
     }
 
-    public function test__fetching__default()
+    public function test__fetching__null()
     {
         $options = ['binding' => []];
         $aat = new AuthAttempt($options, new Aggregate([]));
@@ -125,7 +164,7 @@ class AuthAttemptTest extends TestCase
         $this->assertTrue($aat->fetching([]));
     }
 
-    public function test__filtering__default()
+    public function test__filtering__null()
     {
         $options = ['binding' => []];
         $aat = new AuthAttempt($options, new Aggregate([]));
@@ -145,28 +184,54 @@ class AuthAttemptTest extends TestCase
         $aat = new AuthAttempt($options, new Aggregate([]));
         $this->assertTrue($aat->filtering([]));
     }
-//
-//    public function test__filter__null()
-//    {
-//        $options = ['binding' => []];
-//        $aat = new AuthAttempt($options, new Aggregate([]));
-//
-//        $this->assertNull($aat->filter([]));
-//    }
-//
-//    public function test__attributes()
-//    {
-//        $options = ['binding' => [], 'attributes' => ['${username}', 'cn']];
-//        $aat = new AuthAttempt($options, new Aggregate([]));
-//
-//        $this->assertSame(['uid', 'cn'], $aat->attributes(['username' => 'uid']));
-//    }
-//
-//    public function test__attributes__null()
-//    {
-//        $options = ['binding' => []];
-//        $aat = new AuthAttempt($options, new Aggregate([]));
-//
-//        $this->assertNull($aat->attributes([]));
-//    }
+
+    /**
+     * @dataProvider ffEnabling
+     */
+    public function test__isSearchRequested__true(array $ff)
+    {
+        $options = array_merge(['binding' => []], $ff);
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertTrue($aat->isSearchRequested([]));
+    }
+
+    /**
+     * @dataProvider ffDisabling
+     */
+    public function test__isSearchRequested__false(array $ff)
+    {
+        $options = array_merge(['binding' => []], $ff);
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertFalse($aat->isSearchRequested([]));
+    }
+
+    /**
+     * @dataProvider ffAll
+     */
+    public function test__getSearchIfRequested__missing(array $ff)
+    {
+        $options = array_merge(['binding' => []], $ff);
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertNull($aat->getSearchIfRequested([]));
+    }
+
+    /**
+     * @dataProvider ffDisabling
+     */
+    public function test__getSearchIfRequested__null(array $ff)
+    {
+        $options = array_merge(['binding' => [], 'search' => []], $ff);
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertNull($aat->getSearchIfRequested([]));
+    }
+
+    /**
+     * @dataProvider ffEnabling
+     */
+    public function test__getSearchIfRequested__nonNull(array $ff)
+    {
+        $options = array_merge(['binding' => [], 'search' => []], $ff);
+        $aat = new AuthAttempt($options, new Aggregate([]));
+        $this->assertInstanceOf(BindSearch::class, $aat->getSearchIfRequested([]));
+    }
 }

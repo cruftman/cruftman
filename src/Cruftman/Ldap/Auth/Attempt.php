@@ -129,39 +129,40 @@ class Attempt
     }
 
     /**
-     * @todo Write documentation
+     * Performs all the necessary post-bind actions.
+     *
+     * @param  array $arguments
+     * @return bool
      */
-    protected function postBindActions(array $arguments)
+    protected function postBindActions(array $arguments) : bool
     {
         return $this->postBindSearchIfRequested($arguments);
     }
 
     /**
-     * @todo Write documentation
+     * Performs extra post-bind LDAP search if it's requested by this Attempt's
+     * preset.
+     *
+     * @param  array $arguments
+     * @return bool
      */
-    protected function postBindSearchIfRequested(array $arguments)
+    protected function postBindSearchIfRequested(array $arguments) : bool
     {
-        if (($search = $this->postBindSearchRequested($arguments)) !== null) {
+        $preset = $this->getAuthAttemptPreset();
+        if (($search = $preset->getSearchIfRequested($arguments)) !== null) {
             return $this->postBindSearch($search, $arguments);
         }
         return true;
     }
 
     /**
-     * @todo Write documentation
+     * Performs a post-bind search.
+     *
+     * @param  Search $search
+     * @param  array $arguments
+     * @return bool ``false`` if filtering is enabled and the search failed to return an entry
      */
-    protected function postBindSearchRequested(array $arguments) : ?Search
-    {
-        $preset = $this->getAuthAttemptPreset();
-        $filtering = $preset->filtering($arguments) ?? true;
-        $fetching = $preset->fetching($arguments) ?? true;
-        return ($filtering || $fetching) ? $preset->search() : null;
-    }
-
-    /**
-     * @todo Write documentation
-     */
-    protected function postBindSearch(Search $search, array $arguments)
+    protected function postBindSearch(Search $search, array $arguments) : bool
     {
         $bindDn = $this->getAuthStatus()->getBindDn();
         $bindLdap = $this->getAuthStatus()->getBindLdap();
@@ -173,7 +174,13 @@ class Attempt
     }
 
     /**
-     * @todo Write documentation
+     * Makes an LDAP search to find the entry specified in *$bindDn* argument.
+     *
+     * @param  string $bindDn
+     * @param  AdapterInterface $ldap
+     * @param  array $arguments
+     *
+     * @return \Korowai\Lib\Ldap\Entry|null ``null`` is returned if the number of entries in result is other than ``1``
      */
     public function getBindEntry(string $bindDn, AdapterInterface $ldap, array $arguments)
     {
@@ -186,6 +193,7 @@ class Attempt
 
     /**
      * Invoked when all connections failed.
+     *
      * @param  array $connections
      * @param  array $arguments
      */
