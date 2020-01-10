@@ -166,7 +166,7 @@ class Attempt
     {
         $bindDn = $this->getAuthStatus()->getBindDn();
         $bindLdap = $this->getAuthStatus()->getBindLdap();
-        $entry = $this->getBindEntry($bindDn, $bindLdap, $arguments);
+        $entry = $this->findBindEntry($bindDn, $bindLdap, $arguments);
         if ($entry !== null) {
             $this->getAuthStatus()->setBindEntry(new Entry($entry));
         }
@@ -180,9 +180,11 @@ class Attempt
      * @param  AdapterInterface $ldap
      * @param  array $arguments
      *
-     * @return \Korowai\Lib\Ldap\Entry|null ``null`` is returned if the number of entries in result is other than ``1``
+     * @return \Korowai\Lib\Ldap\Entry|null
+     *         ``null`` is returned if the number of resultant entries is other
+     *         than ``1``
      */
-    public function getBindEntry(string $bindDn, AdapterInterface $ldap, array $arguments)
+    protected function findBindEntry(string $bindDn, AdapterInterface $ldap, array $arguments)
     {
         $arguments = array_merge(['binddn' => $bindDn], $arguments);
         $search = $this->getAuthAttemptPreset()->search();
@@ -192,7 +194,7 @@ class Attempt
     }
 
     /**
-     * Invoked when all connections failed.
+     * Invoked when all connections failed with recoverable error.
      *
      * @param  array $connections
      * @param  array $arguments

@@ -19,7 +19,7 @@ class AuthAttemptTest extends TestCase
      * Provides 'filtering' and 'fetching' options that shall make
      * the isSearchRequested() to return true.
      */
-    public function ffEnabling()
+    public function ffOptionsEnablingSearchProvider()
     {
         return [
             [[]],
@@ -36,7 +36,7 @@ class AuthAttemptTest extends TestCase
      * Provides 'filtering' and 'fetching' options that shall make
      * the isSearchRequested() to return false.
      */
-    public function ffDisabling()
+    public function ffOptionsDisablingSearchProvider()
     {
         return [
             [['filtering' => false, 'fetching' => false]],
@@ -46,11 +46,11 @@ class AuthAttemptTest extends TestCase
     /**
      * Provides 'filtering' and 'fetching' options -- all possible combinations.
      */
-    public function ffAll()
+    public function ffOptionsProvider()
     {
         return array_merge(
-            $this->ffEnabling(),
-            $this->ffDisabling()
+            $this->ffOptionsEnablingSearchProvider(),
+            $this->ffOptionsDisablingSearchProvider()
         );
     }
 
@@ -186,7 +186,7 @@ class AuthAttemptTest extends TestCase
     }
 
     /**
-     * @dataProvider ffEnabling
+     * @dataProvider ffOptionsEnablingSearchProvider
      */
     public function test__isSearchRequested__true(array $ff)
     {
@@ -196,7 +196,7 @@ class AuthAttemptTest extends TestCase
     }
 
     /**
-     * @dataProvider ffDisabling
+     * @dataProvider ffOptionsDisablingSearchProvider
      */
     public function test__isSearchRequested__false(array $ff)
     {
@@ -206,7 +206,7 @@ class AuthAttemptTest extends TestCase
     }
 
     /**
-     * @dataProvider ffAll
+     * @dataProvider ffOptionsProvider
      */
     public function test__getSearchIfRequested__missing(array $ff)
     {
@@ -216,7 +216,7 @@ class AuthAttemptTest extends TestCase
     }
 
     /**
-     * @dataProvider ffDisabling
+     * @dataProvider ffOptionsDisablingSearchProvider
      */
     public function test__getSearchIfRequested__null(array $ff)
     {
@@ -226,7 +226,7 @@ class AuthAttemptTest extends TestCase
     }
 
     /**
-     * @dataProvider ffEnabling
+     * @dataProvider ffOptionsEnablingSearchProvider
      */
     public function test__getSearchIfRequested__nonNull(array $ff)
     {
