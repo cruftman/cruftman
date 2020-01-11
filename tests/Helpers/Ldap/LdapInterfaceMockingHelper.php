@@ -1,6 +1,6 @@
 <?php
 /**
- * @file tests/Helpers/MockingHelper.php
+ * @file tests/Helpers/Ldap/LdapInterfaceMockingHelper.php
  *
  * This file is part of the Cruftman package
  *

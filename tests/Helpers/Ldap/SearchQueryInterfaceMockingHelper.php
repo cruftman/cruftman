@@ -1,6 +1,6 @@
 <?php
 /**
- * @file tests/Helpers/MockingHelper.php
+ * @file tests/Helpers/Ldap/SearchQueryInterfaceMockingHelper.php
  *
  * This file is part of the Cruftman package
  *
@@ -25,7 +25,7 @@ trait SearchQueryInterfaceMockingHelper
 
     protected function getSearchQueryInterfaceMockMethods()
     {
-        return ['bind', 'createSearchQuery'];
+        return ['execute', 'getResult'];
     }
 
     protected function configureSearchQueryInterfaceMock(SearchQueryInterface $mock, array $config)

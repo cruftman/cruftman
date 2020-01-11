@@ -1,6 +1,6 @@
 <?php
 /**
- * @file tests/Helpers/MockingHelper.php
+ * @file tests/Helpers/Ldap/Tools/BinderMockingHelper.php
  *
  * This file is part of the Cruftman package
  *
