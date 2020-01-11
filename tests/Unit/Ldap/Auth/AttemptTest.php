@@ -27,10 +27,14 @@ use Korowai\Lib\Ldap\Exception\LdapException;
 use Korowai\Lib\Ldap\Adapter\ResultInterface;
 
 use Tests\Helpers\MockingHelper;
+use Tests\Helpers\Ldap\LdapInterfaceMockingHelper;
+use Tests\Helpers\Ldap\ToolsMockingHelper;
 
 class AttemptTest extends TestCase
 {
     use MockingHelper;
+    use LdapInterfaceMockingHelper;
+    use ToolsMockingHelper;
 
     //
     // data providers
@@ -96,25 +100,24 @@ class AttemptTest extends TestCase
     //
 
     // LdapInterface
-    protected function ldapInterfaceMock(array $params)
+    protected function ldapInterfaceMock(array $config)
     {
         $ldap = $this->getMockBuilder(LdapInterface::class)->getMock();
-        $methods = ['bind', 'createSearchQuery'];
-        $this->configureMockMethods($ldap, $methods, $params);
+        $this->configureLdapInterfaceMock($ldap, $config);
         return $ldap;
     }
 
     // Presets\Binding
-    protected function bindingPresetMock(array $params)
+    protected function bindingPresetMock(array $methodsConfig)
     {
         $binding = $this->createMock(BindingPreset::class);
         $methods = ['dn', 'password'];
-        $this->configureMockMethods($binding, $methods, $params);
+        $this->configureMockMethods($binding, $methods, $methodsConfig);
         return $binding;
     }
 
     // Presets\AuthAttempt
-    protected function authAttemptPresetMock(array $params)
+    protected function authAttemptPresetMock(array $methodsConfig)
     {
         $preset = $this->createMock(AuthAttemptPreset::class);
         $methods = [
@@ -125,35 +128,26 @@ class AttemptTest extends TestCase
             'isSearchRequested',
             'getSearchIfRequested'
         ];
-        $this->configureMockMethods($preset, $methods, $params);
+        $this->configureMockMethods($preset, $methods, $methodsConfig);
         return $preset;
     }
 
     // Tools\Connector
-    protected function connectorToolMock(array $params)
+    protected function connectorToolMock(array $methodsConfig)
     {
-        $connector = $this->getMockBuilder(Connector::class)->getMock();
-        $methods = ['createLdap'];
-        $this->configureMockMethods($connector, $methods, $params);
-        return $connector;
+        return $this->createConnectorMock(['methods' => $methodsConfig]);
     }
 
     // Tools\Binder
-    protected function binderToolMock(array $params)
+    protected function binderToolMock(array $methodsConfig)
     {
-        $binder = $this->getMockBuilder(Binder::class)->getMock();
-        $methods = ['bind', 'bindDn'];
-        $this->configureMockMethods($binder, $methods, $params);
-        return $binder;
+        return $this->createBinderMock(['methods' => $methodsConfig]);
     }
 
     // Tools\Finder
-    protected function finderToolMock(array $params)
+    protected function finderToolMock(array $methodsConfig)
     {
-        $finder = $this->getMockBuilder(Finder::class)->getMock();
-        $methods = ['createQuery', 'search'];
-        $this->configureMockMethods($finder, $methods, $params);
-        return $finder;
+        return $this->createFinderMock(['methods' => $methodsConfig]);
     }
 
     public function test__uses__HasAuthAttemptPreset()
@@ -250,8 +244,10 @@ class AttemptTest extends TestCase
         $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
 
         $ldap = $this->ldapInterfaceMock([
-            'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => $expect],
-            'createSearchQuery' => 'never',
+            'methods' => [
+                'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => $expect],
+                'createSearchQuery' => 'never',
+            ]
         ]);
 
         $attempt = $this->createAttemptWithOptions(
@@ -276,12 +272,14 @@ class AttemptTest extends TestCase
         $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
 
         $ldap = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException('Invalid Credentials', 0x31))
-            ],
-            'createSearchQuery' => 'never'
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException('Invalid Credentials', 0x31))
+                ],
+                'createSearchQuery' => 'never'
+            ]
         ]);
 
         $attempt = $this->createAttemptWithOptions(
@@ -307,12 +305,14 @@ class AttemptTest extends TestCase
         $options = ['binding' => ['uid=${username},dc=foo', '${password}']];
 
         $ldap = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
-            ],
-            'createSearchQuery' => 'never'
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+                ],
+                'createSearchQuery' => 'never'
+            ]
         ]);
 
         $attempt = $this->createAttemptWithOptions(
@@ -337,12 +337,14 @@ class AttemptTest extends TestCase
         $options = ['binding' => ['uid=${username},dc=foo', '${password}' ]];
 
         $ldap = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException('Invalid syntax', 0x15))
-            ],
-            'createSearchQuery' => 'never'
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException('Invalid syntax', 0x15))
+                ],
+                'createSearchQuery' => 'never'
+            ]
         ]);
 
         $attempt = $this->createAttemptWithOptions(
@@ -391,7 +393,9 @@ class AttemptTest extends TestCase
             'binding'     => ['times' => 1, 'willReturn' => $binding]
         ]);
         $ldap = $this->ldapInterfaceMock([
-            'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => $expect]
+            'methods' => [
+                'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => $expect]
+            ]
         ]);
 
         $attempt = $this->createAttemptWithPreset(
@@ -425,10 +429,12 @@ class AttemptTest extends TestCase
         ]);
 
         $ldap = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException('Invalid Credentials', 0x31))
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException('Invalid Credentials', 0x31))
+                ]
             ]
         ]);
 
@@ -461,10 +467,12 @@ class AttemptTest extends TestCase
             'binding'     => ['times' => 1, 'willReturn' => $binding]
         ]);
         $ldap = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+                ]
             ]
         ]);
 
@@ -497,10 +505,12 @@ class AttemptTest extends TestCase
             'binding'     => ['times' => 1, 'willReturn' => $binding]
         ]);
         $ldap = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException('Invalid syntax', 0x15))
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException('Invalid syntax', 0x15))
+                ]
             ]
         ]);
 
@@ -535,7 +545,9 @@ class AttemptTest extends TestCase
         ]);
 
         $ldap1 = $this->ldapInterfaceMock([
-            'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => true]
+            'methods' => [
+                'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => true]
+            ]
         ]);
         $attempt = $this->createAttemptWithPreset(
             $preset,
@@ -570,15 +582,19 @@ class AttemptTest extends TestCase
         ]);
 
         $ldap1 = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+                ]
             ]
         ]);
 
         $ldap2 = $this->ldapInterfaceMock([
-            'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => true]
+            'methods' => [
+                'bind' => ['times' => 1, 'with' => ['uid=jsmith,dc=foo', 'secret'], 'willReturn' => true]
+            ]
         ]);
 
         $connector = $this->connectorToolMock([
@@ -619,18 +635,22 @@ class AttemptTest extends TestCase
         ]);
 
         $ldap1 = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+                ]
             ]
         ]);
 
         $ldap2 = $this->ldapInterfaceMock([
-            'bind' => [
-                'times' => 1,
-                'with'  => ['uid=jsmith,dc=foo', 'secret'],
-                'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+            'methods' => [
+                'bind' => [
+                    'times' => 1,
+                    'with'  => ['uid=jsmith,dc=foo', 'secret'],
+                    'will'  => $this->throwException(new LdapException("can't connect to LDAP server", -1))
+                ]
             ]
         ]);
 
