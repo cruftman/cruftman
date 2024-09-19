@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Description: Symfony Console
+## Usage: console
+## Example: ddev console list
+## ExecRaw: true
+
+exec /usr/bin/symfony console "$@"

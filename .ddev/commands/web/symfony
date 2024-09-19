@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Description: Symfony CLI
+## Usage: symfony
+## Example: ddev symfony list
+## ExecRaw: true
+
+exec /usr/bin/symfony "$@"
