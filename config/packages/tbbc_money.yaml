@@ -1,0 +1,8 @@
+tbbc_money:
+    currencies: ["USD", "EUR", "PLN"]
+    reference_currency: "PLN"
+    decimals: 2
+doctrine:
+    dbal:
+        types:
+            money: Tbbc\MoneyBundle\Type\MoneyType
