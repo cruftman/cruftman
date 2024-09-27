@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
-#[ORM\UniqueConstraint(fields: ["code"])]
+#[ORM\UniqueConstraint(fields: ["ref"])]
 class Item
 {
     #[ORM\Id]
@@ -17,7 +17,7 @@ class Item
     private ?int $id = null;
 
     #[ORM\Column(length: 64)]
-    private ?string $code = null;
+    private ?string $ref = null;
 
     #[ORM\Column(length: 1024, nullable: true)]
     private ?string $comment = null;
@@ -45,14 +45,14 @@ class Item
         return $this->id;
     }
 
-    public function getCode(): ?string
+    public function getRef(): ?string
     {
-        return $this->code;
+        return $this->ref;
     }
 
-    public function setCode(string $code): static
+    public function setRef(string $ref): static
     {
-        $this->code = $code;
+        $this->ref = $ref;
 
         return $this;
     }
