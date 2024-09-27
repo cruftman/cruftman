@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\StocktakeItemLocationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: StocktakeItemLocationRepository::class)]
 #[ORM\UniqueConstraint(fields: ['stocktake', 'item'])]
 class StocktakeItemLocation

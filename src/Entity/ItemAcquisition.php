@@ -2,10 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ItemAcquisitionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Money\Money;
 
+#[ApiResource]
+#[ApiFilter(RangeFilter::class, properties: [ 'price' ])]
 #[ORM\Entity(repositoryClass: ItemAcquisitionRepository::class)]
 class ItemAcquisition
 {

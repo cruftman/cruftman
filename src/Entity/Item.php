@@ -2,11 +2,18 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\ExistsFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource]
+#[ApiFilter(SearchFilter::class, properties: [ 'ref' => 'start' ])]
+#[ApiFilter(ExistsFilter::class, properties: [ 'itemAcquisition' ])]
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
 #[ORM\UniqueConstraint(fields: ["ref"])]
 class Item
