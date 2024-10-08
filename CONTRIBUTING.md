@@ -47,6 +47,12 @@ ddev phpunit --help
 ddev psalm --help
 ```
 
+#### Running php-cs-fixer
+
+```console
+ddev php-cs-fixer --help
+```
+
 #### Launching phpmyadmin
 
 ```console

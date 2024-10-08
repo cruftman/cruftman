@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Description: Run PHPUnit
+## Usage: php-cs-fixer
+## Example: ddev php-cs-fixer
+## ExecRaw: true
+
+exec vendor/bin/php-cs-fixer "$@"
