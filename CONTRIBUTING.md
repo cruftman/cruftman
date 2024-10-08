@@ -41,6 +41,12 @@ ddev console help
 ddev phpunit --help
 ```
 
+#### Running psalm
+
+```console
+ddev psalm --help
+```
+
 #### Launching phpmyadmin
 
 ```console

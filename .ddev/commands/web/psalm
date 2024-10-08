@@ -1,0 +1,8 @@
+#!/bin/bash
+
+## Description: Run PHPUnit
+## Usage: psalm
+## Example: ddev psalm
+## ExecRaw: true
+
+exec vendor/bin/psalm "$@"
