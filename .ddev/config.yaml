@@ -23,6 +23,10 @@ web_environment:
     # - DATABASE_URL=postgresql://db:db@$db:5432/db?serverVersion=14&charset=utf8
 corepack_enable: false
 
+hooks:
+    post-start:
+        - exec: mysql -uroot -proot -hdb -e "CREATE DATABASE IF NOT EXISTS db_test; GRANT ALL ON db_test.* TO 'db'@'%';"
+
 # Key features of DDEV's config.yaml:
 
 # name: <projectname> # Name of the project, automatically provides
