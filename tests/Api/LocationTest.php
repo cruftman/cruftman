@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace App\Tests\api;
+namespace App\Tests\Api;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
 
-class LocationTest extends ApiTestCase
+class LocationApiTest extends ApiTestCase
 {
     use ResetDatabase;
     use Factories;
