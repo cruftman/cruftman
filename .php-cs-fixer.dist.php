@@ -11,6 +11,7 @@ EOF;
 $finder = PhpCsFixer\Finder::create()
     ->files()
     ->in(__DIR__ . '/src')
+    ->in(__DIR__ . '/tests')
     ->name('*.php')
 ;
 
@@ -20,8 +21,7 @@ return $config
     ->setFinder($finder)
     ->setRiskyAllowed(true)
     ->setRules([
-        '@PSR2' => true,
-        '@PhpCsFixer' => true,
+        '@Symfony' => true,
         'blank_line_after_opening_tag' => false,
         'linebreak_after_opening_tag' => false,
         'declare_strict_types' => true,
