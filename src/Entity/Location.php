@@ -29,7 +29,7 @@ class Location
     #[ORM\Column(length: 1024, nullable: true)]
     private ?string $comment = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children', cascade: ['persist'])]
     private ?self $parent = null;
 
     /**
