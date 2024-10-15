@@ -104,7 +104,7 @@
         "doctrine/doctrine-fixtures-bundle": "^3.6",
         "friendsofphp/php-cs-fixer": "^3.64",
         "justinrainbow/json-schema": "^6.0",
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "^10|^11",
         "psalm/plugin-symfony": "^5.2",
         "symfony/browser-kit": "7.1.*",
         "symfony/css-selector": "7.1.*",
