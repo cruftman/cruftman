@@ -25,7 +25,6 @@ class LocationApiTest extends ApiTestCase
     public static function provLocationsEndpoint(): \Generator
     {
         $acme100rooms = [
-            ['ref' => 'ACME', 'comment' => 'ACME building'],
             ...array_map(
                 fn (int $n): array => [
                     'ref' => "ACME/{$n}",
@@ -41,7 +40,7 @@ class LocationApiTest extends ApiTestCase
             '@type' => 'Collection',
         ];
 
-        yield '#01' => [
+        yield '#01: empty' => [
             'sequence' => [],
             'request' => ['GET', '/api/locations'],
             'expect' => array_merge($expect, [
@@ -49,7 +48,7 @@ class LocationApiTest extends ApiTestCase
             ]),
         ];
 
-        yield '#02' => [
+        yield '#02: single entity with null comment' => [
             'sequence' => [
                 ['ref' => 'ACME/236', 'comment' => null],
             ],
@@ -69,7 +68,7 @@ class LocationApiTest extends ApiTestCase
             ]),
         ];
 
-        yield '#03' => [
+        yield '#03: few entities with parent/child relations' => [
             'sequence' => [
                 ['ref' => 'ACME', 'comment' => 'ACME Building'],
                 ['ref' => 'ACME/123', 'comment' => 'Room 123 in the ACME Building', 'parent' => 'ACME'],
@@ -147,8 +146,7 @@ class LocationApiTest extends ApiTestCase
             ]),
         ];
 
-        // 1 building with 100 rooms, page=1
-        yield '#04' => [
+        yield '#04: many entities, page=1' => [
             'sequence' => $acme100rooms,
             'request' => ['GET', '/api/locations'],
             'expect' => array_merge($expect, [
@@ -163,8 +161,7 @@ class LocationApiTest extends ApiTestCase
             ]),
         ];
 
-        // 1 building with 100 rooms, page=2
-        yield '#05' => [
+        yield '#05: many entities, page=2' => [
             'sequence' => $acme100rooms,
             'request' => ['GET', '/api/locations?page=2'],
             'expect' => array_merge($expect, [
@@ -188,6 +185,7 @@ class LocationApiTest extends ApiTestCase
     #[DataProvider('provLocationsEndpoint')]
     public function testLocationsEndpoint(array $sequence, array $request, array $expect): void
     {
+        /** @var \Zenstruck\Foundry\Persistence\Proxy<Location>[] */
         $objects = LocationFactory::createSequence(array_map(
             fn (array $entry): array => array_diff_key($entry, [ 'parent' => true ]), $sequence
         ));
@@ -206,7 +204,11 @@ class LocationApiTest extends ApiTestCase
             }
         }
 
-        $response = static::createClient()->request(...$request);
+        if (count($request) >= 3) {
+            static::createClient()->request($request[0], $request[1], $request[2]);
+        } else {
+            static::createClient()->request($request[0], $request[1]);
+        }
 
         $this->assertResponseIsSuccessful();
 
