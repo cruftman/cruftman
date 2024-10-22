@@ -278,4 +278,30 @@ class LocationApiTest extends ApiTestCase
 
         $this->assertJsonEquals($expect);
     }
+
+    public function testPostLocation(): void
+    {
+        static::createClient()->request('POST', '/api/locations', [
+            'json' => [
+                'ref' => 'ACME/321',
+                'comment' => 'Room 321 in ACME building',
+            ],
+            'headers' => [
+                'Content-Type' => 'application/ld+json',
+            ],
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonEquals([
+            "@context" => "/api/contexts/Location",
+            "@id" => "/api/locations/1",
+            "@type" => "Location",
+            "children" => [],
+            "comment" => "Room 321 in ACME building",
+            "id" => 1,
+            "ref" => "ACME/321",
+            "stocktakeItemLocations" => []
+        ]);
+    }
 }
