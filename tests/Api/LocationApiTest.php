@@ -22,7 +22,7 @@ class LocationApiTest extends ApiTestCase
      *      expect: array<mixed>,
      *  }>
      */
-    public static function provLocationsEndpoint(): \Generator
+    public static function provGetLocations(): \Generator
     {
         $acme100rooms = [
             ...array_map(
@@ -182,8 +182,8 @@ class LocationApiTest extends ApiTestCase
      * @param array{0: string, 1: string, 2?: array<string, mixed>} $request
      * @param array<mixed> $expect
      */
-    #[DataProvider('provLocationsEndpoint')]
-    public function testLocationsEndpoint(array $sequence, array $request, array $expect): void
+    #[DataProvider('provGetLocations')]
+    public function testGetLocations(array $sequence, array $request, array $expect): void
     {
         /** @var \Zenstruck\Foundry\Persistence\Proxy<Location>[] */
         $objects = LocationFactory::createSequence(array_map(
