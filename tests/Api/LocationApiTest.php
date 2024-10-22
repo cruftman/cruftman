@@ -16,6 +16,44 @@ class LocationApiTest extends ApiTestCase
     use Factories;
 
     /**
+     * @return array<string,mixed>
+     */
+    public static function getLocationsIriTemplate(): array
+    {
+        return [
+            "@type" => "IriTemplate",
+            "mapping" => [
+                [
+                    "@type" => "IriTemplateMapping",
+                    "property" => "ref",
+                    "required" => false,
+                    "variable" => "ref"
+                ],
+                [
+                    "@type" => "IriTemplateMapping",
+                    "property" => "children",
+                    "required" => false,
+                    "variable" => "exists[children]"
+                ],
+                [
+                    "@type" => "IriTemplateMapping",
+                    "property" => "parent",
+                    "required" => false,
+                    "variable" => "exists[parent]"
+                ],
+                [
+                    "@type" => "IriTemplateMapping",
+                    "property" => "stocktakeItemLocations",
+                    "required" => false,
+                    "variable" => "exists[stocktakeItemLocations]"
+                ]
+            ],
+            "template" => "/api/locations{?ref,exists[children],exists[parent],exists[stocktakeItemLocations]}",
+            "variableRepresentation" => "BasicRepresentation"
+        ];
+    }
+
+    /**
      * @return \Generator<array{
      *      sequence: list<array{ref: string, comment: ?string, parent?: string}>,
      *      request: array{0: string, 1: string, 2?: array<string,mixed>},
@@ -34,17 +72,35 @@ class LocationApiTest extends ApiTestCase
             ),
         ];
 
+        $expect100rooms = [
+            ...array_map(
+                fn(int $id): array => [
+                    "@id" => "/api/locations/{$id}",
+                    "@type" => "Location",
+                    "children" => [],
+                    "id" => $id,
+                    "stocktakeItemLocations" => [],
+                    ...$acme100rooms[$id-1],
+                ],
+                range(1, 100)
+            ),
+        ];
+
         $expect = [
             '@context' => '/api/contexts/Location',
             '@id' => '/api/locations',
             '@type' => 'Collection',
         ];
 
+        $iriTemplate = self::getLocationsIriTemplate();
+
         yield '#01: empty' => [
             'sequence' => [],
             'request' => ['GET', '/api/locations'],
             'expect' => array_merge($expect, [
                 'totalItems' => 0,
+                'member' => [],
+                'search' => $iriTemplate,
             ]),
         ];
 
@@ -65,6 +121,7 @@ class LocationApiTest extends ApiTestCase
                         'stocktakeItemLocations' => [],
                     ]
                 ],
+                'search' => $iriTemplate,
             ]),
         ];
 
@@ -118,6 +175,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 4,
                         'ref' => 'PENT',
+                        'comment' => 'Pentagon house',
                         'children' => [
                             '/api/locations/5',
                         ],
@@ -143,10 +201,11 @@ class LocationApiTest extends ApiTestCase
                         'stocktakeItemLocations' => [],
                     ],
                 ],
+                'search' => $iriTemplate,
             ]),
         ];
 
-        yield '#04: many entities, page=1' => [
+        yield '#04: get page=1 of 100 rooms' => [
             'sequence' => $acme100rooms,
             'request' => ['GET', '/api/locations'],
             'expect' => array_merge($expect, [
@@ -158,10 +217,12 @@ class LocationApiTest extends ApiTestCase
                     'last' => '/api/locations?page=4',
                     'next' => '/api/locations?page=2',
                 ],
+                'member' => array_slice($expect100rooms, 0, 30),
+                'search' => $iriTemplate,
             ]),
         ];
 
-        yield '#05: many entities, page=2' => [
+        yield '#05: get page=2 of 100 rooms' => [
             'sequence' => $acme100rooms,
             'request' => ['GET', '/api/locations?page=2'],
             'expect' => array_merge($expect, [
@@ -172,7 +233,10 @@ class LocationApiTest extends ApiTestCase
                     'first' => '/api/locations?page=1',
                     'last' => '/api/locations?page=4',
                     'next' => '/api/locations?page=3',
+                    'previous' => '/api/locations?page=1',
                 ],
+                'search' => $iriTemplate,
+                'member' => array_slice($expect100rooms, 30, 30),
             ]),
         ];
     }
@@ -212,6 +276,6 @@ class LocationApiTest extends ApiTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $this->assertJsonContains($expect);
+        $this->assertJsonEquals($expect);
     }
 }
