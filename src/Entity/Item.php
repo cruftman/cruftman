@@ -42,9 +42,16 @@ class Item
     #[ORM\OneToMany(targetEntity: StocktakeItemLocation::class, mappedBy: 'item')]
     private Collection $stocktakeItemLocations;
 
+    /**
+     * @var Collection<int, Location>
+     */
+    #[ORM\ManyToMany(targetEntity: Location::class, inversedBy: 'items')]
+    private Collection $locations;
+
     public function __construct()
     {
         $this->stocktakeItemLocations = new ArrayCollection();
+        $this->locations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -131,6 +138,30 @@ class Item
                 $stocktakeItemLocation->setItem(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Location>
+     */
+    public function getLocations(): Collection
+    {
+        return $this->locations;
+    }
+
+    public function addLocation(Location $location): static
+    {
+        if (!$this->locations->contains($location)) {
+            $this->locations->add($location);
+        }
+
+        return $this;
+    }
+
+    public function removeLocation(Location $location): static
+    {
+        $this->locations->removeElement($location);
 
         return $this;
     }
