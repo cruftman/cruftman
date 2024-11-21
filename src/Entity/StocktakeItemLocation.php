@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: StocktakeItemLocationRepository::class)]
-#[ORM\UniqueConstraint(fields: ['stocktake', 'item'])]
+#[ORM\UniqueConstraint(fields: ['stocktake', 'item', 'location'])]
 class StocktakeItemLocation
 {
     #[ORM\Id]
