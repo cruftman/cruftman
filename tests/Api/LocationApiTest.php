@@ -79,6 +79,7 @@ class LocationApiTest extends ApiTestCase
                     "@type" => "Location",
                     "children" => [],
                     "id" => $id,
+                    "items" => [],
                     "stocktakeItemLocations" => [],
                     ...$acme100rooms[$id-1],
                 ],
@@ -117,6 +118,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 1,
                         'ref' => 'ACME/236',
+                        'items' => [],
                         'children' => [],
                         'stocktakeItemLocations' => [],
                     ]
@@ -143,6 +145,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 1,
                         'ref' => 'ACME',
+                        'items' => [],
                         'comment' => 'ACME Building',
                         'children' => [
                             '/api/locations/2',
@@ -155,6 +158,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 2,
                         'ref' => 'ACME/123',
+                        'items' => [],
                         'comment' => 'Room 123 in the ACME Building',
                         'parent' => '/api/locations/1',
                         'children' => [],
@@ -165,6 +169,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 3,
                         'ref' => 'ACME/124',
+                        'items' => [],
                         'comment' => 'Room 124 in the ACME Building',
                         'parent' => '/api/locations/1',
                         'children' => [],
@@ -175,6 +180,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 4,
                         'ref' => 'PENT',
+                        'items' => [],
                         'comment' => 'Pentagon house',
                         'children' => [
                             '/api/locations/5',
@@ -186,6 +192,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 5,
                         'ref' => 'PENT/321',
+                        'items' => [],
                         'comment' => 'Room 321 in the Pentagon House',
                         'parent' => '/api/locations/4',
                         'children' => [],
@@ -196,6 +203,7 @@ class LocationApiTest extends ApiTestCase
                         '@type' => 'Location',
                         'id' => 6,
                         'ref' => 'FOO',
+                        'items' => [],
                         'comment' => 'Room FOO somewhere else',
                         'children' => [],
                         'stocktakeItemLocations' => [],
@@ -301,6 +309,7 @@ class LocationApiTest extends ApiTestCase
             "comment" => "Room 321 in ACME building",
             "id" => 1,
             "ref" => "ACME/321",
+            "items" => [],
             "stocktakeItemLocations" => []
         ]);
     }
